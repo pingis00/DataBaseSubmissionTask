@@ -25,17 +25,17 @@ public class CustomerEntity
     [Required]
     [ForeignKey(nameof(AddressEntity))]
     public int AddressId { get; set; }
-    public virtual AddressEntity Address { get; set; } = null!;
+    public AddressEntity Address { get; set; } = null!;
 
     [Required]
     [ForeignKey(nameof(RoleEntity))]
     public int RoleId { get; set; }
-    public virtual RoleEntity Role { get; set; } = null!;
+    public RoleEntity Role { get; set; } = null!;
 
     [Required]
     [ForeignKey(nameof(ContactPreferenceEntity))]
     public int ContactPreferenceId { get; set; }
-    public virtual ContactPreferenceEntity ContactPreference { get; set; } = null!;
+    public ContactPreferenceEntity ContactPreference { get; set; } = null!;
 
-    public virtual ICollection<CustomerReviewEntity> CustomerReviewEntities { get; set; } = new List<CustomerReviewEntity>();
+    public ICollection<CustomerReviewEntity> CustomerReviewEntities { get; set; } = new List<CustomerReviewEntity>();
 }

@@ -15,6 +15,6 @@ public class CustomerReviewEntity
     [Required]
     [ForeignKey(nameof(CustomerEntity))]
     public int CustomerId { get; set; }
-    public virtual CustomerEntity Customer { get; set; } = null!;
+    public CustomerEntity Customer { get; set; } = null!;
 
 }

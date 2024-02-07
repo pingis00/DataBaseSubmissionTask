@@ -4,7 +4,7 @@ using Microsoft.Identity.Client;
 
 namespace ApplicationCore.Infrastructure.Contexts
 {
-    public class DataContext(DbContextOptions<DataContext> options) : DbContext(options)
+    public class EagerLoadingContext(DbContextOptions<EagerLoadingContext> options) : DbContext(options)
     {
         public virtual DbSet<RoleEntity> Roles { get; set; }
         public virtual DbSet<AddressEntity> Addresses { get; set; }

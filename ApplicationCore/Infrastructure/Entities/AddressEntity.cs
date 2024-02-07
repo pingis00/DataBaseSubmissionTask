@@ -17,5 +17,5 @@ public class AddressEntity
     [Column(TypeName = "nvarchar(50)")]
     public string City { get; set; } = null!;
 
-    public virtual ICollection<CustomerEntity> Customers { get; set; } = new List<CustomerEntity>();
+    public ICollection<CustomerEntity> Customers { get; set; } = new List<CustomerEntity>();
 }

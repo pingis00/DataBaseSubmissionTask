@@ -18,7 +18,7 @@ public partial class App : Application
         AppHost = Host.CreateDefaultBuilder().ConfigureServices(services =>
         {
             
-            services.AddDbContext<DataContext>(x => x.UseSqlServer(@"Data Source=localhost;Initial Catalog=DbCustomers;Integrated Security=True;Encrypt=True;Trust Server Certificate=True", x => x.MigrationsAssembly(nameof(ApplicationCore))));
+            services.AddDbContext<EagerLoadingContext>(x => x.UseSqlServer(@"Data Source=localhost;Initial Catalog=DbCustomers;Integrated Security=True;Encrypt=True;Trust Server Certificate=True", x => x.MigrationsAssembly(nameof(ApplicationCore))));
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<MainWindow>();
             

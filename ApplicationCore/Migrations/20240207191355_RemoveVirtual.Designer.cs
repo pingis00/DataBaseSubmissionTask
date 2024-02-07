@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ApplicationCore.Migrations
 {
     [DbContext(typeof(EagerLoadingContext))]
-    [Migration("20240207144006_InitializeTables")]
-    partial class InitializeTables
+    [Migration("20240207191355_RemoveVirtual")]
+    partial class RemoveVirtual
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
