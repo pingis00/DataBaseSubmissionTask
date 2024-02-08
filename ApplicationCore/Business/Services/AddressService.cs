@@ -3,6 +3,7 @@ using ApplicationCore.Business.Helpers;
 using ApplicationCore.Business.Interfaces;
 using ApplicationCore.Infrastructure.Entities;
 using ApplicationCore.Infrastructure.Interfaces;
+using System.Data;
 using System.Diagnostics;
 
 namespace ApplicationCore.Business.Services;
@@ -15,27 +16,36 @@ public class AddressService(IAddressRepository addressRepository) : IAddressServ
     {
         try
         {
-            var existingAddress = await _addressRepository.GetOneAsync(a => 
-            a.StreetName == address.StreetName && 
-            a.PostalCode == address.PostalCode && 
-            a.City == address.City);
+            var existingAddressResult = await GetAddressByIdAsync(address.Id);
 
-            if (existingAddress != null)
+            if (existingAddressResult.IsSuccess && existingAddressResult.Data != null)
             {
-                return OperationResult<AddressDto>.Success("Adressen finns redan i systemet.", new AddressDto
-                { Id = existingAddress.Id, StreetName =existingAddress.StreetName, PostalCode =existingAddress.PostalCode, City = existingAddress.City});
+                return OperationResult<AddressDto>.Success("Adressen finns redan i systemet.", existingAddressResult.Data);  
             }
             else
             {
-                var newAddressEntity = await _addressRepository.CreateAsync(new AddressEntity
+                var normalizedStreetName = TextNormalizationHelper.NormalizeText(address.StreetName).Data;
+                var normalizedCity = TextNormalizationHelper.NormalizeText(address.City).Data;
+                var normalizedPostalCode = TextNormalizationHelper.FormatSwedishPostalCode(address.PostalCode).Data;
+
+
+                var newAddressEntityResult = await _addressRepository.CreateAsync(new AddressEntity
                 {
-                    StreetName = address.StreetName,
-                    PostalCode = address.PostalCode,
-                    City = address.City
+                    StreetName = normalizedStreetName,
+                    PostalCode = normalizedPostalCode,
+                    City = normalizedCity
                 });
+
+                if (!newAddressEntityResult.IsSuccess)
+                {
+                    return OperationResult<AddressDto>.Failure("Det gick inte att skapa adressen.");
+                }
+
+                var newAddressEntity = newAddressEntityResult.Data;
 
                 var newAddressDto = new AddressDto
                 {
+                    Id = newAddressEntity.Id,
                     StreetName = newAddressEntity.StreetName,
                     PostalCode = newAddressEntity.PostalCode,
                     City = newAddressEntity.City
@@ -55,22 +65,22 @@ public class AddressService(IAddressRepository addressRepository) : IAddressServ
     {
         try
         {
-            var addressToDelete = GetAddressByIdAsync(addressId);
-            if (addressToDelete != null)
+            var addressToDeleteResult = await GetAddressByIdAsync(addressId);
+
+            if (!addressToDeleteResult.IsSuccess)
             {
-                var result = await _addressRepository.DeleteAsync(a => a.Id == addressToDelete.Id);
-                if (result)
-                {
-                    return OperationResult<bool>.Success("Adressen raderades framgångsrikt.", true);
-                }
-                else
-                {
-                    return OperationResult<bool>.Failure("Det uppstod ett problem vid radering av adressen.");
-                }
+                return OperationResult<bool>.Failure("Adressen kunde inte hittas.");
+            }
+            var addressToDelete = addressToDeleteResult.Data;
+
+            var result = await _addressRepository.DeleteAsync(a => a.Id == addressToDelete.Id);
+            if (result.IsSuccess)
+            {
+                return OperationResult<bool>.Success("Adressen raderades framgångsrikt.", true);
             }
             else
             {
-                return OperationResult<bool>.Failure("Adressen kunde inte hittas.");
+                return OperationResult<bool>.Failure("Det uppstod ett problem vid radering av adressen.");
             }
         }
         catch (Exception ex)
@@ -84,9 +94,10 @@ public class AddressService(IAddressRepository addressRepository) : IAddressServ
     {
         try
         {
-            var address = await _addressRepository.GetOneAsync(a => a.Id == addressId);
-            if (address != null)
+            var addressResult = await _addressRepository.GetOneAsync(a => a.Id == addressId);
+            if (addressResult.IsSuccess && addressResult.Data != null)
             {
+                var address = addressResult.Data;
                 var addressDto = new AddressDto
                 {
                     Id = address.Id,
@@ -114,22 +125,30 @@ public class AddressService(IAddressRepository addressRepository) : IAddressServ
     {
         try
         {
-            var addresses = await _addressRepository.GetAllAsync();
-            
-            var addressDtos = addresses.Select(a => new AddressDto
+            var addressEntitiesResult = await _addressRepository.GetAllAsync();
+
+            if (addressEntitiesResult.IsSuccess && addressEntitiesResult.Data != null)
             {
-                Id = a.Id,
-                StreetName = a.StreetName,
-                PostalCode = a.PostalCode,
-                City = a.City
-            });
-            if (addressDtos.Any())
-            {
-                return OperationResult<IEnumerable<AddressDto>>.Success("Adresser hämtades framgångsrikt.", addressDtos);
+                var addressesDto = addressEntitiesResult.Data.Select(addressEntity => new AddressDto
+                {
+                    Id = addressEntity.Id,
+                    StreetName = addressEntity.StreetName,
+                    PostalCode = addressEntity.PostalCode,
+                    City = addressEntity.City,
+                }).ToList();
+
+                if (addressesDto.Any())
+                {
+                    return OperationResult<IEnumerable<AddressDto>>.Success("Adresser hämtades framgångsrikt.", addressesDto);
+                }
+                else
+                {
+                    return OperationResult<IEnumerable<AddressDto>>.Failure("Inga adresser hittades.");
+                }
             }
             else
             {
-                return OperationResult<IEnumerable<AddressDto>>.Failure("Inga adresser hittades.");
+                return OperationResult<IEnumerable<AddressDto>>.Failure("Det gick inte att hämta adresserna.");
             }
         }
         catch (Exception ex)

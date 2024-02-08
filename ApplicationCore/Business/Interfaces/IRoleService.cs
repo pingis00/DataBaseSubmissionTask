@@ -8,6 +8,6 @@ public interface IRoleService
     Task<OperationResult<RoleDto>> CreateRoleAsync(RoleDto role);
     Task<OperationResult<RoleDto>> GetRolesByIdAsync(int roleId);
     Task<OperationResult<IEnumerable<RoleDto>>> GetAllRolesAsync();
-    Task<OperationResult<RoleDto>> UpdateRoleAsync(RoleDto addressDto);
+    Task<OperationResult<RoleDto>> UpdateRoleAsync(RoleDto roleDto);
     Task<OperationResult<bool>> DeleteRoleAsync(int roleId);
 }

@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Infrastructure.Contexts;
+﻿using ApplicationCore.Business.Helpers;
+using ApplicationCore.Infrastructure.Contexts;
 using ApplicationCore.Infrastructure.Entities;
 using ApplicationCore.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,7 @@ public class CustomerRepository(EagerLoadingContext context) : BaseRepository<Cu
 {
     private readonly EagerLoadingContext _context = context;
 
-    public override async Task<IEnumerable<CustomerEntity>> GetAllAsync()
+    public override async Task<OperationResult<IEnumerable<CustomerEntity>>> GetAllAsync()
     {
         try
         {
@@ -20,16 +21,16 @@ public class CustomerRepository(EagerLoadingContext context) : BaseRepository<Cu
                 .Include(x => x.ContactPreference)
                 .Include(x => x.Role)
                 .ToListAsync();
-            if (existingEntities != null)
-            {
-                return existingEntities;
-            }
+            return OperationResult<IEnumerable<CustomerEntity>>.Success("Success", existingEntities);
         }
-        catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
-        return null!;
+        catch (Exception ex)
+        {
+            Debug.WriteLine("ERROR :: " + ex.Message);
+            return OperationResult<IEnumerable<CustomerEntity>>.Failure(ex.Message);
+        }
     }
 
-    public override async Task<CustomerEntity> GetOneAsync(Expression<Func<CustomerEntity, bool>> predicate)
+    public override async Task<OperationResult<CustomerEntity>> GetOneAsync(Expression<Func<CustomerEntity, bool>> predicate)
     {
         try
         {
@@ -40,10 +41,17 @@ public class CustomerRepository(EagerLoadingContext context) : BaseRepository<Cu
                 .FirstOrDefaultAsync(predicate);
             if (existingEntity != null)
             {
-                return existingEntity;
+                return OperationResult<CustomerEntity>.Success("Entiteten hittades.", existingEntity);
+            }
+            else
+            {
+                return OperationResult<CustomerEntity>.Failure("Entiteten hittades inte.");
             }
         }
-        catch (Exception ex) { Debug.WriteLine("ERROR :: " + ex.Message); }
-        return null!;
+        catch (Exception ex)
+        {
+            Debug.WriteLine("ERROR :: " + ex.Message);
+            return OperationResult<CustomerEntity>.Failure("Ett fel uppstod när entiteten skulle hämtas: " + ex.Message);
+        }
     }
 }

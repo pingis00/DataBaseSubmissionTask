@@ -1,4 +1,5 @@
-﻿using ApplicationCore.Infrastructure.Entities;
+﻿using ApplicationCore.Business.Helpers;
+using ApplicationCore.Infrastructure.Entities;
 
 namespace ApplicationCore.Infrastructure.Interfaces;
 
