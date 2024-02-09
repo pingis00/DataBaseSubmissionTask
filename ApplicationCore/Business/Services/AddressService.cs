@@ -162,9 +162,48 @@ public class AddressService(IAddressRepository addressRepository) : IAddressServ
     {
         try
         {
-           return await CreateAddressAsync(addressDto);
+            var getAddressResult = await _addressRepository.GetOneAsync(a => a.Id == addressDto.Id);
 
+            if (!getAddressResult.IsSuccess)
+            {
+                return OperationResult<AddressDto>.Failure("Adressen kunde inte hittas.");
+            }
 
+            var entityToUpdate = getAddressResult.Data;
+
+            if (entityToUpdate != null)
+            {
+                entityToUpdate.StreetName = addressDto.StreetName;
+                entityToUpdate.PostalCode = addressDto.PostalCode;
+                entityToUpdate.City = addressDto.City;
+
+                var updateResult = await _addressRepository.UpdateAsync(
+                    e => e.Id == entityToUpdate.Id,
+                    entityToUpdate                  
+                );
+
+                if (updateResult.IsSuccess)
+                {
+                    var updatedEntity = updateResult.Data;
+                    var updatedDto = new AddressDto
+                    {
+                        Id = updatedEntity.Id,
+                        StreetName = updatedEntity.StreetName,
+                        PostalCode = updatedEntity.PostalCode,
+                        City = updatedEntity.City
+                    };
+
+                    return OperationResult<AddressDto>.Success("Adressen uppdaterades framgångsrikt.", updatedDto);
+                }
+                else
+                {
+                    return OperationResult<AddressDto>.Failure("Det gick inte att uppdatera adressen.");
+                }
+            }
+            else
+            {
+                return OperationResult<AddressDto>.Failure("Adressen kunde inte hittas.");
+            }
         }
         catch (Exception ex)
         {

@@ -3,6 +3,7 @@ using ApplicationCore.Business.Helpers;
 using ApplicationCore.Business.Interfaces;
 using ApplicationCore.Infrastructure.Entities;
 using ApplicationCore.Infrastructure.Interfaces;
+using ApplicationCore.Infrastructure.Repositories;
 using System.Data;
 using System.Diagnostics;
 
@@ -20,24 +21,30 @@ public class ContactPreferenceService(IContactPreferenceRepository contactPrefer
 
             if (existingcontactPreferenceResult.IsSuccess && existingcontactPreferenceResult.Data != null)
             {
-                return OperationResult<ContactPreferenceDto>.Success("Adressen finns redan i systemet.", existingcontactPreferenceResult.Data);
+                return OperationResult<ContactPreferenceDto>.Success("Kontaktpreferensen finns redan i systemet.", existingcontactPreferenceResult.Data);
             }
             else
             {
-                var normalizedContactPreference = TextNormalizationHelper.NormalizeText(contactPreference.PreferredContactMethod).Data;
+                var normalizedcontactPreferenceName = TextNormalizationHelper.NormalizeText(contactPreference.PreferredContactMethod).Data;
 
-                var newcontactPreferenceEntity = await _contactPreferenceRepository.CreateAsync(new ContactPreferenceEntity
+                var newContactPreferenceEntityResult = await _contactPreferenceRepository.CreateAsync(new ContactPreferenceEntity
                 {
-                    PreferredContactMethod = normalizedContactPreference
+                    PreferredContactMethod = normalizedcontactPreferenceName
                 });
 
-                var newContactPreferenceDto = new ContactPreferenceDto
+                if (!newContactPreferenceEntityResult.IsSuccess)
                 {
-                    Id = newcontactPreferenceEntity.Id,
-                    PreferredContactMethod = newcontactPreferenceEntity.PreferredContactMethod
+                    return OperationResult<ContactPreferenceDto>.Failure("Det gick inte att skapa kontaktpreferensen.");
+                }
+                var newPreferenceEntity = newContactPreferenceEntityResult.Data;
+
+                var newPreferenceDto = new ContactPreferenceDto
+                {
+                    Id = newPreferenceEntity.Id,
+                    PreferredContactMethod = newPreferenceEntity.PreferredContactMethod
                 };
 
-                return OperationResult<ContactPreferenceDto>.Success("Kontaktpreferensen skapades framgångrikt", newContactPreferenceDto);
+                return OperationResult<ContactPreferenceDto>.Success("Kontaktppreferensen skapades framgångrikt", newPreferenceDto);
             }
         }
         catch (Exception ex)
@@ -51,22 +58,23 @@ public class ContactPreferenceService(IContactPreferenceRepository contactPrefer
     {
         try
         {
-            var contactPreferenceIToDelete = GetContactPreferenceByIdAsync(contactPreferenceId);
-            if (contactPreferenceIToDelete != null)
+            var preferenceToDeleteResult = await GetContactPreferenceByIdAsync(contactPreferenceId);
+
+            if (!preferenceToDeleteResult.IsSuccess)
             {
-                var result = await _contactPreferenceRepository.DeleteAsync(c => c.Id == contactPreferenceIToDelete.Id);
-                if (result)
-                {
-                    return OperationResult<bool>.Success("Kontaktpreferensen raderades framgångsrikt.", true);
-                }
-                else
-                {
-                    return OperationResult<bool>.Failure("Det uppstod ett problem vid radering av kontaktpreferensen.");
-                }
+                return OperationResult<bool>.Failure("Kontaktpreferensen kunde inte hittas.");
+            }
+            var preferenceToDelete = preferenceToDeleteResult.Data;
+
+
+            var result = await _contactPreferenceRepository.DeleteAsync(a => a.Id == preferenceToDelete.Id);
+            if (result.IsSuccess)
+            {
+                return OperationResult<bool>.Success("Kontaktpreferensen raderades framgångsrikt.", true);
             }
             else
             {
-                return OperationResult<bool>.Failure("Kontaktpreferensen kunde inte hittas.");
+                return OperationResult<bool>.Failure("Det uppstod ett problem vid radering av kontaktpreferensen.");
             }
         }
         catch (Exception ex)
@@ -80,26 +88,28 @@ public class ContactPreferenceService(IContactPreferenceRepository contactPrefer
     {
         try
         {
-            var contactEntities = await _contactPreferenceRepository.GetAllAsync();
+            var preferenceEntitiesResult = await _contactPreferenceRepository.GetAllAsync();
 
-            var contactPreferences = new List<ContactPreferenceDto>();
-
-            foreach ( var contactPreference in contactEntities)
+            if (preferenceEntitiesResult.IsSuccess && preferenceEntitiesResult.Data != null)
             {
-                contactPreferences.Add(new ContactPreferenceDto
+                var preferenceDto = preferenceEntitiesResult.Data.Select(preferenceEntity => new ContactPreferenceDto
                 {
-                    Id = contactPreference.Id,
-                    PreferredContactMethod = contactPreference.PreferredContactMethod,
-                });
-            }
+                    Id = preferenceEntity.Id,
+                    PreferredContactMethod = preferenceEntity.PreferredContactMethod
+                }).ToList();
 
-            if (contactPreferences.Any())
-            {
-                return OperationResult<IEnumerable<ContactPreferenceDto>>.Success("Kontaktpreferenserna hämtades framgångsrikt.", contactPreferences);
+                if (preferenceDto.Any())
+                {
+                    return OperationResult<IEnumerable<ContactPreferenceDto>>.Success("Kontaktpreferenserna hämtades framgångsrikt.", preferenceDto);
+                }
+                else
+                {
+                    return OperationResult<IEnumerable<ContactPreferenceDto>>.Failure("Inga kontaktpreferenser hittades.");
+                }
             }
             else
             {
-                return OperationResult<IEnumerable<ContactPreferenceDto>>.Failure("Inga kontaktpreferenser hittades.");
+                return OperationResult<IEnumerable<ContactPreferenceDto>>.Failure("Det gick inte att hämta kontaktpreferenserna.");
             }
         }
         catch (Exception ex)
@@ -113,16 +123,16 @@ public class ContactPreferenceService(IContactPreferenceRepository contactPrefer
     {
         try
         {
-            var contactPreference = await _contactPreferenceRepository.GetOneAsync(cp => cp.Id == contactPreferenceId);
-            if (contactPreference != null)
+            var contactPreferenceResult = await _contactPreferenceRepository.GetOneAsync(p => p.Id == contactPreferenceId);
+            if (contactPreferenceResult.IsSuccess && contactPreferenceResult.Data != null)
             {
-                var contactPreferenceDto = new ContactPreferenceDto
+                var preference = contactPreferenceResult.Data;
+                var preferenceDto = new ContactPreferenceDto
                 {
-                    Id = contactPreference.Id,
-                    PreferredContactMethod = contactPreference.PreferredContactMethod,
+                    Id = preference.Id,
+                    PreferredContactMethod = preference.PreferredContactMethod
                 };
-
-                return OperationResult<ContactPreferenceDto>.Success("Kontaktpreferens hämtades framgångsrikt.", contactPreferenceDto);
+                return OperationResult<ContactPreferenceDto>.Success("Kontaktpreferensen hämtades framgångsrikt.", preferenceDto);
             }
             else
             {
@@ -140,12 +150,49 @@ public class ContactPreferenceService(IContactPreferenceRepository contactPrefer
     {
         try
         {
-            return await CreateContactPreferenceAsync(contactPreferenceDto);
+            var getPreferenceResult = await _contactPreferenceRepository.GetOneAsync(p => p.Id == contactPreferenceDto.Id);
+
+            if (!getPreferenceResult.IsSuccess)
+            {
+                return OperationResult<ContactPreferenceDto>.Failure("Rollen kunde inte hittas.");
+            }
+
+            var entityToUpdate = getPreferenceResult.Data;
+
+            if (entityToUpdate != null)
+            {
+                entityToUpdate.PreferredContactMethod = contactPreferenceDto.PreferredContactMethod;
+
+                var updateResult = await _contactPreferenceRepository.UpdateAsync(
+                    p => p.Id == entityToUpdate.Id,
+                    entityToUpdate
+                );
+
+                if (updateResult.IsSuccess)
+                {
+                    var updatedEntity = updateResult.Data;
+                    var updatedDto = new ContactPreferenceDto
+                    {
+                        Id = updatedEntity.Id,
+                        PreferredContactMethod = updatedEntity.PreferredContactMethod
+                    };
+
+                    return OperationResult<ContactPreferenceDto>.Success("Adressen uppdaterades framgångsrikt.", updatedDto);
+                }
+                else
+                {
+                    return OperationResult<ContactPreferenceDto>.Failure("Det gick inte att uppdatera adressen.");
+                }
+            }
+            else
+            {
+                return OperationResult<ContactPreferenceDto>.Failure("Adressen kunde inte hittas.");
+            }
         }
         catch (Exception ex)
         {
             Debug.WriteLine("ERROR :: " + ex.Message);
-            return OperationResult<ContactPreferenceDto>.Failure("Ett internt fel inträffade när kontektpreferensen skulle uppdateras.");
+            return OperationResult<ContactPreferenceDto>.Failure("Ett internt fel inträffade när adressen skulle uppdateras.");
         }
     }
 }

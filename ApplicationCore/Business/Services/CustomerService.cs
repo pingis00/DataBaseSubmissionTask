@@ -240,8 +240,89 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
         }
     }
 
-    public Task<OperationResult<CustomerRegistrationDto>> UpdateCustomerAsync(CustomerRegistrationDto customerDto)
+    public async Task<OperationResult<UpdateCustomerDto>> UpdateCustomerAsync(UpdateCustomerDto updateCustomerDto)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var getCustomerResult = await _customerRepository.GetOneAsync(c => c.Id == updateCustomerDto.Id);
+            if (!getCustomerResult.IsSuccess)
+            {
+                return OperationResult<UpdateCustomerDto>.Failure("Rollen kunde inte hittas.");
+            }
+
+            var entityToUpdate = getCustomerResult.Data;
+
+            if (entityToUpdate != null)
+            {
+                var roleResult = await _roleService.CreateRoleAsync(updateCustomerDto.Role);
+                if (!roleResult.IsSuccess)
+                {
+                    return OperationResult<UpdateCustomerDto>.Failure("Rollen kunde inte Uppdateras.");
+                }
+
+                var addressResult = await _addressService.CreateAddressAsync(updateCustomerDto.Address);
+                if (!addressResult.IsSuccess)
+                {
+                    return OperationResult<UpdateCustomerDto>.Failure("Adressen kunde inte Uppdateras.");
+                }
+
+                var preferenceResult = await _contactPreferenceService.CreateContactPreferenceAsync(updateCustomerDto.ContactPreference);
+                if (!preferenceResult.IsSuccess)
+                {
+                    return OperationResult<UpdateCustomerDto>.Failure("Kontaktpreferensen kunde inte Uppdateras.");
+                }
+
+                entityToUpdate = getCustomerResult.Data;
+
+                if (entityToUpdate != null)
+                {
+                    entityToUpdate.FirstName = updateCustomerDto.FirstName;
+                    entityToUpdate.LastName = updateCustomerDto.LastName;
+                    entityToUpdate.Email = updateCustomerDto.Email;
+                    entityToUpdate.PhoneNumber = updateCustomerDto.PhoneNumber;
+                    entityToUpdate.RoleId = roleResult.Data.Id;
+                    entityToUpdate.AddressId = addressResult.Data.Id;
+                    entityToUpdate.ContactPreferenceId = preferenceResult.Data.Id;
+
+                    var updateResult = await _customerRepository.UpdateAsync(
+                        c => c.Id == entityToUpdate.Id,
+                        entityToUpdate
+                    );
+
+                    if (!updateResult.IsSuccess)
+                    {
+                        return OperationResult<UpdateCustomerDto>.Failure("Det gick inte att uppdatera kunden.");
+                    }
+                    var updatedEntity = updateResult.Data;
+                    var updatedDto = new UpdateCustomerDto
+                    {
+                        Id = updatedEntity.Id,
+                        FirstName = updatedEntity.FirstName,
+                        LastName = updatedEntity.LastName,
+                        Email = updatedEntity.Email,
+                        PhoneNumber = updatedEntity.PhoneNumber,
+                        Role = roleResult.Data,
+                        Address = addressResult.Data,
+                        ContactPreference = preferenceResult.Data
+                    };
+                    return OperationResult<UpdateCustomerDto>.Success("Kunden uppdaterades framgångsrikt.", updatedDto);
+
+                }
+                else
+                {
+                    return OperationResult<UpdateCustomerDto>.Failure("Kunden kunde inte hittas.");
+                }
+
+            }
+            else
+            {
+                return OperationResult<UpdateCustomerDto>.Failure("Kunden kunde inte hittas.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine("ERROR :: " + ex.Message);
+            return OperationResult<UpdateCustomerDto>.Failure("Ett internt fel inträffade när adressen skulle uppdateras.");
+        }
     }
 }

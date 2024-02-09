@@ -85,7 +85,6 @@ public class RoleService(IRoleRepository roleRepository) : IRoleService
 
     public async Task<OperationResult<IEnumerable<RoleDto>>> GetAllRolesAsync()
     {
-
         try
         {
             var roleEntitiesResult = await _roleRepository.GetAllAsync();
@@ -150,12 +149,49 @@ public class RoleService(IRoleRepository roleRepository) : IRoleService
     {
         try
         {
-            return await CreateRoleAsync(roleDto);
+            var getRoleResult = await _roleRepository.GetOneAsync(r => r.Id == roleDto.Id);
+
+            if (!getRoleResult.IsSuccess)
+            {
+                return OperationResult<RoleDto>.Failure("Rollen kunde inte hittas.");
+            }
+
+            var entityToUpdate = getRoleResult.Data;
+
+            if (entityToUpdate != null)
+            {
+                entityToUpdate.RoleName = roleDto.RoleName;
+
+                var updateResult = await _roleRepository.UpdateAsync(
+                    r => r.Id == entityToUpdate.Id,
+                    entityToUpdate
+                );
+
+                if (updateResult.IsSuccess)
+                {
+                    var updatedEntity = updateResult.Data;
+                    var updatedDto = new RoleDto
+                    {
+                        Id = updatedEntity.Id,
+                        RoleName = updatedEntity.RoleName,
+                    };
+
+                    return OperationResult<RoleDto>.Success("Adressen uppdaterades framgångsrikt.", updatedDto);
+                }
+                else
+                {
+                    return OperationResult<RoleDto>.Failure("Det gick inte att uppdatera adressen.");
+                }
+            }
+            else
+            {
+                return OperationResult<RoleDto>.Failure("Adressen kunde inte hittas.");
+            }
         }
         catch (Exception ex)
         {
             Debug.WriteLine("ERROR :: " + ex.Message);
-            return OperationResult<RoleDto>.Failure("Ett internt fel inträffade när rollen skulle uppdateras.");
+            return OperationResult<RoleDto>.Failure("Ett internt fel inträffade när adressen skulle uppdateras.");
         }
     }
 }
