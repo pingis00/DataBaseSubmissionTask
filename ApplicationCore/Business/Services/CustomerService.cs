@@ -10,12 +10,13 @@ using System.Diagnostics;
 
 namespace ApplicationCore.Business.Services;
 
-public class CustomerService(ICustomerRepository customerRepository, IAddressService addressService, IContactPreferenceService contactPreferenceService, IRoleService roleService, EagerLoadingContext eagerLoading) : ICustomerService
+public class CustomerService(ICustomerRepository customerRepository, IAddressService addressService, IContactPreferenceService contactPreferenceService, IRoleService roleService, ICustomerReviewService reviewService, EagerLoadingContext eagerLoading) : ICustomerService
 {
     private readonly ICustomerRepository _customerRepository = customerRepository;
     private readonly IAddressService _addressService = addressService;
     private readonly IContactPreferenceService _contactPreferenceService = contactPreferenceService;
     private readonly IRoleService _roleService = roleService;
+    private readonly ICustomerReviewService _reviewService = reviewService;
     private readonly EagerLoadingContext _eagerLoading = eagerLoading;
 
     public async Task<OperationResult<CustomerRegistrationDto>> CreateCustomerAsync(CustomerRegistrationDto customer)
@@ -23,7 +24,7 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
         using var transaction = _eagerLoading.Database.BeginTransaction();
         try
         {
-            var result = await GetCustomerByEmailAsync(customer.Email);
+            var result = await _customerRepository.FindAsync(c => c.Email == customer.Email);
 
             if (result.IsSuccess && result.Data != null)
             {
@@ -86,8 +87,9 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
                     FirstName = customerEntity.FirstName,
                     LastName = customerEntity.LastName,
                     Email = customerEntity.Email,
-                    PhoneNumber = customerEntity.PhoneNumber,
+                    PhoneNumber = customerEntity.PhoneNumber
                 };
+
                 await transaction.CommitAsync();
                 return OperationResult<CustomerRegistrationDto>.Success("Adressen skapades framgångrikt", newCustomerDto);
             }
@@ -197,11 +199,11 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
         catch (Exception ex)
         {
             Debug.WriteLine("ERROR :: " + ex.Message);
-            return OperationResult<CustomerRegistrationDto>.Failure("Ett internt fel inträffade när Emailen skulle kollas.");
+            return OperationResult<CustomerRegistrationDto>.Failure("Ett internt fel inträffade när Emailen skulle hämtas.");
         }
     }
 
-    public async Task<OperationResult<CustomerRegistrationDto>> GetCustomerByIdAsync(int customerId)
+    public async Task<OperationResult<CustomerFullDetailDto>> GetCustomerByIdAsync(int customerId)
     {
         try
         {
@@ -210,7 +212,7 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
             {
                 var customer = customerResult.Data;
 
-                var customerDto = new CustomerRegistrationDto
+                var customerDto = new CustomerFullDetailDto
                 {
                     Id = customer.Id,
                     FirstName = customer.FirstName,
@@ -222,21 +224,27 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
                     PostalCode = customer.Address.PostalCode,
                     City = customer.Address.City,
                     RoleName = customer.Role.RoleName,
-                    PreferredContactMethod = customer.ContactPreference.PreferredContactMethod
+                    PreferredContactMethod = customer.ContactPreference.PreferredContactMethod,
+                    
                 };
+                var reviewsResult = await _reviewService.GetReviewsByCustomerIdAsync(customerId);
+                if (reviewsResult.IsSuccess)
+                {
+                    customerDto.Reviews = reviewsResult.Data.ToList();
+                }
 
-                return OperationResult<CustomerRegistrationDto>.Success("Kunden hämtades framgångsrikt.", customerDto);
+                return OperationResult<CustomerFullDetailDto>.Success("Kunden hämtades framgångsrikt.", customerDto);
             }
             else
             {
-                return OperationResult<CustomerRegistrationDto>.Failure("Kunden kunde inte hittas.");
+                return OperationResult<CustomerFullDetailDto>.Failure("Kunden kunde inte hittas.");
             }
         }
 
         catch (Exception ex)
         {
             Debug.WriteLine("ERROR :: " + ex.Message);
-            return OperationResult<CustomerRegistrationDto>.Failure("Ett internt fel inträffade när kunden hämtades.");
+            return OperationResult<CustomerFullDetailDto>.Failure("Ett internt fel inträffade när kunden hämtades.");
         }
     }
 

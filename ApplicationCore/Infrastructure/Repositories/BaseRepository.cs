@@ -52,6 +52,24 @@ public abstract class BaseRepository<TEntity> : IRepository<TEntity> where TEnti
         }
     }
 
+    public virtual async Task<OperationResult<IEnumerable<TEntity>>> FindAsync(Expression<Func<TEntity, bool>> predicate)
+    {
+        try
+        {
+            var filteredEntities = await _context.Set<TEntity>().Where(predicate).ToListAsync();
+            if (filteredEntities != null)
+            {
+                return OperationResult<IEnumerable<TEntity>>.Success("Filtrerade entiteter har hämtats.", filteredEntities);
+            }
+            return OperationResult<IEnumerable<TEntity>>.Failure("Inga filtrerade entiteter hittades.");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine("ERROR :: " + ex.Message);
+            return OperationResult<IEnumerable<TEntity>>.Failure($"Ett fel uppstod när de filtrerade entiteterna skulle hämtas: {ex.Message}");
+        }
+    }
+
     public virtual async Task<OperationResult<IEnumerable<TEntity>>> GetAllAsync()
     {
         try

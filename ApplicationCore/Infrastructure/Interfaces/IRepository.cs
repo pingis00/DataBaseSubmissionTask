@@ -11,4 +11,5 @@ public interface IRepository<T> where T : class
     Task<OperationResult<T>> GetOneAsync(Expression<Func<T, bool>> predicate);
     Task<OperationResult<T>> UpdateAsync(Expression<Func<T, bool>> predicate, T Entity);
     Task<OperationResult<bool>> DeleteAsync(Expression<Func<T, bool>> predicate);
+    Task<OperationResult<IEnumerable<T>>> FindAsync(Expression<Func<T, bool>> predicate);
 }
