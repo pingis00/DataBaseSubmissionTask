@@ -14,11 +14,11 @@ public class CustomerRegistrationDto
     public string PreferredContactMethod { get; set; } = null!;
     public string RoleName { get; set; } = null!;
 
-    public AddressDto Address { get; set; } = null!;
+    public AddressDto Address { get; set; } = new AddressDto();
 
-    public ContactPreferenceDto ContactPreference { get; set; } = null!;
+    public ContactPreferenceDto ContactPreference { get; set; } = new ContactPreferenceDto();
 
-    public RoleDto Role { get; set; } = null!;
+    public RoleDto Role { get; set; } = new RoleDto();
 
-    public CustomerDto Customer { get; set; } = null!;
+    public CustomerDto Customer { get; set; } = new CustomerDto();
 }

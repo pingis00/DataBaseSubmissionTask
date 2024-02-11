@@ -16,6 +16,27 @@
             <DataTemplate DataType="{x:Type viewmodels:HomePageViewModel}">
                 <views:HomePageView />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type viewmodels:RegisterCustomerViewModel}">
+                <views:RegisterCustomerView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewmodels:CustomerListViewModel}">
+                <views:CustomerListView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewmodels:CustomerDetailsViewModel}">
+                <views:CustomerDetailsView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewmodels:UpdateCustomerViewModel}">
+                <views:UpdateCustomerView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewmodels:DeleteCustomerViewModel}">
+                <views:DeleteCustomerView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewmodels:CustomerReviewViewModel}">
+                <views:CustomerReviewView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewmodels:SettingsViewModel}">
+                <views:SettingsView/>
+            </DataTemplate>
         </ContentControl.Resources>
     </ContentControl>
 </Window>

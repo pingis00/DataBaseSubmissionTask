@@ -16,16 +16,22 @@ public class RoleService(IRoleRepository roleRepository) : IRoleService
     {
         try
         {
-            var existingRoleResult = await GetRolesByIdAsync(role.Id);
+            var normalizedRoleName = TextNormalizationHelper.NormalizeText(role.RoleName).Data;
+            var existingRoleResult = await _roleRepository.GetOneAsync(r => r.RoleName == normalizedRoleName);
 
             if (existingRoleResult.IsSuccess && existingRoleResult.Data != null)
             {
-                return OperationResult<RoleDto>.Success("Rollen finns redan i systemet.", existingRoleResult.Data);
+                var roleDto = new RoleDto
+                {
+                    Id = existingRoleResult.Data.Id,
+                    RoleName = existingRoleResult.Data.RoleName
+
+                };
+
+                return OperationResult<RoleDto>.Success("Rollen finns redan i systemet.", roleDto);
             }
             else
             {
-                var normalizedRoleName = TextNormalizationHelper.NormalizeText(role.RoleName).Data;
-
                 var newRoleEntityResult = await _roleRepository.CreateAsync(new RoleEntity
                 {
                     RoleName = normalizedRoleName

@@ -17,16 +17,22 @@ public class ContactPreferenceService(IContactPreferenceRepository contactPrefer
     {
         try
         {
-            var existingcontactPreferenceResult = await GetContactPreferenceByIdAsync(contactPreference.Id);
+            var normalizedcontactPreferenceName = TextNormalizationHelper.NormalizeText(contactPreference.PreferredContactMethod).Data;
+            var existingEntity = await _contactPreferenceRepository.GetOneAsync(c => c.PreferredContactMethod == normalizedcontactPreferenceName);
 
-            if (existingcontactPreferenceResult.IsSuccess && existingcontactPreferenceResult.Data != null)
+            if (existingEntity.IsSuccess && existingEntity.Data != null)
             {
-                return OperationResult<ContactPreferenceDto>.Success("Kontaktpreferensen finns redan i systemet.", existingcontactPreferenceResult.Data);
+                var preferrenceDto = new ContactPreferenceDto
+                {
+                    Id = existingEntity.Data.Id,
+                    PreferredContactMethod = existingEntity.Data.PreferredContactMethod,
+                    
+                };
+
+                return OperationResult<ContactPreferenceDto>.Success("Kontaktpreferensen finns redan i systemet.", preferrenceDto);
             }
             else
             {
-                var normalizedcontactPreferenceName = TextNormalizationHelper.NormalizeText(contactPreference.PreferredContactMethod).Data;
-
                 var newContactPreferenceEntityResult = await _contactPreferenceRepository.CreateAsync(new ContactPreferenceEntity
                 {
                     PreferredContactMethod = normalizedcontactPreferenceName

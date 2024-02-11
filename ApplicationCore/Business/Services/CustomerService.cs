@@ -10,13 +10,12 @@ using System.Diagnostics;
 
 namespace ApplicationCore.Business.Services;
 
-public class CustomerService(ICustomerRepository customerRepository, IAddressService addressService, IContactPreferenceService contactPreferenceService, IRoleService roleService, ICustomerReviewService reviewService, EagerLoadingContext eagerLoading) : ICustomerService
+public class CustomerService(ICustomerRepository customerRepository, IAddressService addressService, IContactPreferenceService contactPreferenceService, IRoleService roleService, EagerLoadingContext eagerLoading) : ICustomerService
 {
     private readonly ICustomerRepository _customerRepository = customerRepository;
     private readonly IAddressService _addressService = addressService;
     private readonly IContactPreferenceService _contactPreferenceService = contactPreferenceService;
     private readonly IRoleService _roleService = roleService;
-    private readonly ICustomerReviewService _reviewService = reviewService;
     private readonly EagerLoadingContext _eagerLoading = eagerLoading;
 
     public async Task<OperationResult<CustomerRegistrationDto>> CreateCustomerAsync(CustomerRegistrationDto customer)
@@ -26,7 +25,7 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
         {
             var result = await _customerRepository.FindAsync(c => c.Email == customer.Email);
 
-            if (result.IsSuccess && result.Data != null)
+            if (result.IsSuccess && result.Data.Any())
             {
                 await transaction.RollbackAsync();
                 return OperationResult<CustomerRegistrationDto>.Failure("Epostadressen finns redan i systemet.");
@@ -39,6 +38,7 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
                     await transaction.RollbackAsync();
                     return OperationResult<CustomerRegistrationDto>.Failure(addressModel.Message);
                 }
+                customer.Address.Id = addressModel.Data.Id;
 
                 var contactPreferenceModel = await _contactPreferenceService.CreateContactPreferenceAsync(customer.ContactPreference);
                 if (!contactPreferenceModel.IsSuccess)
@@ -46,6 +46,7 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
                     await transaction.RollbackAsync();
                     return OperationResult<CustomerRegistrationDto>.Failure(contactPreferenceModel.Message);
                 }
+                customer.ContactPreference.Id = contactPreferenceModel.Data.Id;
 
                 var roleModel = await _roleService.CreateRoleAsync(customer.Role);
                 if (!roleModel.IsSuccess)
@@ -53,6 +54,7 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
                     await transaction.RollbackAsync();
                     return OperationResult<CustomerRegistrationDto>.Failure(roleModel.Message);
                 }
+                customer.Role.Id = roleModel.Data.Id;
 
                 var normalizedFirstName = TextNormalizationHelper.NormalizeText(customer.FirstName).Data;
                 var normalizedLastName = TextNormalizationHelper.NormalizeText(customer.LastName).Data;
@@ -203,7 +205,7 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
         }
     }
 
-    public async Task<OperationResult<CustomerFullDetailDto>> GetCustomerByIdAsync(int customerId)
+    public async Task<OperationResult<CustomerRegistrationDto>> GetCustomerByIdAsync(int customerId)
     {
         try
         {
@@ -212,7 +214,7 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
             {
                 var customer = customerResult.Data;
 
-                var customerDto = new CustomerFullDetailDto
+                var customerDto = new CustomerRegistrationDto
                 {
                     Id = customer.Id,
                     FirstName = customer.FirstName,
@@ -227,24 +229,19 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
                     PreferredContactMethod = customer.ContactPreference.PreferredContactMethod,
                     
                 };
-                var reviewsResult = await _reviewService.GetReviewsByCustomerIdAsync(customerId);
-                if (reviewsResult.IsSuccess)
-                {
-                    customerDto.Reviews = reviewsResult.Data.ToList();
-                }
 
-                return OperationResult<CustomerFullDetailDto>.Success("Kunden hämtades framgångsrikt.", customerDto);
+                return OperationResult<CustomerRegistrationDto>.Success("Kunden hämtades framgångsrikt.", customerDto);
             }
             else
             {
-                return OperationResult<CustomerFullDetailDto>.Failure("Kunden kunde inte hittas.");
+                return OperationResult<CustomerRegistrationDto>.Failure("Kunden kunde inte hittas.");
             }
         }
 
         catch (Exception ex)
         {
             Debug.WriteLine("ERROR :: " + ex.Message);
-            return OperationResult<CustomerFullDetailDto>.Failure("Ett internt fel inträffade när kunden hämtades.");
+            return OperationResult<CustomerRegistrationDto>.Failure("Ett internt fel inträffade när kunden hämtades.");
         }
     }
 

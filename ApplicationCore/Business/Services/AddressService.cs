@@ -16,19 +16,29 @@ public class AddressService(IAddressRepository addressRepository) : IAddressServ
     {
         try
         {
-            var existingAddressResult = await GetAddressByIdAsync(address.Id);
+            var normalizedStreetName = TextNormalizationHelper.NormalizeText(address.StreetName).Data;
+            var normalizedCity = TextNormalizationHelper.NormalizeText(address.City).Data;
+            var normalizedPostalCode = TextNormalizationHelper.FormatSwedishPostalCode(address.PostalCode).Data;
+
+            var existingAddressResult = await _addressRepository.GetOneAsync(a =>
+            a.StreetName == normalizedStreetName &&
+            a.City == normalizedCity &&
+            a.PostalCode == normalizedPostalCode);
 
             if (existingAddressResult.IsSuccess && existingAddressResult.Data != null)
             {
-                return OperationResult<AddressDto>.Success("Adressen finns redan i systemet.", existingAddressResult.Data);  
+                var addressDto = new AddressDto
+                {
+                    Id = existingAddressResult.Data.Id,
+                    StreetName = existingAddressResult.Data.StreetName,
+                    PostalCode = existingAddressResult.Data.PostalCode,
+                    City = existingAddressResult.Data.City
+                };
+
+                return OperationResult<AddressDto>.Success("Adressen finns redan i systemet.", addressDto);
             }
             else
             {
-                var normalizedStreetName = TextNormalizationHelper.NormalizeText(address.StreetName).Data;
-                var normalizedCity = TextNormalizationHelper.NormalizeText(address.City).Data;
-                var normalizedPostalCode = TextNormalizationHelper.FormatSwedishPostalCode(address.PostalCode).Data;
-
-
                 var newAddressEntityResult = await _addressRepository.CreateAsync(new AddressEntity
                 {
                     StreetName = normalizedStreetName,
