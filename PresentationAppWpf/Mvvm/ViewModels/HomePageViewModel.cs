@@ -28,10 +28,13 @@ public partial class HomePageViewModel(IServiceProvider serviceProvider) : Obser
         mainViewModel.CurrentViewModel = registerViewModel;
     }
     [RelayCommand]
-    private void NavigateToCustomerList()
+    private async Task NavigateToCustomerList()
     {
+        var customerListViewModel = _serviceProvider.GetRequiredService<CustomerListViewModel>();
+        await customerListViewModel.LoadCustomersAsync();
+
         var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
-        mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<CustomerListViewModel>();
+        mainViewModel.CurrentViewModel = customerListViewModel;
     }
     [RelayCommand]
     private void NavigateToCustomerReview()

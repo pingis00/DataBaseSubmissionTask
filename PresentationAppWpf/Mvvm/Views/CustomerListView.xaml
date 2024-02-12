@@ -28,15 +28,14 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <Button Command="{Binding DataContext.NavigateToUpdateCustomerCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
-                                CommandParameter="{Binding}"
-                                Style="{StaticResource MaterialDesignFlatButton}"
-                                Content="Uppdatera"/>
-                                    <Button Command="{Binding DataContext.DeleteCustomerCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}"
-                                CommandParameter="{Binding CustomerId}"
-                                Style="{StaticResource MaterialDesignFlatButton}"
-                                Margin="4,0,0,0"
-                                Content="Radera"/>
+                                    <Button Command="{Binding DataContext.NavigateToUpdateCustomerCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                            CommandParameter="{Binding Id}" 
+                                            Content="Uppdatera" />
+                                    <Button Command="{Binding DataContext.DeleteCustomerCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                            CommandParameter="{Binding Id}"
+                                            Style="{StaticResource MaterialDesignFlatButton}"
+                                            Margin="4,0,0,0"
+                                            Content="Radera"/>
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>

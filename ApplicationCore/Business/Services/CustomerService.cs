@@ -205,7 +205,7 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
         }
     }
 
-    public async Task<OperationResult<CustomerRegistrationDto>> GetCustomerByIdAsync(int customerId)
+    public async Task<OperationResult<UpdateCustomerDto>> GetCustomerByIdAsync(int customerId)
     {
         try
         {
@@ -214,13 +214,12 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
             {
                 var customer = customerResult.Data;
 
-                var customerDto = new CustomerRegistrationDto
+                var customerDto = new UpdateCustomerDto
                 {
                     Id = customer.Id,
                     FirstName = customer.FirstName,
                     LastName = customer.LastName,
                     Email = customer.Email,
-                    Password = customer.Password,
                     PhoneNumber = customer.PhoneNumber,
                     StreetName = customer.Address.StreetName,
                     PostalCode = customer.Address.PostalCode,
@@ -230,18 +229,18 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
                     
                 };
 
-                return OperationResult<CustomerRegistrationDto>.Success("Kunden hämtades framgångsrikt.", customerDto);
+                return OperationResult<UpdateCustomerDto>.Success("Kunden hämtades framgångsrikt.", customerDto);
             }
             else
             {
-                return OperationResult<CustomerRegistrationDto>.Failure("Kunden kunde inte hittas.");
+                return OperationResult<UpdateCustomerDto>.Failure("Kunden kunde inte hittas.");
             }
         }
 
         catch (Exception ex)
         {
             Debug.WriteLine("ERROR :: " + ex.Message);
-            return OperationResult<CustomerRegistrationDto>.Failure("Ett internt fel inträffade när kunden hämtades.");
+            return OperationResult<UpdateCustomerDto>.Failure("Ett internt fel inträffade när kunden hämtades.");
         }
     }
 

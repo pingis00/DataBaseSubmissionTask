@@ -28,9 +28,6 @@
             <DataTemplate DataType="{x:Type viewmodels:UpdateCustomerViewModel}">
                 <views:UpdateCustomerView />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type viewmodels:DeleteCustomerViewModel}">
-                <views:DeleteCustomerView/>
-            </DataTemplate>
             <DataTemplate DataType="{x:Type viewmodels:CustomerReviewViewModel}">
                 <views:CustomerReviewView/>
             </DataTemplate>

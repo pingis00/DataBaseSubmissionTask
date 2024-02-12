@@ -54,9 +54,6 @@ public partial class App : Application
             services.AddTransient<CustomerDetailsViewModel>();
             services.AddTransient<CustomerDetailsView>();
 
-            services.AddTransient<DeleteCustomerViewModel>();
-            services.AddTransient<DeleteCustomerView>();
-
             services.AddTransient<UpdateCustomerViewModel>();
             services.AddTransient<UpdateCustomerView>();
 
