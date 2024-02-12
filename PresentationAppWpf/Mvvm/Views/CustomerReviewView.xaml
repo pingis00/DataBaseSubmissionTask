@@ -1,13 +1,110 @@
 ﻿<UserControl x:Class="PresentationAppWpf.Mvvm.Views.CustomerReviewView"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:PresentationAppWpf.Mvvm.Views"
-      mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800">
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             
+             xmlns:validation="clr-namespace:PresentationAppWpf.Validation"
+             xmlns:local="clr-namespace:PresentationAppWpf.Mvvm.Views"
+             xmlns:viewmodel="clr-namespace:PresentationAppWpf.Mvvm.ViewModels"
+             d:DataContext="{d:DesignInstance Type=viewmodel:CustomerReviewViewModel}"
+             
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+                
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
 
     <Grid>
-        
+        <md:Snackbar MessageQueue="{Binding MessageQueue}"
+             HorizontalAlignment="Center" 
+             VerticalAlignment="Bottom"
+             MaxWidth="300"/>
+        <Button Content="Tillbaka" Command="{Binding NavigateHomeCommand}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,50,0,0">
+            <StackPanel>
+                <TextBox Margin="10" md:HintAssist.Hint="Namn" >
+                    <TextBox.Text>
+                        <Binding Path="CustomerReviewDto.Name" UpdateSourceTrigger="PropertyChanged"
+                                 ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                            <Binding.ValidationRules>
+                                <validation:NameValidationRule ValidatesOnTargetUpdated="False"/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                    <TextBox.Style>
+                        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignTextBox}">
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+                <TextBox Margin="10" md:HintAssist.Hint="Epost-adress" >
+                    <TextBox.Text>
+                        <Binding Path="CustomerReviewDto.Customer.Email" UpdateSourceTrigger="PropertyChanged"
+                                 ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                            <Binding.ValidationRules>
+                                <validation:EmailValidationRule ValidatesOnTargetUpdated="False"/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                    <TextBox.Style>
+                        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignTextBox}">
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+                <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Padding="2" Margin="10">
+                    <TextBox Margin="10" md:HintAssist.Hint="Skriv din recension här..." x:Name="ReviewTextBox" VerticalScrollBarVisibility="Auto"
+                         HorizontalScrollBarVisibility="Disabled" TextWrapping="Wrap" AcceptsReturn="True" Height="200">
+                        <TextBox.Text>
+                            <Binding Path="CustomerReviewDto.Comment" UpdateSourceTrigger="PropertyChanged"
+                                 ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                                <Binding.ValidationRules>
+                                    <validation:CommentValidationRule ValidatesOnTargetUpdated="False"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                        <TextBox.Style>
+                            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignTextBox}">
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+                </Border>
+                <Button Content="Lägg till" Command="{Binding AddCommand}" Margin="10" Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Border Background="Gray" Height="2" Margin="0,10"/>
+                <ListView x:Name="ReviewsListView" Margin="0,16,0,0">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Vertical" Margin="0,8">
+                                <TextBlock Text="{Binding ReviewerEmail}" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding ReviewTextPreview}" TextTrimming="WordEllipsis"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <DataGrid ItemsSource="{Binding Reviews}" AutoGenerateColumns="False" IsReadOnly="True" CanUserDeleteRows="False" Margin="0,10,0,0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Namn" Binding="{Binding ReviewerName}" Width="2*"/>
+                        <DataGridTextColumn Header="Datum" Binding="{Binding Date}" Width="2*"/>
+                        <DataGridTextColumn Header="Recension" Binding="{Binding ReviewTextPreview}" Width="3*"/>
+                        <DataGridTemplateColumn Header="Åtgärd" Width="Auto">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <Button Command="{Binding DataContext.UpdateReviewCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                                CommandParameter="{Binding Id}" 
+                                                Content="Uppdatera" 
+                                                Style="{StaticResource MaterialDesignFlatButton}"
+                                                Margin="4,0,0,0"/>
+                                        <Button Command="{Binding DataContext.DeleteReviewCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                                CommandParameter="{Binding Id}"
+                                                Content="Radera"
+                                                Style="{StaticResource MaterialDesignFlatButton}"
+                                                Margin="4,0,0,0"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </UserControl>

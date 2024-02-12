@@ -4,6 +4,7 @@ using ApplicationCore.Business.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 
@@ -74,6 +75,7 @@ public partial class CustomerListViewModel : ObservableObject
         }
 
         var updateViewModel = _serviceProvider.GetRequiredService<UpdateCustomerViewModel>();
+        await updateViewModel.InitializeAsync();
         updateViewModel.UpdateCustomerDto = updateDtoResult.Data;
 
         var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();

@@ -4,15 +4,92 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              
-             
+             xmlns:validation="clr-namespace:PresentationAppWpf.Validation"
              xmlns:local="clr-namespace:PresentationAppWpf.Mvvm.Views"
+             xmlns:viewmodel="clr-namespace:PresentationAppWpf.Mvvm.ViewModels"
+             d:DataContext="{d:DesignInstance Type=viewmodel:UpdateCustomerViewModel}"
 
              
-
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
     <Grid>
-
+        <md:Snackbar MessageQueue="{Binding MessageQueue}"
+             HorizontalAlignment="Center" 
+             VerticalAlignment="Bottom"
+             MaxWidth="300"
+             Grid.Row="1"/>
+        <StackPanel Margin="16">
+            <TextBox Margin="0,0,0,16" md:HintAssist.Hint="Förnamn">
+                <TextBox.Text>
+                    <Binding Path="UpdateCustomerDto.FirstName" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                        <Binding.ValidationRules>
+                            <validation:NameValidationRule ValidatesOnTargetUpdated="False"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+            <TextBox Margin="0,0,0,16" md:HintAssist.Hint="Efternamn">
+                <TextBox.Text>
+                    <Binding Path="UpdateCustomerDto.LastName" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                        <Binding.ValidationRules>
+                            <validation:NameValidationRule ValidatesOnTargetUpdated="False"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+            <TextBox Margin="0,0,0,16" md:HintAssist.Hint="E-post" IsReadOnly="True" IsEnabled="False"
+                     Text="{Binding UpdateCustomerDto.Email, Mode=OneWay}" />
+            <TextBox Margin="0,0,0,16" md:HintAssist.Hint="Telefonnummer">
+                <TextBox.Text>
+                    <Binding Path="UpdateCustomerDto.PhoneNumber" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                        <Binding.ValidationRules>
+                            <validation:PhoneNumberValidationRule ValidatesOnTargetUpdated="False"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+            <TextBox Margin="0,0,0,16" md:HintAssist.Hint="Gatuadress">
+                <TextBox.Text>
+                    <Binding Path="UpdateCustomerDto.Address.StreetName" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                        <Binding.ValidationRules>
+                            <validation:StreetNameValidationRule ValidatesOnTargetUpdated="False"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+            <TextBox Margin="0,0,0,16" md:HintAssist.Hint="Postnummer">
+                <TextBox.Text>
+                    <Binding Path="UpdateCustomerDto.Address.PostalCode" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                        <Binding.ValidationRules>
+                            <validation:PostalCodeValidationRule ValidatesOnTargetUpdated="False"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+            <TextBox Margin="0,0,0,16" md:HintAssist.Hint="Stad">
+                <TextBox.Text>
+                    <Binding Path="UpdateCustomerDto.Address.City" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                        <Binding.ValidationRules>
+                            <validation:NameValidationRule ValidatesOnTargetUpdated="False"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+            <ComboBox Margin="5"
+                      md:HintAssist.Hint="AnvändarRoll"
+                      ItemsSource="{Binding AvailableRoles}"
+                      DisplayMemberPath="RoleName"
+                      SelectedValuePath="RoleName"
+                      SelectedValue="{Binding UpdateCustomerDto.Role.RoleName, UpdateSourceTrigger=PropertyChanged}" />
+            <ComboBox Margin="5"
+                      md:HintAssist.Hint="Kontaktmetod"
+                      ItemsSource="{Binding AvailableContactMethods}"
+                      DisplayMemberPath="PreferredContactMethod"
+                      SelectedValuePath="PreferredContactMethod"
+                      SelectedValue="{Binding UpdateCustomerDto.ContactPreference.PreferredContactMethod, UpdateSourceTrigger=PropertyChanged}" />
+            <Button Content="Uppdatera" Command="{Binding UpdateCustomerCommand}"  md:ButtonAssist.CornerRadius="0" Style="{StaticResource MaterialDesignFlatButton}" />
+        </StackPanel>
     </Grid>
 </UserControl>

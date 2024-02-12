@@ -7,5 +7,7 @@ public class CustomerReviewDto
     public DateTime Date { get; set; } = DateTime.UtcNow;
     public int CustomerId { get; set; }
 
-    public CustomerDto Customer { get; set; } = null!;
+    public string Name { get; set; } = null!;
+
+    public CustomerDto Customer { get; set; } = new CustomerDto();
 }

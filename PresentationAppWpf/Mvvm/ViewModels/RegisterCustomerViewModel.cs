@@ -23,7 +23,6 @@ public partial class RegisterCustomerViewModel : ObservableObject
     private readonly IContactPreferenceService _contactPreferenceService;
     private FormValidator? _formValidator;
 
-
     [ObservableProperty]
     public CustomerRegistrationDto customerRegistrationDto;
     public ObservableCollection<RoleDto> AvailableRoles { get; private set; } = [];
@@ -50,8 +49,6 @@ public partial class RegisterCustomerViewModel : ObservableObject
     [ObservableProperty]
     public string? confirmPassword;
 
-    public bool ArePasswordsMatching => Password == ConfirmPassword;
-
     private SnackbarMessageQueue _messageQueue = new(TimeSpan.FromSeconds(3));
 
     public SnackbarMessageQueue MessageQueue
@@ -63,18 +60,6 @@ public partial class RegisterCustomerViewModel : ObservableObject
     public void ShowMessage(string message)
     {
         MessageQueue.Enqueue(message);
-    }
-
-    private void InitializeFormValidator()
-    {
-        if (CustomerRegistrationDto == null)
-        {
-            ShowMessage("Vänligen fyll i alla obligatoriska fält.");
-        }
-        else
-        {
-            _formValidator = new FormValidator(CustomerRegistrationDto, ShowMessage);
-        }
     }
 
     public async Task InitializeAsync()
@@ -145,6 +130,18 @@ public partial class RegisterCustomerViewModel : ObservableObject
     private static bool IsValidPassword(string password)
     {
         return Regex.IsMatch(password, @"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])(?=\S+$).{8,}$");
+    }
+
+    private void InitializeFormValidator()
+    {
+        if (CustomerRegistrationDto == null)
+        {
+            ShowMessage("Vänligen fyll i alla obligatoriska fält.");
+        }
+        else
+        {
+            _formValidator = new FormValidator(CustomerRegistrationDto, ShowMessage);
+        }
     }
 
     [RelayCommand]

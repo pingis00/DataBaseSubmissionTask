@@ -20,7 +20,7 @@ public class CustomerReviewService(ICustomerReviewRepository customerReviewRepos
             var customerResult = await _customerService.GetCustomerByEmailAsync(customerReviewDto.Customer.Email);
             if (!customerResult.IsSuccess)
             {
-                return OperationResult<CustomerReviewDto>.Failure("Ingen kund med angiven e-postadress hittades.");
+                return OperationResult<CustomerReviewDto>.Failure("Ingen kund med angiven e-postadress hittades. Du behöver vara registrerad för att lämna en recension.");
             }
 
             var customer = customerResult.Data;
@@ -43,6 +43,14 @@ public class CustomerReviewService(ICustomerReviewRepository customerReviewRepos
                 Comment = reviewResult.Data.Comment,
                 Date = reviewResult.Data.Date,
                 CustomerId = customer.Id,
+                Name = customerReviewDto.Name,
+                Customer = new CustomerDto()
+                {
+                    Id = customerResult.Data.Id,
+                    Email = customerResult.Data.Email,
+                    FirstName = customerResult.Data.FirstName,
+                    LastName = customerResult.Data.LastName
+                }
             };
             return OperationResult<CustomerReviewDto>.Success("Recensionen skapades framgångsrikt.", createdReviewDto);
         }

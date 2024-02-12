@@ -1,6 +1,8 @@
-﻿namespace ApplicationCore.Business.Dtos;
+﻿using ApplicationCore.Business.Interfaces;
 
-public class UpdateCustomerDto
+namespace ApplicationCore.Business.Dtos;
+
+public class UpdateCustomerDto : ICustomerDto
 {
     public int Id { get; set; }
     public string FirstName { get; set; } = null!;
@@ -12,11 +14,10 @@ public class UpdateCustomerDto
     public string City { get; set; } = null!;
     public string PreferredContactMethod { get; set; } = null!;
     public string RoleName { get; set; } = null!;
-    public AddressDto Address { get; set; } = null!;
+    public AddressDto Address { get; set; } = new AddressDto();
 
-    public ContactPreferenceDto ContactPreference { get; set; } = null!;
+    public ContactPreferenceDto ContactPreference { get; set; } = new ContactPreferenceDto();
 
-    public RoleDto Role { get; set; } = null!;
-
-    public CustomerDto Customer { get; set; } = null!;
+    public RoleDto Role { get; set; } = new RoleDto();
+    public string? Password { get; set; }
 }

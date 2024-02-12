@@ -22,9 +22,6 @@
             <DataTemplate DataType="{x:Type viewmodels:CustomerListViewModel}">
                 <views:CustomerListView />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type viewmodels:CustomerDetailsViewModel}">
-                <views:CustomerDetailsView />
-            </DataTemplate>
             <DataTemplate DataType="{x:Type viewmodels:UpdateCustomerViewModel}">
                 <views:UpdateCustomerView />
             </DataTemplate>

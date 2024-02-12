@@ -15,7 +15,7 @@ public class PostalCodeValidationRule : ValidationRule
 
         string postalCode = value.ToString()!;
 
-        if (!Regex.IsMatch(postalCode, @"^\d{5}(?: \d{2})?$"))
+        if (!Regex.IsMatch(postalCode, @"^\d{3}(?:\s?\d{2})?$"))
         {
             return new ValidationResult(false, "ogiltigt postnummer: Exempel: 26478, 264 78");
         }

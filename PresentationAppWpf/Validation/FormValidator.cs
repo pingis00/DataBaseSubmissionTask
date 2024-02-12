@@ -1,4 +1,5 @@
 ﻿using ApplicationCore.Business.Dtos;
+using ApplicationCore.Business.Interfaces;
 using PresentationAppWpf.Mvvm.ViewModels;
 using System.Globalization;
 
@@ -6,12 +7,12 @@ namespace PresentationAppWpf.Validation;
 
 public class FormValidator
 {
-    private readonly CustomerRegistrationDto _customerRegistrationDto;
+    private readonly ICustomerDto _customerDto;
     private readonly Action<string> _showMessage;
 
-    public FormValidator(CustomerRegistrationDto customerRegistrationDto, Action<string> showMessage)
+    public FormValidator(ICustomerDto customerDto, Action<string> showMessage)
     {
-        _customerRegistrationDto = customerRegistrationDto;
+        _customerDto = customerDto;
         _showMessage = showMessage;
     }
 
@@ -35,23 +36,23 @@ public class FormValidator
 
     private bool fieldsAreNotEmpty()
     {
-        return !string.IsNullOrWhiteSpace(_customerRegistrationDto.FirstName) &&
-               !string.IsNullOrWhiteSpace(_customerRegistrationDto.LastName) &&
-               !string.IsNullOrWhiteSpace(_customerRegistrationDto.Email) &&
-               !string.IsNullOrWhiteSpace(_customerRegistrationDto.PhoneNumber) &&
-               !string.IsNullOrWhiteSpace(_customerRegistrationDto.Address.StreetName) &&
-               !string.IsNullOrWhiteSpace(_customerRegistrationDto.Address.PostalCode) &&
-               !string.IsNullOrWhiteSpace(_customerRegistrationDto.Address.City) &&
-               _customerRegistrationDto.Role != null &&
-               !string.IsNullOrWhiteSpace(_customerRegistrationDto.Role.RoleName) &&
-               _customerRegistrationDto.ContactPreference != null &&
-               !string.IsNullOrWhiteSpace(_customerRegistrationDto.ContactPreference.PreferredContactMethod);
+        return !string.IsNullOrWhiteSpace(_customerDto.FirstName) &&
+               !string.IsNullOrWhiteSpace(_customerDto.LastName) &&
+               !string.IsNullOrWhiteSpace(_customerDto.Email) &&
+               !string.IsNullOrWhiteSpace(_customerDto.PhoneNumber) &&
+               !string.IsNullOrWhiteSpace(_customerDto.Address.StreetName) &&
+               !string.IsNullOrWhiteSpace(_customerDto.Address.PostalCode) &&
+               !string.IsNullOrWhiteSpace(_customerDto.Address.City) &&
+               _customerDto.Role != null &&
+               !string.IsNullOrWhiteSpace(_customerDto.Role.RoleName) &&
+               _customerDto.ContactPreference != null &&
+               !string.IsNullOrWhiteSpace(_customerDto.ContactPreference.PreferredContactMethod);
     }
 
     private bool ValidateEmail()
     {
         var emailValidationRule = new EmailValidationRule();
-        var emailValidationResult = emailValidationRule.Validate(_customerRegistrationDto.Email, CultureInfo.CurrentCulture);
+        var emailValidationResult = emailValidationRule.Validate(_customerDto.Email, CultureInfo.CurrentCulture);
         if (!emailValidationResult.IsValid)
         {
             _showMessage(emailValidationResult.ErrorContent?.ToString() ?? "Ett okänt fel uppstod vid validering av e-postadressen.");
@@ -63,7 +64,7 @@ public class FormValidator
     private bool ValidatePhoneNumber()
     {
         var phoneNumberlValidationRule = new PhoneNumberValidationRule();
-        var phoneNumberlValidationResult = phoneNumberlValidationRule.Validate(_customerRegistrationDto.PhoneNumber, CultureInfo.CurrentCulture);
+        var phoneNumberlValidationResult = phoneNumberlValidationRule.Validate(_customerDto.PhoneNumber, CultureInfo.CurrentCulture);
         if (!phoneNumberlValidationResult.IsValid)
         {
             _showMessage(phoneNumberlValidationResult.ErrorContent?.ToString() ?? "Ett okänt fel uppstod vid validering av telefonnumret.");
@@ -74,7 +75,7 @@ public class FormValidator
     private bool ValidateFirstName()
     {
         var firstNameValidationRule = new NameValidationRule();
-        var firstNameValidationResult = firstNameValidationRule.Validate(_customerRegistrationDto.FirstName, CultureInfo.CurrentCulture);
+        var firstNameValidationResult = firstNameValidationRule.Validate(_customerDto.FirstName, CultureInfo.CurrentCulture);
         if (!firstNameValidationResult.IsValid)
         {
             _showMessage(firstNameValidationResult.ErrorContent?.ToString() ?? "Ett okänt fel uppstod vid validering av förnamnet.");
@@ -85,7 +86,7 @@ public class FormValidator
     private bool ValidateLastName()
     {
         var lastNameValidationRule = new NameValidationRule();
-        var lastNameValidationResult = lastNameValidationRule.Validate(_customerRegistrationDto.LastName, CultureInfo.CurrentCulture);
+        var lastNameValidationResult = lastNameValidationRule.Validate(_customerDto.LastName, CultureInfo.CurrentCulture);
         if (!lastNameValidationResult.IsValid)
         {
             _showMessage(lastNameValidationResult.ErrorContent?.ToString() ?? "Ett okänt fel uppstod vid validering av efternamnet.");
@@ -96,7 +97,7 @@ public class FormValidator
     private bool ValidateCity()
     {
         var cityValidationRule = new NameValidationRule();
-        var cityValidationResult = cityValidationRule.Validate(_customerRegistrationDto.Address.City, CultureInfo.CurrentCulture);
+        var cityValidationResult = cityValidationRule.Validate(_customerDto.Address.City, CultureInfo.CurrentCulture);
         if (!cityValidationResult.IsValid)
         {
             _showMessage(cityValidationResult.ErrorContent?.ToString() ?? "Ett okänt fel uppstod vid validering av staden.");
@@ -107,7 +108,7 @@ public class FormValidator
     private bool ValidatePostalCode()
     {
         var postalCodeValidationRule = new PostalCodeValidationRule();
-        var postalCodeValidationResult = postalCodeValidationRule.Validate(_customerRegistrationDto.Address.PostalCode, CultureInfo.CurrentCulture);
+        var postalCodeValidationResult = postalCodeValidationRule.Validate(_customerDto.Address.PostalCode, CultureInfo.CurrentCulture);
         if (!postalCodeValidationResult.IsValid)
         {
             _showMessage(postalCodeValidationResult.ErrorContent?.ToString() ?? "Ett okänt fel uppstod vid validering av postakoden.");
@@ -119,7 +120,7 @@ public class FormValidator
     private bool ValidateStreetName()
     {
         var streetNameValidationRule = new StreetNameValidationRule();
-        var streetNameValidationResult = streetNameValidationRule.Validate(_customerRegistrationDto.Address.StreetName, CultureInfo.CurrentCulture);
+        var streetNameValidationResult = streetNameValidationRule.Validate(_customerDto.Address.StreetName, CultureInfo.CurrentCulture);
         if (!streetNameValidationResult.IsValid)
         {
             _showMessage(streetNameValidationResult.ErrorContent?.ToString() ?? "Ett okänt fel uppstod vid validering av adressen.");

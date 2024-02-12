@@ -8,7 +8,7 @@
              xmlns:viewModels="clr-namespace:PresentationAppWpf.Mvvm.ViewModels"
              d:DataContext="{d:DesignInstance Type=viewModels:CustomerListViewModel}"
              
-             xmlns:MaterialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
@@ -29,13 +29,19 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                     <Button Command="{Binding DataContext.NavigateToUpdateCustomerCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                                            CommandParameter="{Binding Id}" 
-                                            Content="Uppdatera" />
+                                            CommandParameter="{Binding Id}"
+                                            Style="{StaticResource MaterialDesignFlatButton}"
+                                            Margin="4,0,0,0"
+                                            ToolTip="Uppdatera">
+                                        <md:PackIcon Kind="Pencil" />
+                                    </Button>
                                     <Button Command="{Binding DataContext.DeleteCustomerCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                                             CommandParameter="{Binding Id}"
                                             Style="{StaticResource MaterialDesignFlatButton}"
                                             Margin="4,0,0,0"
-                                            Content="Radera"/>
+                                            ToolTip="Radera">
+                                        <md:PackIcon Kind="Delete" />
+                                    </Button>
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>

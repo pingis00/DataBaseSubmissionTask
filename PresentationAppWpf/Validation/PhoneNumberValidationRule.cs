@@ -15,9 +15,9 @@ public class PhoneNumberValidationRule : ValidationRule
 
         string phoneNumber = value.ToString()!;
 
-        if (!Regex.IsMatch(phoneNumber, @"^(\+\d{1,3})?\d{1,16}$"))
+        if (!Regex.IsMatch(phoneNumber, @"^(\+\d{1,3})?(\d{3,4}\s?){2,3}\d{3,4}$"))
         {
-            return new ValidationResult(false, "Telefonnumret är ogiltigt. Exempel 0702789698 eller +46702789698");
+            return new ValidationResult(false, "Telefonnumret är ogiltigt. Exempel 0702789698, +46702789698, 0702 789 698, +46 70 278 9698");
         }
 
         return ValidationResult.ValidResult;

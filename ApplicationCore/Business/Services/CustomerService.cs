@@ -251,19 +251,13 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
             var getCustomerResult = await _customerRepository.GetOneAsync(c => c.Id == updateCustomerDto.Id);
             if (!getCustomerResult.IsSuccess)
             {
-                return OperationResult<UpdateCustomerDto>.Failure("Rollen kunde inte hittas.");
+                return OperationResult<UpdateCustomerDto>.Failure("Kunden kunde inte hittas.");
             }
 
             var entityToUpdate = getCustomerResult.Data;
 
             if (entityToUpdate != null)
             {
-                var roleResult = await _roleService.CreateRoleAsync(updateCustomerDto.Role);
-                if (!roleResult.IsSuccess)
-                {
-                    return OperationResult<UpdateCustomerDto>.Failure("Rollen kunde inte Uppdateras.");
-                }
-
                 var addressResult = await _addressService.CreateAddressAsync(updateCustomerDto.Address);
                 if (!addressResult.IsSuccess)
                 {
@@ -274,6 +268,12 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
                 if (!preferenceResult.IsSuccess)
                 {
                     return OperationResult<UpdateCustomerDto>.Failure("Kontaktpreferensen kunde inte Uppdateras.");
+                }
+
+                var roleResult = await _roleService.CreateRoleAsync(updateCustomerDto.Role);
+                if (!roleResult.IsSuccess)
+                {
+                    return OperationResult<UpdateCustomerDto>.Failure("Rollen kunde inte Uppdateras.");
                 }
 
                 entityToUpdate = getCustomerResult.Data;
