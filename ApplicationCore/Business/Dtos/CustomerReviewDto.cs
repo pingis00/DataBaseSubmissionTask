@@ -6,8 +6,5 @@ public class CustomerReviewDto
     public string Comment { get; set; } = null!;
     public DateTime Date { get; set; } = DateTime.UtcNow;
     public int CustomerId { get; set; }
-
-    public string Name { get; set; } = null!;
-
     public CustomerDto Customer { get; set; } = new CustomerDto();
 }

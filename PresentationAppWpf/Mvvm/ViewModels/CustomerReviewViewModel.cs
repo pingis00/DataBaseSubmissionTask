@@ -7,6 +7,7 @@ using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 using PresentationAppWpf.Validation;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Globalization;
 using System.Windows.Controls;
 
@@ -63,6 +64,23 @@ public partial class CustomerReviewViewModel : ObservableObject
         }
     }
 
+    public async Task DeleteReviewAsync(int reviewId)
+    {
+        var result = await _customerReviewService.DeleteCustomerReviewAsync(reviewId);
+
+        if (result.IsSuccess)
+        {
+            var reviewToRemove = Reviews.First(r => r.Id == reviewId);
+            Reviews.Remove(reviewToRemove);
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteReview(int reviewId)
+    {
+        await DeleteReviewAsync(reviewId);
+    }
+
     [RelayCommand]
     private async Task AddAsync()
     {
@@ -73,19 +91,12 @@ public partial class CustomerReviewViewModel : ObservableObject
             return;
         }
 
-        var customerResult = await _customerService.GetCustomerByEmailAsync(email);
-        if (!customerResult.IsSuccess)
-        {
-            ShowMessage("Ingen kund med angiven e-postadress hittades.");
-            return;
-        }
-
-
         var createResult = await _customerReviewService.CreateCustomerReviewAsync(CustomerReviewDto!);
         if (createResult.IsSuccess)
         {
             ShowMessage("Din recension har lagts till!");
             ClearForm();
+            await LoadReviews();
         }
         else
         {

@@ -11,5 +11,6 @@ namespace ApplicationCore.Business.Interfaces
         Task<OperationResult<IEnumerable<CustomerListDto>>> GetAllCustomersAsync();
         Task<OperationResult<UpdateCustomerDto>> UpdateCustomerAsync(UpdateCustomerDto updateCustomerDto);
         Task<OperationResult<bool>> DeleteCustomerAsync(int customerId);
+        Task<OperationResult<CustomerDto>> GetCustomerForReviewByEmailAsync(string email);
     }
 }

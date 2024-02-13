@@ -244,6 +244,36 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
         }
     }
 
+    public async Task<OperationResult<CustomerDto>> GetCustomerForReviewByEmailAsync(string email)
+    {
+        try
+        {
+            var customerResult = await _customerRepository.GetOneAsync(c => c.Email == email);
+            if (customerResult.IsSuccess && customerResult.Data != null)
+            {
+                var customer = customerResult.Data;
+                var customerDto = new CustomerDto
+                {
+                    Id = customer.Id,
+                    FirstName = customer.FirstName,
+                    LastName = customer.LastName,
+                    Email = customer.Email,
+                    PhoneNumber = customer.PhoneNumber
+                };
+                return OperationResult<CustomerDto>.Success("Kunden hittades.", customerDto);
+            }
+            else
+            {
+                return OperationResult<CustomerDto>.Failure("Ingen kund med angiven e-postadress hittades.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"ERROR :: {ex.Message}");
+            return OperationResult<CustomerDto>.Failure("Ett internt fel inträffade när kunden skulle hämtas.");
+        }
+    }
+
     public async Task<OperationResult<UpdateCustomerDto>> UpdateCustomerAsync(UpdateCustomerDto updateCustomerDto)
     {
         try

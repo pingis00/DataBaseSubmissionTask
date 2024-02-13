@@ -17,7 +17,7 @@ public class CustomerReviewService(ICustomerReviewRepository customerReviewRepos
     {
         try
         {
-            var customerResult = await _customerService.GetCustomerByEmailAsync(customerReviewDto.Customer.Email);
+            var customerResult = await _customerService.GetCustomerForReviewByEmailAsync(customerReviewDto.Customer.Email);
             if (!customerResult.IsSuccess)
             {
                 return OperationResult<CustomerReviewDto>.Failure("Ingen kund med angiven e-postadress hittades. Du behöver vara registrerad för att lämna en recension.");
@@ -43,7 +43,6 @@ public class CustomerReviewService(ICustomerReviewRepository customerReviewRepos
                 Comment = reviewResult.Data.Comment,
                 Date = reviewResult.Data.Date,
                 CustomerId = customer.Id,
-                Name = customerReviewDto.Name,
                 Customer = new CustomerDto()
                 {
                     Id = customerResult.Data.Id,
@@ -99,12 +98,20 @@ public class CustomerReviewService(ICustomerReviewRepository customerReviewRepos
 
             if (reviewEntitiesResult.IsSuccess && reviewEntitiesResult.Data != null)
             {
+                const int previewLength = 40;
+
                 var reviewDto = reviewEntitiesResult.Data.Select(reviewEntity => new CustomerReviewDto
                 {
                     Id = reviewEntity.Id,
-                    Comment = reviewEntity.Comment,
+                    Comment = reviewEntity.Comment.Length > previewLength
+                          ? reviewEntity.Comment.Substring(0, previewLength) + "..."
+                          : reviewEntity.Comment,
                     Date = reviewEntity.Date,
                     CustomerId = reviewEntity.CustomerId,
+                    Customer = new CustomerDto
+                    {
+                        Email = reviewEntity.Customer.Email,
+                    }
                 }).ToList();
 
                 if (reviewDto.Any())

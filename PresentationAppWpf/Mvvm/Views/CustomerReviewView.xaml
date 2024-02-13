@@ -22,20 +22,6 @@
         <Button Content="Tillbaka" Command="{Binding NavigateHomeCommand}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
         <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,50,0,0">
             <StackPanel>
-                <TextBox Margin="10" md:HintAssist.Hint="Namn" >
-                    <TextBox.Text>
-                        <Binding Path="CustomerReviewDto.Name" UpdateSourceTrigger="PropertyChanged"
-                                 ValidatesOnDataErrors="True" NotifyOnValidationError="True">
-                            <Binding.ValidationRules>
-                                <validation:NameValidationRule ValidatesOnTargetUpdated="False"/>
-                            </Binding.ValidationRules>
-                        </Binding>
-                    </TextBox.Text>
-                    <TextBox.Style>
-                        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignTextBox}">
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
                 <TextBox Margin="10" md:HintAssist.Hint="Epost-adress" >
                     <TextBox.Text>
                         <Binding Path="CustomerReviewDto.Customer.Email" UpdateSourceTrigger="PropertyChanged"
@@ -81,23 +67,27 @@
                 </ListView>
                 <DataGrid ItemsSource="{Binding Reviews}" AutoGenerateColumns="False" IsReadOnly="True" CanUserDeleteRows="False" Margin="0,10,0,0">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Namn" Binding="{Binding ReviewerName}" Width="2*"/>
+                        <DataGridTextColumn Header="Email" Binding="{Binding Customer.Email}" Width="2*"/>
                         <DataGridTextColumn Header="Datum" Binding="{Binding Date}" Width="2*"/>
-                        <DataGridTextColumn Header="Recension" Binding="{Binding ReviewTextPreview}" Width="3*"/>
+                        <DataGridTextColumn Header="Recension" Binding="{Binding Comment}" Width="3*"/>
                         <DataGridTemplateColumn Header="Åtgärd" Width="Auto">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                         <Button Command="{Binding DataContext.UpdateReviewCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                                                 CommandParameter="{Binding Id}" 
-                                                Content="Uppdatera" 
                                                 Style="{StaticResource MaterialDesignFlatButton}"
-                                                Margin="4,0,0,0"/>
+                                                ToolTip="Uppdatera"
+                                                Margin="4,0,0,0">
+                                            <md:PackIcon Kind="Pencil" />
+                                        </Button>
                                         <Button Command="{Binding DataContext.DeleteReviewCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                                                 CommandParameter="{Binding Id}"
-                                                Content="Radera"
                                                 Style="{StaticResource MaterialDesignFlatButton}"
-                                                Margin="4,0,0,0"/>
+                                                ToolTip="Radera"
+                                                Margin="4,0,0,0">
+                                            <md:PackIcon Kind="Delete" />
+                                        </Button>
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
