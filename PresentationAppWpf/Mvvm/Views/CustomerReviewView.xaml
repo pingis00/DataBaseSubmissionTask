@@ -74,7 +74,14 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                        <Button Command="{Binding DataContext.UpdateReviewCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                        <Button Command="{Binding DataContext.ViewFullCommentCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                                CommandParameter="{Binding Id}"
+                                                Style="{StaticResource MaterialDesignFlatButton}"
+                                                ToolTip="Visa hela kommentaren"
+                                                Margin="4,0,0,0">
+                                            <md:PackIcon Kind="Visibility" />
+                                        </Button>
+                                        <Button Command="{Binding DataContext.NavigateToUpdateReviewCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                                                 CommandParameter="{Binding Id}" 
                                                 Style="{StaticResource MaterialDesignFlatButton}"
                                                 ToolTip="Uppdatera"

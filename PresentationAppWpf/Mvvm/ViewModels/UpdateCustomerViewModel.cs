@@ -13,26 +13,18 @@ using System.Windows;
 
 namespace PresentationAppWpf.Mvvm.ViewModels;
 
-public partial class UpdateCustomerViewModel : ObservableObject
+public partial class UpdateCustomerViewModel(IServiceProvider serviceProvider, ICustomerService customerService, IRoleService roleService, IContactPreferenceService contactPreferenceService) : ObservableObject
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly ICustomerService _customerService;
-    private readonly IRoleService _roleService;
-    private readonly IContactPreferenceService _contactPreferenceService;
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
+    private readonly ICustomerService _customerService = customerService;
+    private readonly IRoleService _roleService = roleService;
+    private readonly IContactPreferenceService _contactPreferenceService = contactPreferenceService;
     private FormValidator? _formValidator;
 
     [ObservableProperty]
     private UpdateCustomerDto? updateCustomerDto;
     public ObservableCollection<RoleDto> AvailableRoles { get; private set; } = [];
     public ObservableCollection<ContactPreferenceDto> AvailableContactMethods { get; private set; } = [];
-
-    public UpdateCustomerViewModel(IServiceProvider serviceProvider, ICustomerService customerService, IRoleService roleService, IContactPreferenceService contactPreferenceService)
-    {
-        _serviceProvider = serviceProvider;
-        _customerService = customerService;
-        _roleService = roleService;
-        _contactPreferenceService = contactPreferenceService;
-    }
 
     private SnackbarMessageQueue _messageQueue = new(TimeSpan.FromSeconds(3));
 

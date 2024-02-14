@@ -1,17 +1,26 @@
 ﻿using ApplicationCore.Business.Dtos;
 using ApplicationCore.Business.Helpers;
 using ApplicationCore.Business.Interfaces;
+using ApplicationCore.Infrastructure.Contexts;
 using ApplicationCore.Infrastructure.Entities;
 using ApplicationCore.Infrastructure.Interfaces;
 using ApplicationCore.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Diagnostics;
 
 namespace ApplicationCore.Business.Services;
 
-public class ContactPreferenceService(IContactPreferenceRepository contactPreferenceRepository) : IContactPreferenceService
+public class ContactPreferenceService(IContactPreferenceRepository contactPreferenceRepository, EagerLoadingContext dbContext) : IContactPreferenceService
 {
     private readonly IContactPreferenceRepository _contactPreferenceRepository = contactPreferenceRepository;
+    private readonly EagerLoadingContext _dbContext = dbContext;
+
+    public async Task<OperationResult<bool>> ContactPreferenceHasCustomersAsync(int contactPreferenceId)
+    {
+        bool hasCustomers = await _dbContext.Customers.AnyAsync(c => c.ContactPreferenceId == contactPreferenceId);
+        return OperationResult<bool>.Success(hasCustomers ? "Det finns kunder kopplade till Kontaktpreferensen." : "Det finns inga kunder kopplade till Kontaktpreferensen.");
+    }
 
     public async Task<OperationResult<ContactPreferenceDto>> CreateContactPreferenceAsync(ContactPreferenceDto contactPreference)
     {
@@ -69,6 +78,12 @@ public class ContactPreferenceService(IContactPreferenceRepository contactPrefer
             if (!preferenceToDeleteResult.IsSuccess)
             {
                 return OperationResult<bool>.Failure("Kontaktpreferensen kunde inte hittas.");
+            }
+
+            OperationResult<bool> hasCustomersResult = await ContactPreferenceHasCustomersAsync(contactPreferenceId);
+            if (hasCustomersResult.IsSuccess && hasCustomersResult.Data)
+            {
+                return OperationResult<bool>.Failure("Preferensen kan inte raderas eftersom den är kopplad till en eller flera kunder.");
             }
             var preferenceToDelete = preferenceToDeleteResult.Data;
 

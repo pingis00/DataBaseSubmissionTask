@@ -7,7 +7,7 @@ public class CustomerReviewEntity
 {
     public int Id { get; set; }
     [Required]
-    [Column(TypeName = "nvarchar(50)")]
+    [Column(TypeName = "nvarchar(500)")]
     public string Comment { get; set; } = null!;
 
     public DateTime Date { get; set; } = DateTime.UtcNow;

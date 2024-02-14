@@ -152,7 +152,12 @@ public class CustomerReviewService(ICustomerReviewRepository customerReviewRepos
                 Id = reviewEntity.Id,
                 Comment = reviewEntity.Comment,
                 Date = reviewEntity.Date,
-                CustomerId = reviewEntity.CustomerId,
+                Customer = new CustomerDto
+                {
+                    Id = reviewEntity.Id,
+                    Email = reviewEntity.Customer.Email,
+                }
+
 
             };
             return OperationResult<CustomerReviewDto>.Success("Recensionen hämtades framgångsrikt.", reviewDto);

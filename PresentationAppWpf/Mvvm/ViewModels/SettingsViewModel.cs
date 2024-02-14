@@ -51,6 +51,19 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private bool isEditMode = false;
 
+    private SnackbarMessageQueue _messageQueue = new(TimeSpan.FromSeconds(3));
+
+    public SnackbarMessageQueue MessageQueue
+    {
+        get { return _messageQueue; }
+        set { SetProperty(ref _messageQueue, value); }
+    }
+
+    public void ShowMessage(string message)
+    {
+        MessageQueue.Enqueue(message);
+    }
+
 
     private void ClearRoleForm()
     {
@@ -78,6 +91,11 @@ public partial class SettingsViewModel : ObservableObject
                     ClearRoleForm();
                 });
                 await LoadRolesAsync();
+                ShowMessage("Rollen har lagts till.");
+            }
+            else
+            {
+                ShowMessage("Det gick inte att lägga till rollen.");
             }
         }
     }
@@ -97,6 +115,11 @@ public partial class SettingsViewModel : ObservableObject
                     ClearPreferenceForm();
                 });
                 await LoadPreferencesAsync();
+                ShowMessage("Preferensen har lagts till.");
+            }
+            else
+            {
+                ShowMessage("Det gick inte att lägga till preferensen.");
             }
         }
     }
@@ -113,6 +136,10 @@ public partial class SettingsViewModel : ObservableObject
                 OnPropertyChanged(nameof(Roles));
             });
         }
+        else
+        {
+            ShowMessage("Det finns inga roller i listan.");
+        }
     }
 
     public async Task DeleteRoleAsync(int roleId)
@@ -123,6 +150,11 @@ public partial class SettingsViewModel : ObservableObject
         {
             var roleToRemove = Roles.First(r => r.Id == roleId);
             Roles.Remove(roleToRemove);
+            ShowMessage("Rollen har tagits bort.");
+        }
+        else
+        {
+            ShowMessage("Det gick inte att ta bort rollen.");
         }
     }
 
@@ -137,6 +169,11 @@ public partial class SettingsViewModel : ObservableObject
                 ContactPreferences = new ObservableCollection<ContactPreferenceDto>(result.Data);
                 OnPropertyChanged(nameof(ContactPreferences));
             });
+
+        }
+        else
+        {
+            ShowMessage("Det finns inga preferenser i listan.");
         }
     }
 
@@ -156,7 +193,13 @@ public partial class SettingsViewModel : ObservableObject
             {
                 var preferenceToRemove = ContactPreferences.First(p => p.Id == preferenceId);
                 ContactPreferences.Remove(preferenceToRemove);
+                ShowMessage("Preferensen har tagits bort.");
             }
+            else
+            {
+                ShowMessage("Det gick inte att ta bort preferensen.");
+            }
+
         });
     }
 
@@ -204,6 +247,7 @@ public partial class SettingsViewModel : ObservableObject
         else
         { 
             await AddRole();
+            ShowMessage("Rollen uppdaterades.");
         }
     }
 
@@ -224,6 +268,7 @@ public partial class SettingsViewModel : ObservableObject
         else
         {
             await AddPreference();
+            ShowMessage("Preferensen uppdaterades.");
         }
     }
 

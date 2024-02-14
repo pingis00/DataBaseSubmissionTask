@@ -21,6 +21,16 @@ namespace ApplicationCore.Infrastructure.Contexts
             modelBuilder.Entity<CustomerEntity>()
                 .HasIndex(x => x.Email)
                 .IsUnique();
+
+            modelBuilder.Entity<ContactPreferenceEntity>()
+                .HasIndex(x => x.PreferredContactMethod)
+                .IsUnique();
+
+            modelBuilder.Entity<CustomerReviewEntity>()
+                .HasOne(cr => cr.Customer)
+                .WithMany(c => c.CustomerReviewEntities)
+                .HasForeignKey(cr => cr.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

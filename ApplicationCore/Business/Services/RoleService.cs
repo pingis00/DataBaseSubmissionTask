@@ -1,16 +1,19 @@
 ﻿using ApplicationCore.Business.Dtos;
 using ApplicationCore.Business.Helpers;
 using ApplicationCore.Business.Interfaces;
+using ApplicationCore.Infrastructure.Contexts;
 using ApplicationCore.Infrastructure.Entities;
 using ApplicationCore.Infrastructure.Interfaces;
 using ApplicationCore.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace ApplicationCore.Business.Services;
 
-public class RoleService(IRoleRepository roleRepository) : IRoleService
+public class RoleService(IRoleRepository roleRepository, EagerLoadingContext dbContext) : IRoleService
 {
     private readonly IRoleRepository _roleRepository = roleRepository;
+    private readonly EagerLoadingContext _dbContext = dbContext;
 
     public async Task<OperationResult<RoleDto>> CreateRoleAsync(RoleDto role)
     {
@@ -68,6 +71,12 @@ public class RoleService(IRoleRepository roleRepository) : IRoleService
             if (!roleToDeleteResult.IsSuccess)
             {
                 return OperationResult<bool>.Failure("Rollen kunde inte hittas.");
+            }
+
+            OperationResult<bool> hasCustomersResult = await RoleHasCustomersAsync(roleId);
+            if (!hasCustomersResult.IsSuccess)
+            {
+                return OperationResult<bool>.Failure("Rollen kan inte raderas eftersom den är kopplad till en eller flera kunder.");
             }
             var roleToDelete = roleToDeleteResult.Data;
 
@@ -149,6 +158,16 @@ public class RoleService(IRoleRepository roleRepository) : IRoleService
             Debug.WriteLine("ERROR :: " + ex.Message);
             return OperationResult<RoleDto>.Failure("Ett internt fel inträffade när rollen hämtades.");
         }
+    }
+
+    public async Task<OperationResult<bool>> RoleHasCustomersAsync(int roleId)
+    {
+        bool hasCustomers = await _dbContext.Customers.AnyAsync(c => c.RoleId == roleId);
+        if (hasCustomers)
+        {
+            return OperationResult<bool>.Failure("Det finns kunder kopplade till rollen.");
+        }
+        return OperationResult<bool>.Success("Det finns inga kunder kopplade till Rollen.");
     }
 
     public async Task<OperationResult<RoleDto>> UpdateRoleAsync(RoleDto roleDto)

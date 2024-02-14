@@ -24,20 +24,20 @@ public partial class App : Application
             
             services.AddDbContext<EagerLoadingContext>(x => x.UseSqlServer(@"Data Source=localhost;Initial Catalog=DbCustomers;Integrated Security=True;Encrypt=True;Trust Server Certificate=True", x => x.MigrationsAssembly(nameof(ApplicationCore))));
 
-            services.AddSingleton<ICustomerService, CustomerService>();
-            services.AddSingleton<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
 
-            services.AddSingleton<IAddressService, AddressService>();
-            services.AddSingleton<IAddressRepository, AddressRepository>();
+            services.AddScoped<IAddressService, AddressService>();
+            services.AddScoped<IAddressRepository, AddressRepository>();
 
-            services.AddSingleton<IRoleService, RoleService>();
-            services.AddSingleton<IRoleRepository, RoleRepository>();
+            services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
 
-            services.AddSingleton<IContactPreferenceService, ContactPreferenceService>();
-            services.AddSingleton<IContactPreferenceRepository, ContactPreferenceRepository>();
+            services.AddScoped<IContactPreferenceService, ContactPreferenceService>();
+            services.AddScoped<IContactPreferenceRepository, ContactPreferenceRepository>();
 
-            services.AddSingleton<ICustomerReviewService, CustomerReviewService>();
-            services.AddSingleton<ICustomerReviewRepository, CustomerReviewRepository>();
+            services.AddScoped<ICustomerReviewService, CustomerReviewService>();
+            services.AddScoped<ICustomerReviewRepository, CustomerReviewRepository>();
 
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<MainWindow>();
@@ -59,6 +59,9 @@ public partial class App : Application
 
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsView>();
+
+            services.AddTransient<UpdateReviewViewModel>();
+            services.AddTransient<UpdateReviewView>();
 
         }).Build();
     }

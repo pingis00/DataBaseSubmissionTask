@@ -10,4 +10,5 @@ public interface IContactPreferenceService
     Task<OperationResult<IEnumerable<ContactPreferenceDto>>> GetAllContactPreferencesAsync();
     Task<OperationResult<ContactPreferenceDto>> UpdateContactPreferenceAsync(ContactPreferenceDto contactPreferenceDto);
     Task<OperationResult<bool>> DeleteContactPreferenceAsync(int contactPreferenceId);
+    Task<OperationResult<bool>> ContactPreferenceHasCustomersAsync(int contactPreferenceId);
 }

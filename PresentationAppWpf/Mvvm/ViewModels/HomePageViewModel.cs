@@ -40,7 +40,7 @@ public partial class HomePageViewModel(IServiceProvider serviceProvider) : Obser
     private async Task NavigateToCustomerReview()
     {
         var customerReviewViewModel = _serviceProvider.GetRequiredService<CustomerReviewViewModel>();
-        await customerReviewViewModel.LoadReviews();
+        await customerReviewViewModel.LoadReviewsAsync();
 
         var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
         mainViewModel.CurrentViewModel = customerReviewViewModel;

@@ -29,7 +29,7 @@
                 <Button Command="{Binding NavigateToCustomerListCommand}" Content="Kundlista" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource MaterialDesignFlatButton}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,0,0,10">
-                <Button Command="{Binding NavigateToCustomerReviewCommand}" Content="Resencioner" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource MaterialDesignFlatButton}" />
+                <Button Command="{Binding NavigateToCustomerReviewCommand}" Content="Recensioner" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource MaterialDesignFlatButton}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,0,0,10">
                 <Button Command="{Binding NavigateToSettingsCommand }" Content="Lägg till egenskaper" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource MaterialDesignFlatButton}" />

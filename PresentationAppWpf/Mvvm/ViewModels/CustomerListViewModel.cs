@@ -3,6 +3,7 @@ using ApplicationCore.Business.Interfaces;
 using ApplicationCore.Business.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.ObjectModel;
@@ -30,6 +31,19 @@ public partial class CustomerListViewModel : ObservableObject
         set => SetProperty(ref _selectedCustomer, value);
     }
 
+    private SnackbarMessageQueue _messageQueue = new(TimeSpan.FromSeconds(3));
+
+    public SnackbarMessageQueue MessageQueue
+    {
+        get { return _messageQueue; }
+        set { SetProperty(ref _messageQueue, value); }
+    }
+
+    public void ShowMessage(string message)
+    {
+        MessageQueue.Enqueue(message);
+    }
+
     public async Task LoadCustomersAsync()
     {
         var result = await _customerService.GetAllCustomersAsync();
@@ -41,6 +55,10 @@ public partial class CustomerListViewModel : ObservableObject
                 Customers = new ObservableCollection<CustomerListDto>(result.Data);
                 OnPropertyChanged(nameof(Customers));
             });
+        }
+        else
+        {
+            ShowMessage("Kundlistan är tom.");
         }
     }
 
@@ -54,6 +72,11 @@ public partial class CustomerListViewModel : ObservableObject
             {
                 var customerToRemove = Customers.First(c => c.Id == customerId);
                 Customers.Remove(customerToRemove);
+                ShowMessage("Kunden raderades");
+            }
+            else
+            {
+                ShowMessage("Det gick inte att radera kunden");
             }
         });
     }
@@ -70,7 +93,7 @@ public partial class CustomerListViewModel : ObservableObject
         var updateDtoResult = await _customerService.GetCustomerByIdAsync(customerId);
         if (!updateDtoResult.IsSuccess || updateDtoResult.Data == null)
         {
-            MessageBox.Show("Kunde inte hämta kundinformation.", "Fel", MessageBoxButton.OK, MessageBoxImage.Error);
+            ShowMessage("Kunde inte hämta kundinformation.");
             return;
         }
 

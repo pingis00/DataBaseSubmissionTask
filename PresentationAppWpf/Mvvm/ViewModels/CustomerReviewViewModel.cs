@@ -51,7 +51,7 @@ public partial class CustomerReviewViewModel : ObservableObject
         MessageQueue.Enqueue(message);
     }
 
-    public async Task LoadReviews()
+    public async Task LoadReviewsAsync()
     {
         var result = await _customerReviewService.GetAllCustomerReviewsAsync();
         if (result.IsSuccess)
@@ -96,7 +96,7 @@ public partial class CustomerReviewViewModel : ObservableObject
         {
             ShowMessage("Din recension har lagts till!");
             ClearForm();
-            await LoadReviews();
+            await LoadReviewsAsync();
         }
         else
         {
@@ -109,6 +109,22 @@ public partial class CustomerReviewViewModel : ObservableObject
         CustomerReviewDto = new CustomerReviewDto();
     }
 
+    [RelayCommand]
+    private async Task NavigateToUpdateReview(int reviewId)
+    {
+        var reviewDtoResult = await _customerReviewService.GetCustomerReviewByIdAsync(reviewId);
+        if (!reviewDtoResult.IsSuccess || reviewDtoResult.Data == null)
+        {
+            ShowMessage("Kunde inte hämta Recensioninformation.");
+            return;
+        }
+
+        var updateReviewViewModel = _serviceProvider.GetRequiredService<UpdateReviewViewModel>();
+        updateReviewViewModel.CustomerReviewDto = reviewDtoResult.Data;
+
+        var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
+        mainViewModel.CurrentViewModel = updateReviewViewModel;
+    }
 
     [RelayCommand]
     private void NavigateHome()

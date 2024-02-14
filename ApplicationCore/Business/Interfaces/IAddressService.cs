@@ -10,4 +10,5 @@ public interface IAddressService
     Task<OperationResult<IEnumerable<AddressDto>>> GetAllAddressesAsync();
     Task<OperationResult<AddressDto>> UpdateAddressAsync(AddressDto addressDto);
     Task<OperationResult<bool>> DeleteAddressAsync(int addressId);
+    Task<OperationResult<bool>> AddressHasCustomersAsync(int addressId);
 }

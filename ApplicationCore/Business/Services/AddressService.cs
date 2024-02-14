@@ -1,16 +1,25 @@
 ﻿using ApplicationCore.Business.Dtos;
 using ApplicationCore.Business.Helpers;
 using ApplicationCore.Business.Interfaces;
+using ApplicationCore.Infrastructure.Contexts;
 using ApplicationCore.Infrastructure.Entities;
 using ApplicationCore.Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Diagnostics;
 
 namespace ApplicationCore.Business.Services;
 
-public class AddressService(IAddressRepository addressRepository) : IAddressService
+public class AddressService(IAddressRepository addressRepository, EagerLoadingContext dbContext) : IAddressService
 {
     private readonly IAddressRepository _addressRepository = addressRepository;
+    private readonly EagerLoadingContext _dbContext = dbContext;
+
+    public async Task<OperationResult<bool>> AddressHasCustomersAsync(int addressId)
+    {
+        bool hasCustomers = await _dbContext.Customers.AnyAsync(c => c.AddressId == addressId);
+        return OperationResult<bool>.Success(hasCustomers ? "Det finns kunder kopplade till adressen." : "Det finns inga kunder kopplade till adressen.");
+    }
 
     public async Task<OperationResult<AddressDto>> CreateAddressAsync(AddressDto address)
     {
@@ -81,7 +90,14 @@ public class AddressService(IAddressRepository addressRepository) : IAddressServ
             {
                 return OperationResult<bool>.Failure("Adressen kunde inte hittas.");
             }
+
+            OperationResult<bool> hasCustomersResult = await AddressHasCustomersAsync(addressId);
+            if (hasCustomersResult.IsSuccess && hasCustomersResult.Data)
+            {
+                return OperationResult<bool>.Failure("Adressen kan inte raderas eftersom den är kopplad till en eller flera kunder.");
+            }
             var addressToDelete = addressToDeleteResult.Data;
+
 
             var result = await _addressRepository.DeleteAsync(a => a.Id == addressToDelete.Id);
             if (result.IsSuccess)
