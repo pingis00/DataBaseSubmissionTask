@@ -156,6 +156,8 @@ public class CustomerReviewService(ICustomerReviewRepository customerReviewRepos
                 {
                     Id = reviewEntity.Id,
                     Email = reviewEntity.Customer.Email,
+                    FirstName = reviewEntity.Customer.FirstName,
+                    LastName = reviewEntity.Customer.LastName,
                 }
 
 

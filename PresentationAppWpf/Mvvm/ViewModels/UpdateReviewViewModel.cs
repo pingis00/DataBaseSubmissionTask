@@ -60,4 +60,5 @@ public partial class UpdateReviewViewModel(IServiceProvider serviceProvider, ICu
             ShowMessage("Recensionuppdatering misslyckades.");
         }
     }
+
 }

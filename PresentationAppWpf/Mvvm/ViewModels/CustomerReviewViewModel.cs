@@ -127,6 +127,23 @@ public partial class CustomerReviewViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private async Task NavigateToFullReview(int reviewId)
+    {
+        var reviewDtoResult = await _customerReviewService.GetCustomerReviewByIdAsync(reviewId);
+        if (!reviewDtoResult.IsSuccess || reviewDtoResult.Data == null)
+        {
+            ShowMessage("Kunde inte hämta Recensioninformation.");
+            return;
+        }
+
+        var fullReviewViewModel = _serviceProvider.GetRequiredService<FullReviewViewModel>();
+        fullReviewViewModel.CustomerReviewDto = reviewDtoResult.Data;
+
+        var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
+        mainViewModel.CurrentViewModel = fullReviewViewModel;
+    }
+
+    [RelayCommand]
     private void NavigateHome()
     {
         ClearForm();

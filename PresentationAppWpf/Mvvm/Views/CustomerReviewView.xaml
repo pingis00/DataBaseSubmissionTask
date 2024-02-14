@@ -74,7 +74,7 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                        <Button Command="{Binding DataContext.ViewFullCommentCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                        <Button Command="{Binding DataContext.NavigateToFullReviewCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                                                 CommandParameter="{Binding Id}"
                                                 Style="{StaticResource MaterialDesignFlatButton}"
                                                 ToolTip="Visa hela kommentaren"

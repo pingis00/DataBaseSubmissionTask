@@ -19,7 +19,7 @@
                     HorizontalAlignment="Center" 
                     VerticalAlignment="Bottom"
                     MaxWidth="300"/>
-            <Button Content="Tillbaka" Command="{Binding NavigateHomeCommand}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <Button Content="Tillbaka" Command="{Binding NavigateBackToReviewListCommand}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
             <TextBox Margin="10" md:HintAssist.Hint="Epost-adress" IsReadOnly="True" IsEnabled="False" Text="{Binding CustomerReviewDto.Customer.Email, Mode=OneWay}" >
                 <TextBox.Style>
                     <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignTextBox}">

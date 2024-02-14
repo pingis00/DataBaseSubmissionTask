@@ -63,6 +63,9 @@ public partial class App : Application
             services.AddTransient<UpdateReviewViewModel>();
             services.AddTransient<UpdateReviewView>();
 
+            services.AddTransient<FullReviewViewModel>();
+            services.AddTransient<FullReviewView>();
+
         }).Build();
     }
 
