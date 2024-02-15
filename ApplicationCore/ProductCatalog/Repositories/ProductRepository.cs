@@ -21,7 +21,7 @@ public class ProductRepository(DataContext context) : BaseProductRepository<Prod
             var existingEntities = await _context.Products
                 .Include(x => x.Category)
                 .Include(x => x.Brand)
-                .Include(x => x.Inventories)
+                .Include(x => x.Inventory)
                 .ToListAsync();
             return OperationResult<IEnumerable<Product>>.Success("Success", existingEntities);
         }
@@ -39,7 +39,7 @@ public class ProductRepository(DataContext context) : BaseProductRepository<Prod
             var existingEntity = await _context.Products
                 .Include(x => x.Category)
                 .Include(x => x.Brand)
-                .Include(x => x.Inventories)
+                .Include(x => x.Inventory)
                 .FirstOrDefaultAsync(predicate);
             if (existingEntity != null)
             {

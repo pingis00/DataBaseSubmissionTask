@@ -78,11 +78,6 @@ public class ProductService(IProductRepository productRepository, IBrandService 
                     ArticleNumber = productEntity.ArticleNumber,
                     Title = productEntity.Title,
                     ProductDescription = productEntity.ProductDescription,
-                    Brandname = productEntity.Brand.Brandname,
-                    CategoryName = productEntity.Category.CategoryName,
-                    Quantity = productEntity.Inventory.Quantity,
-                    Price = productEntity.Inventory.Price,
-
                 };
 
                 await transaction.CommitAsync();
@@ -212,14 +207,14 @@ public class ProductService(IProductRepository productRepository, IBrandService 
         }
     }
 
-    public async Task<OperationResult<CompleteProductDto>> UpdateProductAsync(CompleteProductDto updateProductDto)
+    public async Task<OperationResult<UpdateProductDto>> UpdateProductAsync(UpdateProductDto updateProductDto)
     {
         try
         {
             var getProductResult = await _productRepository.ProductGetOneAsync(p => p.ArticleNumber == updateProductDto.ArticleNumber);
             if (!getProductResult.IsSuccess)
             {
-                return OperationResult<CompleteProductDto>.Failure("Produkten kunde inte hittas.");
+                return OperationResult<UpdateProductDto>.Failure("Produkten kunde inte hittas.");
             }
 
             var entityToUpdate = getProductResult.Data;
@@ -229,19 +224,13 @@ public class ProductService(IProductRepository productRepository, IBrandService 
                 var brandResult = await _brandService.CreateBrandAsync(updateProductDto.Brand);
                 if (!brandResult.IsSuccess)
                 {
-                    return OperationResult<CompleteProductDto>.Failure("Varumärket kunde inte Uppdateras.");
+                    return OperationResult<UpdateProductDto>.Failure("Varumärket kunde inte Uppdateras.");
                 }
 
                 var categoryResult = await _categoryService.CreateCategoryAsync(updateProductDto.Category);
                 if (!categoryResult.IsSuccess)
                 {
-                    return OperationResult<CompleteProductDto>.Failure("Kategorin kunde inte Uppdateras.");
-                }
-
-                var inventoryResult = await _inventoryService.CreateInventoryAsync(updateProductDto.Inventory);
-                if (!inventoryResult.IsSuccess)
-                {
-                    return OperationResult<CompleteProductDto>.Failure("Inventariet kunde inte Uppdateras.");
+                    return OperationResult<UpdateProductDto>.Failure("Kategorin kunde inte Uppdateras.");
                 }
 
                 entityToUpdate = getProductResult.Data;
@@ -252,8 +241,6 @@ public class ProductService(IProductRepository productRepository, IBrandService 
                     entityToUpdate.ProductDescription = updateProductDto.ProductDescription;
                     entityToUpdate.BrandId = brandResult.Data.Id;
                     entityToUpdate.CategoryId = categoryResult.Data.Id;
-                    entityToUpdate.Inventory = inventoryResult.Data.Id;
-
 
                     var updateResult = await _productRepository.ProductUpdateAsync(
                         p => p.ArticleNumber == entityToUpdate.ArticleNumber,
@@ -262,24 +249,23 @@ public class ProductService(IProductRepository productRepository, IBrandService 
 
                     if (!updateResult.IsSuccess)
                     {
-                        return OperationResult<CompleteProductDto>.Failure("Det gick inte att uppdatera produkten.");
+                        return OperationResult<UpdateProductDto>.Failure("Det gick inte att uppdatera produkten.");
                     }
                     var updatedEntity = updateResult.Data;
-                    var updatedDto = new CompleteProductDto
+                    var updatedDto = new UpdateProductDto
                     {
                         ArticleNumber = updatedEntity.ArticleNumber,
                         Title = updatedEntity.Title,
                         ProductDescription = updatedEntity.ProductDescription,
                         Brand = brandResult.Data,
                         Category = categoryResult.Data,
-                        Inventory = inventoryResult.Data
                     };
-                    return OperationResult<CompleteProductDto>.Success("Kunden uppdaterades framgångsrikt.", updatedDto);
+                    return OperationResult<UpdateProductDto>.Success("Kunden uppdaterades framgångsrikt.", updatedDto);
 
                 }
                 else
                 {
-                    return OperationResult<CompleteProductDto>.Failure("Kunden kunde inte hittas.");
+                    return OperationResult<UpdateProductDto>.Failure("Kunden kunde inte hittas.");
                 }
 
             }

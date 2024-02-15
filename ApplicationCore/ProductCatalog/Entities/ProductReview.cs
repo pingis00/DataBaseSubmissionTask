@@ -13,10 +13,10 @@ public partial class ProductReview
     public int Id { get; set; }
 
     [StringLength(50)]
-    public string? ReviewName { get; set; }
+    public string ReviewName { get; set; } = null!;
 
     [StringLength(500)]
-    public string? ReviewText { get; set; }
+    public string ReviewText { get; set; } = null!;
 
     public int ArticleNumber { get; set; }
 

@@ -48,7 +48,6 @@ public class ProductReviewService(IProductReviewRepository productReviewReposito
                 {
                     ArticleNumber = productResult.Data.ArticleNumber,
                     Title = productResult.Data.Title,
-
                 }
             };
             return OperationResult<ProductReviewDto>.Success("Recensionen skapades framgångsrikt.", createdReviewDto);
