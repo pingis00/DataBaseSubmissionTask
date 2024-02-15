@@ -7,4 +7,6 @@ namespace ApplicationCore.Infrastructure.Repositories;
 public class ContactPreferenceRepository(EagerLoadingContext context) : BaseRepository<ContactPreferenceEntity>(context), IContactPreferenceRepository
 {
     private readonly EagerLoadingContext _context = context;
+
+
 }

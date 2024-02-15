@@ -3,6 +3,7 @@ using ApplicationCore.Business.Services;
 using ApplicationCore.Infrastructure.Contexts;
 using ApplicationCore.Infrastructure.Interfaces;
 using ApplicationCore.Infrastructure.Repositories;
+using ApplicationCore.ProductCatalog.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,6 +24,7 @@ public partial class App : Application
         {
             
             services.AddDbContext<EagerLoadingContext>(x => x.UseSqlServer(@"Data Source=localhost;Initial Catalog=DbCustomers;Integrated Security=True;Encrypt=True;Trust Server Certificate=True", x => x.MigrationsAssembly(nameof(ApplicationCore))));
+            services.AddDbContext<DataContext>(x => x.UseSqlServer(@"Data Source=localhost;Initial Catalog=ProductCatalog;Integrated Security=True;Trust Server Certificate=True", x => x.MigrationsAssembly(nameof(ApplicationCore))));
 
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();

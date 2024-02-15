@@ -1,0 +1,34 @@
+CREATE TABLE Brands (
+Id INT PRIMARY KEY IDENTITY,
+BRANDNAME NVARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE Categories (
+	Id INT PRIMARY KEY IDENTITY,
+	CategoryName NVARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE Products (
+	ArticleNumber INT PRIMARY KEY IDENTITY,
+	Title NVARCHAR(100) NOT NULL,
+	ProductDescription NVARCHAR(500) NOT NULL,
+	BrandId INT NOT NULL, 
+	CategoryId INT NOT NULL, 
+	FOREIGN KEY (BrandId) REFERENCES Brands(Id),
+	FOREIGN KEY (CategoryId) REFERENCES Categories(Id)
+);
+
+CREATE TABLE Inventory (
+    ProductId INT PRIMARY KEY,
+    Quantity INT NOT NULL,
+    Price MONEY NOT NULL,
+    FOREIGN KEY (ProductId) REFERENCES Products(ArticleNumber) ON DELETE CASCADE
+);
+
+CREATE TABLE ProductReview (
+	Id INT PRIMARY KEY IDENTITY,
+	ReviewName NVARCHAR(50),
+	ReviewText NVARCHAR(500),
+	ArticleNumber INT NOT NULL,
+	FOREIGN KEY (ArticleNumber) REFERENCES Products(ArticleNumber) ON DELETE CASCADE
+);

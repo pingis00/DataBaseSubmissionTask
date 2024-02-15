@@ -114,16 +114,16 @@ public class RoleService(IRoleRepository roleRepository, EagerLoadingContext dbC
 
                 if (rolesDto.Any())
                 {
-                    return OperationResult<IEnumerable<RoleDto>>.Success("Adresser hämtades framgångsrikt.", rolesDto);
+                    return OperationResult<IEnumerable<RoleDto>>.Success("Rollerna hämtades framgångsrikt.", rolesDto);
                 }
                 else
                 {
-                    return OperationResult<IEnumerable<RoleDto>>.Failure("Inga adresser hittades.");
+                    return OperationResult<IEnumerable<RoleDto>>.Failure("Inga roller hittades.");
                 }
             }
             else
             {
-                return OperationResult<IEnumerable<RoleDto>>.Failure("Det gick inte att hämta adresserna.");
+                return OperationResult<IEnumerable<RoleDto>>.Failure("Det gick inte att hämta rollerna.");
             }
         }
         catch (Exception ex)
