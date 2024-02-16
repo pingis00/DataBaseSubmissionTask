@@ -31,53 +31,48 @@ public class ProductService(IProductRepository productRepository, IBrandService 
             }
             else
             {
-                var brandModel = await _brandService.CreateBrandAsync(product.Brand);
-                if (!brandModel.IsSuccess)
+                var brandResult = await _brandService.CreateBrandAsync(product.Brand);
+                if (!brandResult.IsSuccess)
                 {
                     await transaction.RollbackAsync();
-                    return OperationResult<CompleteProductDto>.Failure(brandModel.Message);
+                    return OperationResult<CompleteProductDto>.Failure(brandResult.Message);
                 }
-                product.Brand.Id= brandModel.Data.Id;
+                product.Brand.Id= brandResult.Data.Id;
 
-                var categoryModel = await _categoryService.CreateCategoryAsync(product.Category);
-                if (!categoryModel.IsSuccess)
+                var categoryResult = await _categoryService.CreateCategoryAsync(product.Category);
+                if (!categoryResult.IsSuccess)
                 {
                     await transaction.RollbackAsync();
-                    return OperationResult<CompleteProductDto>.Failure(categoryModel.Message);
+                    return OperationResult<CompleteProductDto>.Failure(categoryResult.Message);
                 }
-                product.Category.Id = categoryModel.Data.Id;
+                product.Category.Id = categoryResult.Data.Id;
 
                 var normalizedTitle = TextNormalizationHelper.NormalizeText(product.Title).Data;
 
-                var createProductEntityResult = await _productRepository.ProductCreateAsync(new Product
+                var createProductResult = await _productRepository.ProductCreateAsync(new Product
                 {
                     Title = normalizedTitle,
                     ProductDescription = product.ProductDescription,
                     BrandId = product.Brand.Id,
                     CategoryId = product.Category.Id,
                 });
+                product.Inventory.ProductId = createProductResult.Data.ArticleNumber;
 
-                var inventoryModel = await _inventoryService.CreateInventoryAsync(product.Inventory);
-                if (!inventoryModel.IsSuccess)
+                var inventoryResult = await _inventoryService.CreateInventoryAsync(product.Inventory);
+                if (!inventoryResult.IsSuccess)
                 {
                     await transaction.RollbackAsync();
-                    return OperationResult<CompleteProductDto>.Failure(inventoryModel.Message);
+                    return OperationResult<CompleteProductDto>.Failure(inventoryResult.Message);
                 }
-                product.Inventory.Id = inventoryModel.Data.Id;
-
-                if (!createProductEntityResult.IsSuccess)
-                {
-                    await transaction.RollbackAsync();
-                    return OperationResult<CompleteProductDto>.Failure("Det gick inte att skapa produktentiteten.");
-                }
-
-                var productEntity = createProductEntityResult.Data;
 
                 var newProductDto = new CompleteProductDto
                 {
-                    ArticleNumber = productEntity.ArticleNumber,
-                    Title = productEntity.Title,
-                    ProductDescription = productEntity.ProductDescription,
+                    ArticleNumber = createProductResult.Data.ArticleNumber,
+                    Title = createProductResult.Data.Title,
+                    ProductDescription = createProductResult.Data.ProductDescription,
+                    Brand = brandResult.Data,
+                    Category = categoryResult.Data,
+                    Inventory = inventoryResult.Data
                 };
 
                 await transaction.CommitAsync();
@@ -143,7 +138,7 @@ public class ProductService(IProductRepository productRepository, IBrandService 
                     ArticleNumber = productEntity.ArticleNumber,
                     Title = productEntity.Title,
                     ProductDescription = productEntity.ProductDescription,
-                    Brandname = productEntity.Brand.Brandname,
+                    BrandName = productEntity.Brand.Brandname,
                     CategoryName = productEntity.Category.CategoryName,
                     Quantity = productEntity.Inventory.Quantity,
                     Price = productEntity.Inventory.Price,
@@ -185,7 +180,7 @@ public class ProductService(IProductRepository productRepository, IBrandService 
                     ArticleNumber = product.ArticleNumber,
                     Title = product.Title,
                     ProductDescription = product.ProductDescription,
-                    Brandname = product.Brand.Brandname,
+                    BrandName = product.Brand.Brandname,
                     CategoryName = product.Category.CategoryName,
                     Quantity = product.Inventory.Quantity,
                     Price = product.Inventory.Price
@@ -279,5 +274,19 @@ public class ProductService(IProductRepository productRepository, IBrandService 
             Debug.WriteLine("ERROR :: " + ex.Message);
             return OperationResult<UpdateProductDto>.Failure("Ett internt fel inträffade när adressen skulle uppdateras.");
         }
+    }
+
+    public UpdateProductDto ConvertToUpdatable(CompleteProductDto completeDto)
+    {
+        return new UpdateProductDto
+        {
+            ArticleNumber = completeDto.ArticleNumber,
+            Title = completeDto.Title,
+            ProductDescription = completeDto.ProductDescription,
+            Brandname = completeDto.BrandName,
+            CategoryName = completeDto.CategoryName,
+            Brand = completeDto.Brand,
+            Category = completeDto.Category
+        };
     }
 }

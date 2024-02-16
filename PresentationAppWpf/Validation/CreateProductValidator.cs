@@ -29,14 +29,14 @@ public class CreateProductValidator(CompleteProductDto completeProductDto, Actio
     {
         return !string.IsNullOrWhiteSpace(_completeProductDto.Title) &&
                !string.IsNullOrWhiteSpace(_completeProductDto.ProductDescription) &&
-               !string.IsNullOrWhiteSpace(_completeProductDto.Brandname) &&
-               !string.IsNullOrWhiteSpace(_completeProductDto.CategoryName);
+               !string.IsNullOrWhiteSpace(_completeProductDto.Brand.BrandName) &&
+               !string.IsNullOrWhiteSpace(_completeProductDto.Category.CategoryName);
 
     }
 
     private bool ValidateTitle()
     {
-        var titleValidationRule = new NameValidationRule();
+        var titleValidationRule = new ProductNameValidationRule();
         var titleValidationResult = titleValidationRule.Validate(_completeProductDto.Title, CultureInfo.CurrentCulture);
         if (!titleValidationResult.IsValid)
         {
@@ -49,7 +49,7 @@ public class CreateProductValidator(CompleteProductDto completeProductDto, Actio
     private bool ValidateBrandName()
     {
         var brandValidationRule = new NameValidationRule();
-        var brandValidationResult = brandValidationRule.Validate(_completeProductDto.Brandname, CultureInfo.CurrentCulture);
+        var brandValidationResult = brandValidationRule.Validate(_completeProductDto.Brand.BrandName, CultureInfo.CurrentCulture);
         if (!brandValidationResult.IsValid)
         {
             _showMessage(brandValidationResult.ErrorContent?.ToString() ?? "Ett okänt fel uppstod vid validering av varumärke.");
@@ -61,7 +61,7 @@ public class CreateProductValidator(CompleteProductDto completeProductDto, Actio
     private bool ValidateCategoryName()
     {
         var categoryValidationRule = new NameValidationRule();
-        var categoryValidationResult = categoryValidationRule.Validate(_completeProductDto.CategoryName, CultureInfo.CurrentCulture);
+        var categoryValidationResult = categoryValidationRule.Validate(_completeProductDto.Category.CategoryName, CultureInfo.CurrentCulture);
         if (!categoryValidationResult.IsValid)
         {
             _showMessage(categoryValidationResult.ErrorContent?.ToString() ?? "Ett okänt fel uppstod vid validering av varumärke.");
@@ -73,7 +73,7 @@ public class CreateProductValidator(CompleteProductDto completeProductDto, Actio
     private bool ValidateArticleNumber()
     {
         var articleNumberValidationRule = new ArticleNumberValidationRule();
-        var articleNumberValidationResult = articleNumberValidationRule.Validate(_completeProductDto.CategoryName, CultureInfo.CurrentCulture);
+        var articleNumberValidationResult = articleNumberValidationRule.Validate(_completeProductDto.ArticleNumber, CultureInfo.CurrentCulture);
         if (!articleNumberValidationResult.IsValid)
         {
             _showMessage(articleNumberValidationResult.ErrorContent?.ToString() ?? "Ett okänt fel uppstod vid validering av artikelnummer.");
@@ -85,7 +85,7 @@ public class CreateProductValidator(CompleteProductDto completeProductDto, Actio
     private bool ValidateProductDescription()
     {
         var productDescriptionValidationRule = new ProductDescriptionValidationRule();
-        var productDescriptionValidationResult = productDescriptionValidationRule.Validate(_completeProductDto.CategoryName, CultureInfo.CurrentCulture);
+        var productDescriptionValidationResult = productDescriptionValidationRule.Validate(_completeProductDto.ProductDescription, CultureInfo.CurrentCulture);
         if (!productDescriptionValidationResult.IsValid)
         {
             _showMessage(productDescriptionValidationResult.ErrorContent?.ToString() ?? "Ett okänt fel uppstod vid validering av produktinformationen.");
@@ -96,7 +96,7 @@ public class CreateProductValidator(CompleteProductDto completeProductDto, Actio
     private bool ValidateQuantity()
     {
         var quantityValidationRule = new QuantityValidationRule();
-        var quantityValidationResult = quantityValidationRule.Validate(_completeProductDto.CategoryName, CultureInfo.CurrentCulture);
+        var quantityValidationResult = quantityValidationRule.Validate(_completeProductDto.Inventory.Quantity, CultureInfo.CurrentCulture);
         if (!quantityValidationResult.IsValid)
         {
             _showMessage(quantityValidationResult.ErrorContent?.ToString() ?? "Ett okänt fel uppstod vid validering av antalet.");
@@ -107,7 +107,7 @@ public class CreateProductValidator(CompleteProductDto completeProductDto, Actio
     private bool ValidatePrice()
     {
         var priceValidationRule = new PriceValidationRule();
-        var priceValidationResult = priceValidationRule.Validate(_completeProductDto.CategoryName, CultureInfo.CurrentCulture);
+        var priceValidationResult = priceValidationRule.Validate(_completeProductDto.Inventory.Price, CultureInfo.CurrentCulture);
         if (!priceValidationResult.IsValid)
         {
             _showMessage(priceValidationResult.ErrorContent?.ToString() ?? "Ett okänt fel uppstod vid validering av produktinformationen.");
@@ -115,7 +115,4 @@ public class CreateProductValidator(CompleteProductDto completeProductDto, Actio
         }
         return true;
     }
-
-
-
 }

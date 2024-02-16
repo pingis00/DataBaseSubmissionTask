@@ -6,16 +6,10 @@ using System.Globalization;
 
 namespace PresentationAppWpf.Validation;
 
-public class FormValidator
+public class FormValidator(ICustomerDto customerDto, Action<string> showMessage)
 {
-    private readonly ICustomerDto _customerDto;
-    private readonly Action<string> _showMessage;
-
-    public FormValidator(ICustomerDto customerDto, Action<string> showMessage)
-    {
-        _customerDto = customerDto;
-        _showMessage = showMessage;
-    }
+    private readonly ICustomerDto _customerDto = customerDto;
+    private readonly Action<string> _showMessage = showMessage;
 
     public bool ValidateForm()
     {
@@ -61,7 +55,6 @@ public class FormValidator
         }
         return true;
     }
-
     private bool ValidatePhoneNumber()
     {
         var phoneNumberlValidationRule = new PhoneNumberValidationRule();

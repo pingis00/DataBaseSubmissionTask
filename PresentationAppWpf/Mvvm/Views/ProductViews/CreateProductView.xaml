@@ -25,9 +25,9 @@
              Grid.Row="1"/>
 
         <ScrollViewer Grid.Row="0">
-            <StackPanel Margin="20">
+            <StackPanel Margin="30">
                 <TextBlock Text="Lägg till produkt" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="20"/>
-                <StackPanel>
+                <StackPanel Margin="0,0,0,10">
                     <Label Content="Artikelnummer: 8st siffror" />
                     <TextBox Margin="5" md:HintAssist.Hint="ex: 12589658" >
                         <TextBox.Text>
@@ -44,19 +44,19 @@
                         </TextBox.Style>
                     </TextBox>
                 </StackPanel>
-                <StackPanel>
+                <StackPanel Margin="0,0,0,10">
                     <Label Content="Produktnamn:" />
                     <TextBox Margin="5" md:HintAssist.Hint="ex: Samsung galaxy S24 Ultra" Style="{StaticResource MaterialDesignTextBox}">
                         <TextBox.Text>
                             <Binding Path="CompleteProductDto.Title" UpdateSourceTrigger="PropertyChanged">
                                 <Binding.ValidationRules>
-                                    <validation:NameValidationRule ValidatesOnTargetUpdated="False"/>
+                                    <validation:ProductNameValidationRule ValidatesOnTargetUpdated="False"/>
                                 </Binding.ValidationRules>
                             </Binding>
                         </TextBox.Text>
                     </TextBox>
                 </StackPanel>
-                <StackPanel>
+                <StackPanel Margin="0,0,0,10">
                     <Label Content="Produktbeskrivning:" />
                     <TextBox Margin="5" md:HintAssist.Hint="ex: 6,8 QHD+-display: 12 GB RAM + 1 TB lagring" Style="{StaticResource MaterialDesignTextBox}">
                         <TextBox.Text>
@@ -68,16 +68,16 @@
                         </TextBox.Text>
                     </TextBox>
                 </StackPanel>
-                <StackPanel>
+                <StackPanel Margin="0,0,0,10">
                     <Label Content="Varumärke" />
                     <ComboBox Margin="5"
                             md:HintAssist.Hint="Välj i dropdown-lista"
                             ItemsSource="{Binding AvailableBrands}"
-                            DisplayMemberPath="Brandname"
-                            SelectedValuePath="Brandname"
+                            DisplayMemberPath="BrandName"
+                            SelectedValuePath="BrandName"
                             SelectedValue="{Binding CompleteProductDto.Brand.BrandName, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
-                <StackPanel>
+                <StackPanel Margin="0,0,0,10">
                     <Label Content="Kategori" />
                     <ComboBox Margin="5"
                           md:HintAssist.Hint="Välj i dropdown-lista"
@@ -86,7 +86,7 @@
                           SelectedValuePath="CategoryName"
                           SelectedValue="{Binding CompleteProductDto.Category.CategoryName, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
-                <StackPanel>
+                <StackPanel Margin="0,0,0,10">
                     <Label Content="Antal" />
                     <TextBox Margin="5" md:HintAssist.Hint="ex: 12" Style="{StaticResource MaterialDesignTextBox}">
                         <TextBox.Text>

@@ -45,6 +45,9 @@
             <DataTemplate DataType="{x:Type productviewmodel:ProductSettingsViewModel}">
                 <productviews:ProductSettingsView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type productviewmodel:ProductListViewModel}">
+                <productviews:ProductListView/>
+            </DataTemplate>
         </ContentControl.Resources>
     </ContentControl>
 </Window>

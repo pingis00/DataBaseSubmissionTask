@@ -66,4 +66,14 @@ public partial class HomePageViewModel(IServiceProvider serviceProvider) : Obser
         await createProductViewModel.LoadBrandsAndCategoriesAsync();
         mainViewModel.CurrentViewModel = createProductViewModel;
     }
+
+    [RelayCommand]
+    private async Task NavigateToProductList()
+    {
+        var productListViewModel = _serviceProvider.GetRequiredService<ProductListViewModel>();
+        await productListViewModel.LoadProductsAsync();
+
+        var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
+        mainViewModel.CurrentViewModel = productListViewModel;
+    }
 }

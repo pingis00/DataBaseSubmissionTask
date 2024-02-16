@@ -10,9 +10,9 @@ namespace PresentationAppWpf.Validation
         {
             string productDescription = value.ToString()!;
 
-            if (!Regex.IsMatch(productDescription, @"^.{0,500}$"))
+            if (!Regex.IsMatch(productDescription, @"^.{8,500}$"))
             {
-                return new ValidationResult(false, "Produktbeskrivningen får vara max 500 tecken lång");
+                return new ValidationResult(false, "Produktbeskrivningen måste vara minst 8 och max 500 tecken lång");
             }
 
             return ValidationResult.ValidResult;

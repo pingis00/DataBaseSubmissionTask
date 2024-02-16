@@ -35,6 +35,7 @@ public class InventoryService(IIventoryRepository inventoryRepository, DataConte
             {
                 var newInventoryEntityResult = await _inventoryRepository.ProductCreateAsync(new Inventory
                 {
+                    ProductId = inventory.ProductId,
                     Quantity = inventory.Quantity,
                     Price = inventory.Price,
                 });
