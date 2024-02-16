@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Business.Dtos;
 using ApplicationCore.Business.Interfaces;
+using ApplicationCore.ProductCatalog.Dtos;
 using PresentationAppWpf.Mvvm.ViewModels;
 using System.Globalization;
 

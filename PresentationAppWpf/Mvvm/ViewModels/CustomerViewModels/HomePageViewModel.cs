@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using PresentationAppWpf.Mvvm.ViewModels.ProductViewModels;
 
 namespace PresentationAppWpf.Mvvm.ViewModels;
 
@@ -44,5 +45,25 @@ public partial class HomePageViewModel(IServiceProvider serviceProvider) : Obser
 
         var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
         mainViewModel.CurrentViewModel = customerReviewViewModel;
+    }
+
+    [RelayCommand]
+    private async Task NavigateToProductInventory()
+    {
+        var settingsViewModel = _serviceProvider.GetRequiredService<ProductSettingsViewModel>();
+        await settingsViewModel.InitializeCategoryAndBrandAsync();
+
+        var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
+        mainViewModel.CurrentViewModel = settingsViewModel;
+    }
+
+    [RelayCommand]
+    private async Task NavigateToCreateProduct()
+    {
+        var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
+        var createProductViewModel = _serviceProvider.GetRequiredService<CreateProductViewModel>();
+
+        await createProductViewModel.LoadBrandsAndCategoriesAsync();
+        mainViewModel.CurrentViewModel = createProductViewModel;
     }
 }

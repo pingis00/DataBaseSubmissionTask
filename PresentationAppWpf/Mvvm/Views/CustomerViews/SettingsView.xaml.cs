@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 
-namespace PresentationAppWpf.Mvvm.Views;
+namespace PresentationAppWpf.Mvvm.Views.CustomerViews;
 
 public partial class SettingsView : UserControl
 {

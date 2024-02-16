@@ -4,7 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         
-        xmlns:views="clr-namespace:PresentationAppWpf.Mvvm.Views"
+        xmlns:productviews="clr-namespace:PresentationAppWpf.Mvvm.Views.ProductViews"
+        xmlns:productviewmodel="clr-namespace:PresentationAppWpf.Mvvm.ViewModels.ProductViewModels"
+        xmlns:views="clr-namespace:PresentationAppWpf.Mvvm.Views.CustomerViews"
         xmlns:viewmodels="clr-namespace:PresentationAppWpf.Mvvm.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
         WindowStartupLocation="CenterScreen"
@@ -36,6 +38,12 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewmodels:FullReviewViewModel}">
                 <views:FullReviewView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type productviewmodel:CreateProductViewModel}">
+                <productviews:CreateProductView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type productviewmodel:ProductSettingsViewModel}">
+                <productviews:ProductSettingsView/>
             </DataTemplate>
         </ContentControl.Resources>
     </ContentControl>

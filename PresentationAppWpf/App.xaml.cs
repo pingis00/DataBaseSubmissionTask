@@ -4,11 +4,17 @@ using ApplicationCore.Infrastructure.Contexts;
 using ApplicationCore.Infrastructure.Interfaces;
 using ApplicationCore.Infrastructure.Repositories;
 using ApplicationCore.ProductCatalog.Context;
+using ApplicationCore.ProductCatalog.Interfaces;
+using ApplicationCore.ProductCatalog.Repositories;
+using ApplicationCore.ProductCatalog.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PresentationAppWpf.Mvvm.ViewModels;
+using PresentationAppWpf.Mvvm.ViewModels.ProductViewModels;
 using PresentationAppWpf.Mvvm.Views;
+using PresentationAppWpf.Mvvm.Views.CustomerViews;
+using PresentationAppWpf.Mvvm.Views.ProductViews;
 using System.Windows;
 
 namespace PresentationAppWpf;
@@ -41,6 +47,21 @@ public partial class App : Application
             services.AddScoped<ICustomerReviewService, CustomerReviewService>();
             services.AddScoped<ICustomerReviewRepository, CustomerReviewRepository>();
 
+            services.AddScoped<IBrandService, BrandService>();
+            services.AddScoped<IBrandRepository, BrandRepository>();
+
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+
+            services.AddScoped<IInventoryService, InventoryService>();
+            services.AddScoped<IIventoryRepository, InventoryRepository>();
+
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<MainWindow>();
 
@@ -67,6 +88,12 @@ public partial class App : Application
 
             services.AddTransient<FullReviewViewModel>();
             services.AddTransient<FullReviewView>();
+
+            services.AddTransient<ProductSettingsViewModel>();
+            services.AddTransient<ProductSettingsView>();
+
+            services.AddTransient<CreateProductViewModel>();
+            services.AddTransient<CreateProductView>();
 
         }).Build();
     }

@@ -11,16 +11,10 @@ using System.Windows;
 
 namespace PresentationAppWpf.Mvvm.ViewModels;
 
-public partial class CustomerListViewModel : ObservableObject
+public partial class CustomerListViewModel(IServiceProvider serviceProvider, ICustomerService customerService) : ObservableObject
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly ICustomerService _customerService;
-
-    public CustomerListViewModel(IServiceProvider serviceProvider, ICustomerService customerService)
-    {
-        _serviceProvider = serviceProvider;
-        _customerService = customerService;
-    }
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
+    private readonly ICustomerService _customerService = customerService;
 
     [ObservableProperty]
     public ObservableCollection<CustomerListDto> customers = [];

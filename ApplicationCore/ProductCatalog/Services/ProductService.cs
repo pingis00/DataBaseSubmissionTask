@@ -271,13 +271,13 @@ public class ProductService(IProductRepository productRepository, IBrandService 
             }
             else
             {
-                return OperationResult<CompleteProductDto>.Failure("Kunden kunde inte hittas.");
+                return OperationResult<UpdateProductDto>.Failure("Kunden kunde inte hittas.");
             }
         }
         catch (Exception ex)
         {
             Debug.WriteLine("ERROR :: " + ex.Message);
-            return OperationResult<CompleteProductDto>.Failure("Ett internt fel inträffade när adressen skulle uppdateras.");
+            return OperationResult<UpdateProductDto>.Failure("Ett internt fel inträffade när adressen skulle uppdateras.");
         }
     }
 }

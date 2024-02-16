@@ -1,10 +1,10 @@
-﻿<UserControl x:Class="PresentationAppWpf.Mvvm.Views.HomePageView"
+﻿<UserControl x:Class="PresentationAppWpf.Mvvm.Views.CustomerViews.HomePageView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              
-             xmlns:local="clr-namespace:PresentationAppWpf.Mvvm.Views"
+             xmlns:local="clr-namespace:PresentationAppWpf.Mvvm.Views.CustomerViews"
              xmlns:viewModels="clr-namespace:PresentationAppWpf.Mvvm.ViewModels"
              d:DataContext="{d:DesignInstance Type=viewModels:HomePageViewModel}"
              
@@ -35,7 +35,7 @@
                 <Button Command="{Binding NavigateToSettingsCommand }" Content="Kundroller och preferenser" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource MaterialDesignFlatButton}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,0,0,10">
-                <Button Command="{Binding NavigateToCreateProductCommand }" Content="Produkter" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource MaterialDesignFlatButton}" />
+                <Button Command="{Binding NavigateToCreateProductCommand }" Content="Skapa produkter" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource MaterialDesignFlatButton}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,0,0,10">
                 <Button Command="{Binding NavigateToProductListCommand }" Content="Produktlista" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource MaterialDesignFlatButton}" />
@@ -44,10 +44,10 @@
                 <Button Command="{Binding NavigateToProductReviewCommand }" Content="ProduktRecensioner" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource MaterialDesignFlatButton}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,0,0,10">
-                <Button Command="{Binding NavigateToProductSettingsCommand }" Content="Varumärken och Kategorier" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource MaterialDesignFlatButton}" />
+                <Button Command="{Binding NavigateToProductInventoryCommand }" Content="Varumärken och Kategorier" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource MaterialDesignFlatButton}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,0,0,10">
-                <Button Command="{Binding NavigateToProductInventoryCommand }" Content="Produkt-Inventarie" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource MaterialDesignFlatButton}" />
+                <Button Command="{Binding NavigateToProductSettingsCommand }" Content="Produkt-Inventarie" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource MaterialDesignFlatButton}" />
             </StackPanel>
 
 

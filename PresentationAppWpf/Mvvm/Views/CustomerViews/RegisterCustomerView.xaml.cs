@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace PresentationAppWpf.Mvvm.Views;
+namespace PresentationAppWpf.Mvvm.Views.CustomerViews;
 
 public partial class RegisterCustomerView : UserControl
 {
