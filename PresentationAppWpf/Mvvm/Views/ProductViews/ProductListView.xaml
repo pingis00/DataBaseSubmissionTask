@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              
+             xmlns:validation="clr-namespace:PresentationAppWpf.Validation"
              xmlns:local="clr-namespace:PresentationAppWpf.Mvvm.Views.ProductViews"
-             xmlns:viewmodel="clr-namespace:PresentationAppWpf.Mvvm.ViewModels.ProductViewModels"
-             d:DataContext="{d:DesignInstance Type=wiewmodel:ProductListViewModel}"
+             xmlns:viewmodels="clr-namespace:PresentationAppWpf.Mvvm.ViewModels.ProductViewModels"
+             d:DataContext="{d:DesignInstance Type=viewmodels:ProductListViewModel}"
              
              xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
@@ -15,28 +16,28 @@
     <Grid>
         <Button Content="Tillbaka" Command="{Binding NavigateBackCommand}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
         <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,50,0,0">
-            <DataGrid ItemsSource="{Binding Customers}" AutoGenerateColumns="False" IsReadOnly="True" CanUserDeleteRows="False">
+            <DataGrid ItemsSource="{Binding Products}" AutoGenerateColumns="False" IsReadOnly="True" CanUserDeleteRows="False">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Förnamn" Binding="{Binding FirstName}" Width="200"/>
-                    <DataGridTextColumn Header="Efternamn" Binding="{Binding LastName}" Width="200"/>
-                    <DataGridTextColumn Header="E-post" Binding="{Binding Email}" Width="200"/>
-                    <DataGridTextColumn Header="Telefon" Binding="{Binding PhoneNumber}" Width="200"/>
-                    <DataGridTextColumn Header="Adress" Binding="{Binding StreetName}" Width="200"/>
-                    <DataGridTextColumn Header="Postkod" Binding="{Binding PostalCode}" Width="200"/>
-                    <DataGridTextColumn Header="Stad" Binding="{Binding City}" Width="200"/>
+                    <DataGridTextColumn Header="Artikelnummer" Binding="{Binding ArticleNumber}" Width="200"/>
+                    <DataGridTextColumn Header="Titel" Binding="{Binding Title}" Width="200"/>
+                    <DataGridTextColumn Header="Produktbeskrivning" Binding="{Binding ProductDescription}" Width="200"/>
+                    <DataGridTextColumn Header="Varumärke" Binding="{Binding BrandName}" Width="200"/>
+                    <DataGridTextColumn Header="Kategori" Binding="{Binding CategoryName}" Width="200"/>
+                    <DataGridTextColumn Header="Pris" Binding="{Binding Price}" Width="200"/>
+                    <DataGridTextColumn Header="Antal" Binding="{Binding Quantity}" Width="200"/>
                     <DataGridTemplateColumn Header="" Width="Auto">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <Button Command="{Binding DataContext.NavigateToUpdateCustomerCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                                            CommandParameter="{Binding Id}"
+                                    <Button Command="{Binding DataContext.NavigateToUpdateProductsCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                            CommandParameter="{Binding ArticleNumber}"
                                             Style="{StaticResource MaterialDesignFlatButton}"
                                             Margin="4,0,0,0"
                                             ToolTip="Uppdatera">
                                         <md:PackIcon Kind="Pencil" />
                                     </Button>
-                                    <Button Command="{Binding DataContext.DeleteCustomerCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                                            CommandParameter="{Binding Id}"
+                                    <Button Command="{Binding DataContext.DeleteProductCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                            CommandParameter="{Binding ArticleNumber}"
                                             Style="{StaticResource MaterialDesignFlatButton}"
                                             Margin="4,0,0,0"
                                             ToolTip="Radera">

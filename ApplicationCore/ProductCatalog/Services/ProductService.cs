@@ -283,7 +283,7 @@ public class ProductService(IProductRepository productRepository, IBrandService 
             ArticleNumber = completeDto.ArticleNumber,
             Title = completeDto.Title,
             ProductDescription = completeDto.ProductDescription,
-            Brandname = completeDto.BrandName,
+            BrandName = completeDto.BrandName,
             CategoryName = completeDto.CategoryName,
             Brand = completeDto.Brand,
             Category = completeDto.Category

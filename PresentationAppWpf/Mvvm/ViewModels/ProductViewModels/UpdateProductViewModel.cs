@@ -10,13 +10,13 @@ using System.Collections.ObjectModel;
 
 namespace PresentationAppWpf.Mvvm.ViewModels.ProductViewModels;
 
-public partial class UpdateProductViewModel(IServiceProvider serviceProvider, IProductService productService, IBrandService brandService, ICategoryService categoryService, CreateProductValidator? createProductValidator) : ObservableObject
+public partial class UpdateProductViewModel(IServiceProvider serviceProvider, IProductService productService, IBrandService brandService, ICategoryService categoryService) : ObservableObject
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
     private readonly IProductService _productService = productService;
     private readonly IBrandService _brandService = brandService;
     private readonly ICategoryService _categoryService = categoryService;
-    private CreateProductValidator? _createProductValidator = createProductValidator;
+    private UpdateProductValidator? _updateProductValidator;
 
     [ObservableProperty]
     private UpdateProductDto? updateProductDto;
@@ -72,7 +72,7 @@ public partial class UpdateProductViewModel(IServiceProvider serviceProvider, IP
         }
     }
 
-    public void InitializeCreateProductValidator()
+    public void InitializeUpdateProductValidator()
     {
         if (UpdateProductDto == null)
         {
@@ -80,7 +80,7 @@ public partial class UpdateProductViewModel(IServiceProvider serviceProvider, IP
         }
         else
         {
-            _createProductValidator = new CreateProductValidator(UpdateProductDto, ShowMessage);
+            _updateProductValidator = new UpdateProductValidator(UpdateProductDto, ShowMessage);
         }
     }
 
@@ -93,13 +93,13 @@ public partial class UpdateProductViewModel(IServiceProvider serviceProvider, IP
             return;
         }
 
-        InitializeCreateProductValidator();
+        InitializeUpdateProductValidator();
 
-        if (_createProductValidator == null)
+        if (_updateProductValidator == null)
         {
             return;
         }
-        if (!_createProductValidator.ValidateProductCreation())
+        if (!_updateProductValidator.ValidateUpdate())
         {
             return;
         }

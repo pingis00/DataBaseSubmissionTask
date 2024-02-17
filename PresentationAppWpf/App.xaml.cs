@@ -59,9 +59,6 @@ public partial class App : Application
             services.AddScoped<IInventoryService, InventoryService>();
             services.AddScoped<IIventoryRepository, InventoryRepository>();
 
-            services.AddScoped<ICategoryService, CategoryService>();
-            services.AddScoped<ICategoryRepository, CategoryRepository>();
-
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<MainWindow>();
 
@@ -97,6 +94,9 @@ public partial class App : Application
 
             services.AddTransient<ProductListViewModel>();
             services.AddTransient<ProductListView>();
+
+            services.AddTransient<UpdateProductViewModel>();
+            services.AddTransient<UpdateProductView>();
 
         }).Build();
     }

@@ -7,11 +7,50 @@
              xmlns:validation="clr-namespace:PresentationAppWpf.Validation"
              xmlns:local="clr-namespace:PresentationAppWpf.Mvvm.Views.ProductViews"
              xmlns:viewmodel="clr-namespace:PresentationAppWpf.Mvvm.ViewModels.ProductViewModels"
+             d:DataContext="{d:DesignInstance Type=viewmodel:UpdateProductViewModel}"
              
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
     <Grid>
-        
+        <md:Snackbar MessageQueue="{Binding MessageQueue}"
+             HorizontalAlignment="Center" 
+             VerticalAlignment="Bottom"
+             MaxWidth="300"
+             Grid.Row="1"/>
+        <StackPanel Margin="16">
+            <TextBox Margin="0,0,0,16" md:HintAssist.Hint="Titel">
+                <TextBox.Text>
+                    <Binding Path="UpdateProductDto.Title" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                        <Binding.ValidationRules>
+                            <validation:NameValidationRule ValidatesOnTargetUpdated="False"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+            <TextBox Margin="0,0,0,16" md:HintAssist.Hint="Produktbeskrivning">
+                <TextBox.Text>
+                    <Binding Path="UpdateProductDto.ProductDescription" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
+                        <Binding.ValidationRules>
+                            <validation:ProductDescriptionValidationRule ValidatesOnTargetUpdated="False"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+            <ComboBox Margin="5"
+                      md:HintAssist.Hint="Varumärke"
+                      ItemsSource="{Binding AvailableBrands}"
+                      DisplayMemberPath="BrandName"
+                      SelectedValuePath="BrandName"
+                      SelectedValue="{Binding UpdateProductDto.Brand.BrandName, UpdateSourceTrigger=PropertyChanged}" />
+            <ComboBox Margin="5"
+                      md:HintAssist.Hint="Kategori"
+                      ItemsSource="{Binding AvailableCategories}"
+                      DisplayMemberPath="CategoryName"
+                      SelectedValuePath="CategoryName"
+                      SelectedValue="{Binding UpdateProductDto.Category.CategoryName, UpdateSourceTrigger=PropertyChanged}" />
+            <Button Content="Uppdatera" Command="{Binding UpdateProductCommand}"  md:ButtonAssist.CornerRadius="0" Style="{StaticResource MaterialDesignFlatButton}" />
+        </StackPanel>
     </Grid>
 </UserControl>

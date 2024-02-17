@@ -49,9 +49,6 @@
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,0,0,10">
                 <Button Command="{Binding NavigateToProductSettingsCommand }" Content="Produkt-Inventarie" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource MaterialDesignFlatButton}" />
             </StackPanel>
-
-
-
         </StackPanel>
 
     </Grid>

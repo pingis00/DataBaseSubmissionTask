@@ -123,6 +123,3 @@ public class FormValidator(ICustomerDto customerDto, Action<string> showMessage)
         return true;
     }
 }
-
-
-
