@@ -7,6 +7,7 @@ using ApplicationCore.ProductCatalog.Context;
 using ApplicationCore.ProductCatalog.Interfaces;
 using ApplicationCore.ProductCatalog.Repositories;
 using ApplicationCore.ProductCatalog.Services;
+using BCrypt.Net;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -16,6 +17,7 @@ using PresentationAppWpf.Mvvm.Views;
 using PresentationAppWpf.Mvvm.Views.CustomerViews;
 using PresentationAppWpf.Mvvm.Views.ProductViews;
 using System.Windows;
+using System.Windows.Media;
 
 namespace PresentationAppWpf;
 
@@ -30,7 +32,8 @@ public partial class App : Application
         {
             
             services.AddDbContext<EagerLoadingContext>(x => x.UseSqlServer(@"Data Source=localhost;Initial Catalog=DbCustomers;Integrated Security=True;Encrypt=True;Trust Server Certificate=True", x => x.MigrationsAssembly(nameof(ApplicationCore))));
-            services.AddDbContext<DataContext>(x => x.UseSqlServer(@"Data Source=localhost;Initial Catalog=ProductCatalog;Integrated Security=True;Trust Server Certificate=True", x => x.MigrationsAssembly(nameof(ApplicationCore))));
+            services.AddDbContext<DataContext>(x => x.UseSqlServer(@"Data Source=localhost;Initial Catalog=ProductCatalog;Integrated Security=True;Encrypt=True;Trust Server Certificate=True", x => x.MigrationsAssembly(nameof(ApplicationCore))));
+        
 
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
