@@ -21,6 +21,7 @@
              MaxWidth="300"
              Grid.Row="1"/>
         <StackPanel Margin="16">
+            <Label Content="Förnamn" />
             <TextBox Margin="0,0,0,16" md:HintAssist.Hint="Förnamn">
                 <TextBox.Text>
                     <Binding Path="UpdateCustomerDto.FirstName" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
@@ -30,6 +31,7 @@
                     </Binding>
                 </TextBox.Text>
             </TextBox>
+            <Label Content="Efternamn" />
             <TextBox Margin="0,0,0,16" md:HintAssist.Hint="Efternamn">
                 <TextBox.Text>
                     <Binding Path="UpdateCustomerDto.LastName" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
@@ -39,8 +41,10 @@
                     </Binding>
                 </TextBox.Text>
             </TextBox>
+            <Label Content="E-post" />
             <TextBox Margin="0,0,0,16" md:HintAssist.Hint="E-post" IsReadOnly="True" IsEnabled="False"
                      Text="{Binding UpdateCustomerDto.Email, Mode=OneWay}" />
+            <Label Content="Telefonnummer" />
             <TextBox Margin="0,0,0,16" md:HintAssist.Hint="Telefonnummer">
                 <TextBox.Text>
                     <Binding Path="UpdateCustomerDto.PhoneNumber" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
@@ -50,7 +54,8 @@
                     </Binding>
                 </TextBox.Text>
             </TextBox>
-            <TextBox Margin="0,0,0,16" md:HintAssist.Hint="Gatuadress">
+            <Label Content="Adress" />
+            <TextBox Margin="0,0,0,16" md:HintAssist.Hint="Adress">
                 <TextBox.Text>
                     <Binding Path="UpdateCustomerDto.Address.StreetName" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
                         <Binding.ValidationRules>
@@ -59,6 +64,7 @@
                     </Binding>
                 </TextBox.Text>
             </TextBox>
+            <Label Content="Postnummer" />
             <TextBox Margin="0,0,0,16" md:HintAssist.Hint="Postnummer">
                 <TextBox.Text>
                     <Binding Path="UpdateCustomerDto.Address.PostalCode" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
@@ -68,6 +74,7 @@
                     </Binding>
                 </TextBox.Text>
             </TextBox>
+            <Label Content="Stad" />
             <TextBox Margin="0,0,0,16" md:HintAssist.Hint="Stad">
                 <TextBox.Text>
                     <Binding Path="UpdateCustomerDto.Address.City" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True" NotifyOnValidationError="True">
@@ -77,12 +84,14 @@
                     </Binding>
                 </TextBox.Text>
             </TextBox>
+            <Label Content="Användarroll" />
             <ComboBox Margin="5"
                       md:HintAssist.Hint="AnvändarRoll"
                       ItemsSource="{Binding AvailableRoles}"
                       DisplayMemberPath="RoleName"
                       SelectedValuePath="RoleName"
                       SelectedValue="{Binding UpdateCustomerDto.Role.RoleName, UpdateSourceTrigger=PropertyChanged}" />
+            <Label Content="Kontaktmetod" />
             <ComboBox Margin="5"
                       md:HintAssist.Hint="Kontaktmetod"
                       ItemsSource="{Binding AvailableContactMethods}"
@@ -90,6 +99,7 @@
                       SelectedValuePath="PreferredContactMethod"
                       SelectedValue="{Binding UpdateCustomerDto.ContactPreference.PreferredContactMethod, UpdateSourceTrigger=PropertyChanged}" />
             <Button Content="Uppdatera" Command="{Binding UpdateCustomerCommand}"  md:ButtonAssist.CornerRadius="0" Style="{StaticResource MaterialDesignFlatButton}" />
+            <Button Content="Tillbaka" Command="{Binding NavigateBackCommand}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
         </StackPanel>
     </Grid>
 </UserControl>

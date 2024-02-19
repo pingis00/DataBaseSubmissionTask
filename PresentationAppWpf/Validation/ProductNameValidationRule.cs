@@ -17,7 +17,7 @@ public class ProductNameValidationRule : ValidationRule
 
         if (!Regex.IsMatch(comment, @"^[\p{L}\p{N}\p{P}\p{S} ]{10,500}$"))
         {
-            return new ValidationResult(false, "Kommentaren måste vara minst 10 tecken lång och får innehålla bokstäver, siffror och specialtecken.");
+            return new ValidationResult(false, "Produktnamnet måste vara minst 10 tecken lång och får innehålla bokstäver, siffror och specialtecken.");
         }
 
         return ValidationResult.ValidResult;

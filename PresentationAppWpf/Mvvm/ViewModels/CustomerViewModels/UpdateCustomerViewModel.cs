@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
+using PresentationAppWpf.Mvvm.ViewModels.ProductViewModels;
 using PresentationAppWpf.Validation;
 using System;
 using System.Collections.ObjectModel;
@@ -119,6 +120,15 @@ public partial class UpdateCustomerViewModel(IServiceProvider serviceProvider, I
         }
     }
     private async Task NavigateBackToListView()
+    {
+        var customerListViewModel = _serviceProvider.GetRequiredService<CustomerListViewModel>();
+        await customerListViewModel.LoadCustomersAsync();
+        var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
+        mainViewModel.CurrentViewModel = customerListViewModel;
+    }
+
+    [RelayCommand]
+    private async Task NavigateBack()
     {
         var customerListViewModel = _serviceProvider.GetRequiredService<CustomerListViewModel>();
         await customerListViewModel.LoadCustomersAsync();

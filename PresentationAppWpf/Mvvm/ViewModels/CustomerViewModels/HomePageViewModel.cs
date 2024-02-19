@@ -76,4 +76,14 @@ public partial class HomePageViewModel(IServiceProvider serviceProvider) : Obser
         var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
         mainViewModel.CurrentViewModel = productListViewModel;
     }
+
+    [RelayCommand]
+    private async Task NavigateToProductReview()
+    {
+        var productReviewViewModel = _serviceProvider.GetRequiredService<ProductReviewViewModel>();
+        await productReviewViewModel.LoadProductReviewsAsync();
+
+        var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
+        mainViewModel.CurrentViewModel = productReviewViewModel;
+    }
 }

@@ -32,7 +32,7 @@ public class UpdateProductValidator(UpdateProductDto updateProductDto, Action<st
     private bool ValidateBrandName()
     {
         var brandValidationRule = new NameValidationRule();
-        var brandValidationResult = brandValidationRule.Validate(_updateProductDto.Brand.BrandName, CultureInfo.CurrentCulture);
+        var brandValidationResult = brandValidationRule.Validate(_updateProductDto.BrandName, CultureInfo.CurrentCulture);
         if (!brandValidationResult.IsValid)
         {
             _showMessage(brandValidationResult.ErrorContent?.ToString() ?? "Ett okänt fel uppstod vid validering av varumärke.");
@@ -44,7 +44,7 @@ public class UpdateProductValidator(UpdateProductDto updateProductDto, Action<st
     private bool ValidateCategoryName()
     {
         var categoryValidationRule = new NameValidationRule();
-        var categoryValidationResult = categoryValidationRule.Validate(_updateProductDto.Category.CategoryName, CultureInfo.CurrentCulture);
+        var categoryValidationResult = categoryValidationRule.Validate(_updateProductDto.CategoryName, CultureInfo.CurrentCulture);
         if (!categoryValidationResult.IsValid)
         {
             _showMessage(categoryValidationResult.ErrorContent?.ToString() ?? "Ett okänt fel uppstod vid validering av varumärke.");

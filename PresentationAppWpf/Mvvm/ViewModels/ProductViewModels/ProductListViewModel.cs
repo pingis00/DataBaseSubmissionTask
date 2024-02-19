@@ -18,6 +18,9 @@ public partial class ProductListViewModel(IServiceProvider serviceProvider, IPro
     public ObservableCollection<CompleteProductDto> products = [];
     private CompleteProductDto? _selectedProduct;
 
+    public ObservableCollection<BrandDto> AvailableBrands { get; private set; } = [];
+    public ObservableCollection<CategoryDto> AvailableCategories { get; private set; } = [];
+
     public CompleteProductDto SelectedProduct
     {
         get => _selectedProduct!;
@@ -63,7 +66,7 @@ public partial class ProductListViewModel(IServiceProvider serviceProvider, IPro
         {
             if (result.IsSuccess)
             {
-                var productsToRemove = Products.First(p => p.ArticleNumber == productId);
+                var productsToRemove = Products.First(p => p.Id == productId);
                 Products.Remove(productsToRemove);
                 ShowMessage("Produkten raderades");
             }

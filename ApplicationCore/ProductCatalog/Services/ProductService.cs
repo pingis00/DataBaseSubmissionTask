@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Business.Dtos;
 using ApplicationCore.Business.Helpers;
+using ApplicationCore.Business.Interfaces;
 using ApplicationCore.Infrastructure.Entities;
 using ApplicationCore.ProductCatalog.Context;
 using ApplicationCore.ProductCatalog.Dtos;
@@ -22,7 +23,7 @@ public class ProductService(IProductRepository productRepository, IBrandService 
         using var transaction = _dataContext.Database.BeginTransaction();
         try
         {
-            var result = await _productRepository.ProductFindAsync(p => p.ArticleNumber == product.ArticleNumber);
+            var result = await _productRepository.ProductFindAsync(p => p.Id == product.Id);
 
             if (result.IsSuccess && result.Data.Any())
             {
@@ -51,12 +52,13 @@ public class ProductService(IProductRepository productRepository, IBrandService 
 
                 var createProductResult = await _productRepository.ProductCreateAsync(new Product
                 {
+                    ArticleNumber = product.ArticleNumber,
                     Title = normalizedTitle,
                     ProductDescription = product.ProductDescription,
                     BrandId = product.Brand.Id,
                     CategoryId = product.Category.Id,
                 });
-                product.Inventory.ProductId = createProductResult.Data.ArticleNumber;
+                product.Inventory.ProductId = createProductResult.Data.Id;
 
                 var inventoryResult = await _inventoryService.CreateInventoryAsync(product.Inventory);
                 if (!inventoryResult.IsSuccess)
@@ -102,7 +104,7 @@ public class ProductService(IProductRepository productRepository, IBrandService 
             {
                 if (productToDelete != null)
                 {
-                    var result = await _productRepository.ProductDeleteAsync(p => p.ArticleNumber == productToDelete.ArticleNumber);
+                    var result = await _productRepository.ProductDeleteAsync(p => p.Id == productToDelete.Id);
                     if (result.IsSuccess)
                     {
                         return OperationResult<bool>.Success("Produkten raderades framgångsrikt.", true);
@@ -135,13 +137,23 @@ public class ProductService(IProductRepository productRepository, IBrandService 
             {
                 var productsDto = productEntitiesResult.Data.Select(productEntity => new CompleteProductDto
                 {
+                    Id = productEntity.Id,
                     ArticleNumber = productEntity.ArticleNumber,
                     Title = productEntity.Title,
                     ProductDescription = productEntity.ProductDescription,
-                    BrandName = productEntity.Brand.Brandname,
-                    CategoryName = productEntity.Category.CategoryName,
-                    Quantity = productEntity.Inventory.Quantity,
-                    Price = productEntity.Inventory.Price,
+                    Brand = new BrandDto
+                    {
+                        BrandName = productEntity.Brand.BrandName
+                    },
+                    Category = new CategoryDto 
+                    {
+                        CategoryName = productEntity.Category.CategoryName
+                    },
+                    Inventory = new InventoryDto
+                    {
+                        Quantity = productEntity.Inventory.Quantity,
+                        Price = productEntity.Inventory.Price,
+                    }
 
                 }).ToList();
 
@@ -170,17 +182,18 @@ public class ProductService(IProductRepository productRepository, IBrandService 
     {
         try
         {
-            var productResult = await _productRepository.ProductGetOneAsync(p => p.ArticleNumber == productId);
+            var productResult = await _productRepository.ProductGetOneAsync(p => p.Id == productId);
             if (productResult.IsSuccess && productResult.Data != null)
             {
                 var product = productResult.Data;
 
                 var productDto = new CompleteProductDto
                 {
+                    Id = productId,
                     ArticleNumber = product.ArticleNumber,
                     Title = product.Title,
                     ProductDescription = product.ProductDescription,
-                    BrandName = product.Brand.Brandname,
+                    BrandName = product.Brand.BrandName,
                     CategoryName = product.Category.CategoryName,
                     Quantity = product.Inventory.Quantity,
                     Price = product.Inventory.Price
@@ -206,7 +219,7 @@ public class ProductService(IProductRepository productRepository, IBrandService 
     {
         try
         {
-            var getProductResult = await _productRepository.ProductGetOneAsync(p => p.ArticleNumber == updateProductDto.ArticleNumber);
+            var getProductResult = await _productRepository.ProductGetOneAsync(p => p.Id == updateProductDto.Id);
             if (!getProductResult.IsSuccess)
             {
                 return OperationResult<UpdateProductDto>.Failure("Produkten kunde inte hittas.");
@@ -232,13 +245,14 @@ public class ProductService(IProductRepository productRepository, IBrandService 
 
                 if (entityToUpdate != null)
                 {
+                    entityToUpdate.ArticleNumber = updateProductDto.ArticleNumber;
                     entityToUpdate.Title = updateProductDto.Title;
                     entityToUpdate.ProductDescription = updateProductDto.ProductDescription;
                     entityToUpdate.BrandId = brandResult.Data.Id;
                     entityToUpdate.CategoryId = categoryResult.Data.Id;
 
                     var updateResult = await _productRepository.ProductUpdateAsync(
-                        p => p.ArticleNumber == entityToUpdate.ArticleNumber,
+                        p => p.Id == entityToUpdate.Id,
                         entityToUpdate
                     );
 
@@ -249,6 +263,7 @@ public class ProductService(IProductRepository productRepository, IBrandService 
                     var updatedEntity = updateResult.Data;
                     var updatedDto = new UpdateProductDto
                     {
+                        Id = updatedEntity.Id,
                         ArticleNumber = updatedEntity.ArticleNumber,
                         Title = updatedEntity.Title,
                         ProductDescription = updatedEntity.ProductDescription,
@@ -280,6 +295,7 @@ public class ProductService(IProductRepository productRepository, IBrandService 
     {
         return new UpdateProductDto
         {
+            Id = completeDto.Id,
             ArticleNumber = completeDto.ArticleNumber,
             Title = completeDto.Title,
             ProductDescription = completeDto.ProductDescription,
@@ -288,5 +304,34 @@ public class ProductService(IProductRepository productRepository, IBrandService 
             Brand = completeDto.Brand,
             Category = completeDto.Category
         };
+    }
+
+    public async Task<OperationResult<ProductDto>> GetProductByArticleNumberAsync(int articleNumber)
+    {
+        try
+        {
+            var productResult = await _productRepository.ProductGetOneAsync(p => p.ArticleNumber == articleNumber);
+            if (productResult.IsSuccess && productResult.Data != null)
+            {
+                var product = productResult.Data;
+                var productDto = new ProductDto
+                {
+                    Id = product.Id,
+                    ArticleNumber = product.ArticleNumber,
+                    Title = product.Title,
+                    ProductDescription = product.ProductDescription,
+                };
+                return OperationResult<ProductDto>.Success("Produkten hittades.", productDto);
+            }
+            else
+            {
+                return OperationResult<ProductDto>.Failure("Inget produkt med det artikelnumret hittades.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"ERROR :: {ex.Message}");
+            return OperationResult<ProductDto>.Failure("Ett internt fel inträffade när artikelnumret skulle hämtas.");
+        }
     }
 }

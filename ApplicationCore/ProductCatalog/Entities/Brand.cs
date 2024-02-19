@@ -6,15 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationCore.ProductCatalog.Entities;
 
-[Index("Brandname", Name = "UQ__Brands__62FFFD1C13AD2A51", IsUnique = true)]
+[Index("BrandName", Name = "UQ__Brands__2206CE9BF7C88B05", IsUnique = true)]
 public partial class Brand
 {
     [Key]
     public int Id { get; set; }
 
-    [Column("BRANDNAME")]
     [StringLength(50)]
-    public string Brandname { get; set; } = null!;
+    public string BrandName { get; set; } = null!;
 
     [InverseProperty("Brand")]
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();

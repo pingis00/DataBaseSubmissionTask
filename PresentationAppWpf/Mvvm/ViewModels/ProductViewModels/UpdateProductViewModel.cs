@@ -124,4 +124,13 @@ public partial class UpdateProductViewModel(IServiceProvider serviceProvider, IP
         mainViewModel.CurrentViewModel = productListViewModel;
     }
 
+    [RelayCommand]
+    private async Task NavigateBack()
+    {
+        var productListViewModel = _serviceProvider.GetRequiredService<ProductListViewModel>();
+        await productListViewModel.LoadProductsAsync();
+        var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
+        mainViewModel.CurrentViewModel = productListViewModel;
+    }
+
 }

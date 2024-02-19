@@ -18,10 +18,10 @@ public class ProductReviewService(IProductReviewRepository productReviewReposito
     {
         try
         {
-            var productResult = await _productService.GetProductByIdAsync(productReviewDto.ArticleNumber);
+            var productResult = await _productService.GetProductByArticleNumberAsync(productReviewDto.Product.ArticleNumber);
             if (!productResult.IsSuccess)
             {
-                return OperationResult<ProductReviewDto>.Failure("Ingen Proudukt hittades");
+                return OperationResult<ProductReviewDto>.Failure("Ingen Produkt hittades med det artikelnumret");
             }
 
             var product = productResult.Data;
@@ -29,7 +29,7 @@ public class ProductReviewService(IProductReviewRepository productReviewReposito
             {
                 ReviewName = productReviewDto.ReviewName,
                 ReviewText = productReviewDto.ReviewText,
-                ArticleNumber = product.ArticleNumber,
+                ProductId = product.Id,
             };
 
             var reviewResult = await _productReviewRepository.ProductCreateAsync(productReviewEntity);
@@ -43,10 +43,10 @@ public class ProductReviewService(IProductReviewRepository productReviewReposito
                 Id = reviewResult.Data.Id,
                 ReviewName = reviewResult.Data.ReviewName,
                 ReviewText = reviewResult.Data.ReviewText,
-                ArticleNumber = product.ArticleNumber,
+                ProductId = product.Id,
                 Product = new ProductDto()
                 {
-                    ArticleNumber = productResult.Data.ArticleNumber,
+                    Id = productResult.Data.Id,
                     Title = productResult.Data.Title,
                 }
             };
@@ -106,7 +106,12 @@ public class ProductReviewService(IProductReviewRepository productReviewReposito
                           ? reviewEntity.ReviewText.Substring(0, previewLength) + "..."
                           : reviewEntity.ReviewText,
                     ReviewName = reviewEntity.ReviewName,
-                    ArticleNumber = reviewEntity.ArticleNumber,
+                    ProductId = reviewEntity.ProductId,
+                    Product = new ProductDto
+                    {
+                        ArticleNumber = reviewEntity.Product.ArticleNumber,
+                        Title = reviewEntity.Product.Title
+                    }
                 }).ToList();
 
                 if (reviewDto.Any())
@@ -147,7 +152,12 @@ public class ProductReviewService(IProductReviewRepository productReviewReposito
                 Id = reviewEntity.Id,
                 ReviewText = reviewEntity.ReviewText,
                 ReviewName = reviewEntity.ReviewName,
-                ArticleNumber = reviewEntity.ArticleNumber,
+                Product = new ProductDto
+                {
+                    Id = reviewEntity.Id,
+                    ArticleNumber = reviewEntity.Product.ArticleNumber,
+                    Title = reviewEntity.Product.Title
+                }
 
 
             };
@@ -164,7 +174,7 @@ public class ProductReviewService(IProductReviewRepository productReviewReposito
     {
         try
         {
-            var reviewEntitiesResult = await _productReviewRepository.ProductFindAsync(p => p.ArticleNumber == productId);
+            var reviewEntitiesResult = await _productReviewRepository.ProductFindAsync(p => p.Id == productId);
 
             if (reviewEntitiesResult.IsSuccess && reviewEntitiesResult.Data != null)
             {
@@ -173,7 +183,7 @@ public class ProductReviewService(IProductReviewRepository productReviewReposito
                     Id = reviewEntity.Id,
                     ReviewName = reviewEntity.ReviewName,
                     ReviewText = reviewEntity.ReviewText,
-                    ArticleNumber = reviewEntity.ArticleNumber,
+                    ProductId = reviewEntity.ProductId,
                 }).ToList();
 
                 return OperationResult<IEnumerable<ProductReviewDto>>.Success("Recensionerna för kunden hämtades framgångsrikt.", reviewDtos);

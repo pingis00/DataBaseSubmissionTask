@@ -18,9 +18,9 @@ public partial class ProductReview
     [StringLength(500)]
     public string ReviewText { get; set; } = null!;
 
-    public int ArticleNumber { get; set; }
+    public int ProductId { get; set; }
 
-    [ForeignKey("ArticleNumber")]
+    [ForeignKey("ProductId")]
     [InverseProperty("ProductReviews")]
-    public virtual Product ArticleNumberNavigation { get; set; } = null!;
+    public virtual Product Product { get; set; } = null!;
 }

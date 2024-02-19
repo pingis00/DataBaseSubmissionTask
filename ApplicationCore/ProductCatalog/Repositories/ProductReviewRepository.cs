@@ -17,7 +17,7 @@ public class ProductReviewRepository(DataContext context) : BaseProductRepositor
         try
         {
             var existingEntities = await _context.ProductReviews
-                .Include(p => p.ArticleNumberNavigation)
+                .Include(p => p.Product)
                 .ToListAsync();
             return OperationResult<IEnumerable<ProductReview>>.Success("Success", existingEntities);
         }

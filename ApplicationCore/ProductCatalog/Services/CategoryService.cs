@@ -21,7 +21,7 @@ namespace ApplicationCore.ProductCatalog.Services
 
         public async Task<OperationResult<bool>> CategoryHasProductsAsync(int categoryId)
         {
-            bool hasProducts = await _dataContext.Products.AnyAsync(b => b.ArticleNumber == categoryId);
+            bool hasProducts = await _dataContext.Products.AnyAsync(b => b.Id == categoryId);
             if (hasProducts)
             {
                 return OperationResult<bool>.Failure("Det finns produkter kopplade till kategorin.");

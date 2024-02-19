@@ -25,9 +25,11 @@ public partial class FullReviewViewModel(IServiceProvider serviceProvider, ICust
     }
 
     [RelayCommand]
-    private void NavigateToReviewList()
+    private async Task NavigateToReviewList()
     {
+        var customerReviewViewModel = _serviceProvider.GetRequiredService<CustomerReviewViewModel>();
+        await customerReviewViewModel.LoadReviewsAsync();
         var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
-        mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<HomePageViewModel>();
+        mainViewModel.CurrentViewModel = customerReviewViewModel;
     }
 }

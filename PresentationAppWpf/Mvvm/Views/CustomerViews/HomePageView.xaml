@@ -35,7 +35,7 @@
                 <Button Command="{Binding NavigateToSettingsCommand }" Content="Kundroller och preferenser" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource MaterialDesignFlatButton}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,0,0,10">
-                <Button Command="{Binding NavigateToCreateProductCommand }" Content="Skapa produkter" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource MaterialDesignFlatButton}" />
+                <Button Command="{Binding NavigateToCreateProductCommand }" Content="Skapa produkt" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource MaterialDesignFlatButton}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,0,0,10">
                 <Button Command="{Binding NavigateToProductListCommand }" Content="Produktlista" VerticalAlignment="Center" Margin="10,0,0,0" Style="{StaticResource MaterialDesignFlatButton}" />

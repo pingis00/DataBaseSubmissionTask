@@ -6,9 +6,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationCore.ProductCatalog.Entities;
 
+[Index("ArticleNumber", Name = "UQ__Products__3C99114230320116", IsUnique = true)]
 public partial class Product
 {
     [Key]
+    public int Id { get; set; }
+
     public int ArticleNumber { get; set; }
 
     [StringLength(100)]
@@ -32,6 +35,6 @@ public partial class Product
     [InverseProperty("Product")]
     public virtual Inventory? Inventory { get; set; }
 
-    [InverseProperty("ArticleNumberNavigation")]
+    [InverseProperty("Product")]
     public virtual ICollection<ProductReview> ProductReviews { get; set; } = new List<ProductReview>();
 }

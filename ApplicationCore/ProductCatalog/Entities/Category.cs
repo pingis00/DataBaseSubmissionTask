@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationCore.ProductCatalog.Entities;
 
-[Index("CategoryName", Name = "UQ__Categori__8517B2E07C924D21", IsUnique = true)]
+[Index("CategoryName", Name = "UQ__Categori__8517B2E096FBA7CF", IsUnique = true)]
 public partial class Category
 {
     [Key]

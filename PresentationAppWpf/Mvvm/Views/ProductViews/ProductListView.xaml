@@ -19,25 +19,24 @@
             <DataGrid ItemsSource="{Binding Products}" AutoGenerateColumns="False" IsReadOnly="True" CanUserDeleteRows="False">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Artikelnummer" Binding="{Binding ArticleNumber}" Width="200"/>
-                    <DataGridTextColumn Header="Titel" Binding="{Binding Title}" Width="200"/>
-                    <DataGridTextColumn Header="Produktbeskrivning" Binding="{Binding ProductDescription}" Width="200"/>
-                    <DataGridTextColumn Header="Varumärke" Binding="{Binding BrandName}" Width="200"/>
-                    <DataGridTextColumn Header="Kategori" Binding="{Binding CategoryName}" Width="200"/>
-                    <DataGridTextColumn Header="Pris" Binding="{Binding Price}" Width="200"/>
-                    <DataGridTextColumn Header="Antal" Binding="{Binding Quantity}" Width="200"/>
+                    <DataGridTextColumn Header="Titel" Binding="{Binding Title}" Width="250"/>
+                    <DataGridTextColumn Header="Produktbeskrivning" Binding="{Binding ProductDescription}" Width="350"/>
+                    <DataGridTextColumn Header="Varumärke" Binding="{Binding Brand.BrandName}" Width="200"/>
+                    <DataGridTextColumn Header="Kategori" Binding="{Binding Category.CategoryName}" Width="200"/>
+                    <DataGridTextColumn Header="Pris" Binding="{Binding Inventory.Price}" Width="200"/>
                     <DataGridTemplateColumn Header="" Width="Auto">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                     <Button Command="{Binding DataContext.NavigateToUpdateProductsCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                                            CommandParameter="{Binding ArticleNumber}"
+                                            CommandParameter="{Binding Id}"
                                             Style="{StaticResource MaterialDesignFlatButton}"
                                             Margin="4,0,0,0"
                                             ToolTip="Uppdatera">
                                         <md:PackIcon Kind="Pencil" />
                                     </Button>
                                     <Button Command="{Binding DataContext.DeleteProductCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                                            CommandParameter="{Binding ArticleNumber}"
+                                            CommandParameter="{Binding Id}"
                                             Style="{StaticResource MaterialDesignFlatButton}"
                                             Margin="4,0,0,0"
                                             ToolTip="Radera">

@@ -12,4 +12,5 @@ public interface IProductService
     Task<OperationResult<UpdateProductDto>> UpdateProductAsync(UpdateProductDto updateProductDto);
     Task<OperationResult<bool>> DeleteProductAsync(int productId);
     UpdateProductDto ConvertToUpdatable(CompleteProductDto completeDto);
+    Task<OperationResult<ProductDto>> GetProductByArticleNumberAsync(int articleNumber);
 }

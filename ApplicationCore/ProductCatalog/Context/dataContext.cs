@@ -30,41 +30,41 @@ public partial class DataContext : DbContext
     {
         modelBuilder.Entity<Brand>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Brands__3214EC07A72A27B1");
+            entity.HasKey(e => e.Id).HasName("PK__Brands__3214EC07D353B6F6");
         });
 
         modelBuilder.Entity<Category>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Categori__3214EC07A0D9CC27");
+            entity.HasKey(e => e.Id).HasName("PK__Categori__3214EC0727108080");
         });
 
         modelBuilder.Entity<Inventory>(entity =>
         {
-            entity.HasKey(e => e.ProductId).HasName("PK__Inventor__B40CC6CD6650A383");
+            entity.HasKey(e => e.ProductId).HasName("PK__Inventor__B40CC6CDC679F552");
 
             entity.Property(e => e.ProductId).ValueGeneratedNever();
 
-            entity.HasOne(d => d.Product).WithOne(p => p.Inventory).HasConstraintName("FK__Inventory__Produ__46E78A0C");
+            entity.HasOne(d => d.Product).WithOne(p => p.Inventory).HasConstraintName("FK__Inventory__Produ__5535A963");
         });
 
         modelBuilder.Entity<Product>(entity =>
         {
-            entity.HasKey(e => e.ArticleNumber).HasName("PK__Products__3C991143EF9B7DF9");
+            entity.HasKey(e => e.Id).HasName("PK__Products__3214EC070B3EA292");
 
             entity.HasOne(d => d.Brand).WithMany(p => p.Products)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Products__BrandI__3D5E1FD2");
+                .HasConstraintName("FK__Products__BrandI__5165187F");
 
             entity.HasOne(d => d.Category).WithMany(p => p.Products)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Products__Catego__3E52440B");
+                .HasConstraintName("FK__Products__Catego__52593CB8");
         });
 
         modelBuilder.Entity<ProductReview>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__ProductR__3214EC076CAA3401");
+            entity.HasKey(e => e.Id).HasName("PK__ProductR__3214EC071216C0C8");
 
-            entity.HasOne(d => d.ArticleNumberNavigation).WithMany(p => p.ProductReviews).HasConstraintName("FK__ProductRe__Artic__440B1D61");
+            entity.HasOne(d => d.Product).WithMany(p => p.ProductReviews).HasConstraintName("FK__ProductRe__Produ__5812160E");
         });
 
         OnModelCreatingPartial(modelBuilder);

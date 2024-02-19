@@ -1,22 +1,20 @@
 ﻿using ApplicationCore.Business.Dtos;
-using ApplicationCore.Business.Interfaces;
-using ApplicationCore.Business.Services;
+using ApplicationCore.ProductCatalog.Dtos;
+using ApplicationCore.ProductCatalog.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
-using PresentationAppWpf.Validation;
 
-namespace PresentationAppWpf.Mvvm.ViewModels;
+namespace PresentationAppWpf.Mvvm.ViewModels.ProductViewModels;
 
-public partial class UpdateReviewViewModel(IServiceProvider serviceProvider, ICustomerReviewService customerReviewService) : ObservableObject
+public partial class UpdateProductReviewViewModel(IServiceProvider serviceProvider, IProductReviewService productReviewService) : ObservableObject
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
-    private readonly ICustomerReviewService _customerReviewService = customerReviewService;
+    private readonly IProductReviewService _productReviewService = productReviewService;
 
     [ObservableProperty]
-    private CustomerReviewDto? customerReviewDto;
-
+    private ProductReviewDto? productReviewDto;
 
     private SnackbarMessageQueue _messageQueue = new(TimeSpan.FromSeconds(3));
 
@@ -32,24 +30,15 @@ public partial class UpdateReviewViewModel(IServiceProvider serviceProvider, ICu
     }
 
     [RelayCommand]
-    private async Task NavigateBackToReviewList()
-    {
-        var customerReviewViewModel = _serviceProvider.GetRequiredService<CustomerReviewViewModel>();
-        await customerReviewViewModel.LoadReviewsAsync();
-        var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
-        mainViewModel.CurrentViewModel = customerReviewViewModel;
-    }
-
-    [RelayCommand]
     private async Task UpdateReview()
     {
-        if (CustomerReviewDto == null)
+        if (ProductReviewDto == null)
         {
             ShowMessage("Uppdateringsdata är inte korrekt inställd.");
             return;
         }
 
-        var result = await _customerReviewService.UpdateCustomerReviewAsync(CustomerReviewDto);
+        var result = await _productReviewService.UpdateProductReviewAsync(ProductReviewDto);
         if (result.IsSuccess)
         {
             await NavigateBackToReviewList();
@@ -59,6 +48,15 @@ public partial class UpdateReviewViewModel(IServiceProvider serviceProvider, ICu
         {
             ShowMessage("Recensionuppdatering misslyckades.");
         }
+    }
+
+    [RelayCommand]
+    private async Task NavigateBackToReviewList()
+    {
+        var productReviewViewModel = _serviceProvider.GetRequiredService<ProductReviewViewModel>();
+        await productReviewViewModel.LoadProductReviewsAsync();
+        var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
+        mainViewModel.CurrentViewModel = productReviewViewModel;
     }
 
 }

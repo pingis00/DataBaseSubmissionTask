@@ -18,7 +18,7 @@ public class BrandService(IBrandRepository brandRepository, DataContext dataCont
 
     public async Task<OperationResult<bool>> BrandHasProductsAsync(int brandId)
     {
-        bool hasProducts = await _dataContext.Products.AnyAsync(b => b.ArticleNumber == brandId);
+        bool hasProducts = await _dataContext.Products.AnyAsync(b => b.Id == brandId);
         if (hasProducts)
         {
             return OperationResult<bool>.Failure("Det finns produkter kopplade till varumärket.");
@@ -31,14 +31,14 @@ public class BrandService(IBrandRepository brandRepository, DataContext dataCont
         try
         {
             var normalizedBrandName = TextNormalizationHelper.NormalizeText(brand.BrandName).Data;
-            var existingBrandResult = await _brandRepository.ProductGetOneAsync(b => b.Brandname == normalizedBrandName);
+            var existingBrandResult = await _brandRepository.ProductGetOneAsync(b => b.BrandName == normalizedBrandName);
 
             if (existingBrandResult.IsSuccess && existingBrandResult.Data != null)
             {
                 var brandDto = new BrandDto
                 {
                     Id = existingBrandResult.Data.Id,
-                    BrandName = existingBrandResult.Data.Brandname
+                    BrandName = existingBrandResult.Data.BrandName
 
                 };
 
@@ -48,7 +48,7 @@ public class BrandService(IBrandRepository brandRepository, DataContext dataCont
             {
                 var newBrandEntityResult = await _brandRepository.ProductCreateAsync(new Brand
                 {
-                    Brandname = normalizedBrandName
+                    BrandName = normalizedBrandName
                 });
 
                 if (!newBrandEntityResult.IsSuccess)
@@ -60,7 +60,7 @@ public class BrandService(IBrandRepository brandRepository, DataContext dataCont
                 var newBrandDto = new BrandDto
                 {
                     Id = newBrandEntity.Id,
-                    BrandName = newBrandEntity.Brandname
+                    BrandName = newBrandEntity.BrandName
                 };
 
                 return OperationResult<BrandDto>.Success("Varumärket skapades framgångrikt", newBrandDto);
@@ -120,7 +120,7 @@ public class BrandService(IBrandRepository brandRepository, DataContext dataCont
                 var brandDto = brandEntitiesResult.Data.Select(brandEntity => new BrandDto
                 {
                     Id = brandEntity.Id,
-                    BrandName = brandEntity.Brandname,
+                    BrandName = brandEntity.BrandName,
                 }).ToList();
 
                 if (brandDto.Any())
@@ -155,7 +155,7 @@ public class BrandService(IBrandRepository brandRepository, DataContext dataCont
                 var brandDto = new BrandDto
                 {
                     Id = brand.Id,
-                    BrandName = brand.Brandname
+                    BrandName = brand.BrandName
                 };
                 return OperationResult<BrandDto>.Success("Varumärket hämtades framgångsrikt.", brandDto);
             }
@@ -186,7 +186,7 @@ public class BrandService(IBrandRepository brandRepository, DataContext dataCont
 
             if (entityToUpdate != null)
             {
-                entityToUpdate.Brandname = brandDto.BrandName;
+                entityToUpdate.BrandName = brandDto.BrandName;
 
                 var updateResult = await _brandRepository.ProductUpdateAsync(
                     b => b.Id == entityToUpdate.Id,
@@ -199,7 +199,7 @@ public class BrandService(IBrandRepository brandRepository, DataContext dataCont
                     var updatedDto = new BrandDto
                     {
                         Id = updatedEntity.Id,
-                        BrandName = updatedEntity.Brandname,
+                        BrandName = updatedEntity.BrandName,
                     };
 
                     return OperationResult<BrandDto>.Success("Varumärket uppdaterades framgångsrikt.", updatedDto);
