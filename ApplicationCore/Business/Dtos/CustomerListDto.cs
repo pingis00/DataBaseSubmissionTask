@@ -11,4 +11,6 @@ public class CustomerListDto
     public string PostalCode { get; set; } = null!;
     public string City { get; set; } = null!;
     public AddressDto Address { get; set; } = new AddressDto();
+    public ContactPreferenceDto ContactPreference { get; set; } = new ContactPreferenceDto();
+    public RoleDto Role { get; set; } = new RoleDto();
 }

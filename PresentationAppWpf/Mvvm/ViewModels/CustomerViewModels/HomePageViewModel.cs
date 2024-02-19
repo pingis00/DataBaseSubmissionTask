@@ -48,10 +48,20 @@ public partial class HomePageViewModel(IServiceProvider serviceProvider) : Obser
     }
 
     [RelayCommand]
-    private async Task NavigateToProductInventory()
+    private async Task NavigateToProductSettings()
     {
         var settingsViewModel = _serviceProvider.GetRequiredService<ProductSettingsViewModel>();
         await settingsViewModel.InitializeCategoryAndBrandAsync();
+
+        var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
+        mainViewModel.CurrentViewModel = settingsViewModel;
+    }
+
+    [RelayCommand]
+    private async Task NavigateToProductInventory()
+    {
+        var settingsViewModel = _serviceProvider.GetRequiredService<ProductInventoryViewModel>();
+        await settingsViewModel.LoadInventoryAsync();
 
         var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
         mainViewModel.CurrentViewModel = settingsViewModel;

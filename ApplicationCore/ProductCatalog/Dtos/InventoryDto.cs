@@ -7,6 +7,7 @@ public class InventoryDto
     public decimal Price { get; set; }
     public int ProductId { get; set; }
     public string ProductTitle { get; set; } = null!;
+    public string ArticleNumber { get; set; } = null!;
 
     public ProductDto Product { get; set; } = new ProductDto();
 }

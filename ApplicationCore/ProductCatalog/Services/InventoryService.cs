@@ -78,10 +78,14 @@ public class InventoryService(IIventoryRepository inventoryRepository, DataConte
             {
                 var inventoriesDto = inventoryEntitiesResult.Data.Select(inventoryEntity => new InventoryDto
                 {
-                    ProductId = inventoryEntity.ProductId,
-                    ProductTitle = inventoryEntity.Product.Title,
+                    Id = inventoryEntity.ProductId,
                     Quantity = inventoryEntity.Quantity,
                     Price = inventoryEntity.Price,
+                    Product = new ProductDto
+                    {
+                        ArticleNumber = inventoryEntity.Product.ArticleNumber,
+                        Title = inventoryEntity.Product.Title,
+                    }
                 }).ToList();
 
                 if (inventoriesDto.Any())
@@ -116,9 +120,13 @@ public class InventoryService(IIventoryRepository inventoryRepository, DataConte
                 var inventoryto = new InventoryDto
                 {
                     ProductId = inventory.ProductId,
-                    ProductTitle = inventory.Product.Title,
                     Quantity = inventory.Quantity,
                     Price = inventory.Price,
+                    Product = new ProductDto
+                    {
+                        ArticleNumber = inventory.Product.ArticleNumber,
+                        Title = inventory.Product.Title,
+                    }
                 };
                 return OperationResult<InventoryDto>.Success("Inventariet hämtades framgångsrikt.", inventoryto);
             }
@@ -142,15 +150,15 @@ public class InventoryService(IIventoryRepository inventoryRepository, DataConte
 
             if (!getInventoryResult.IsSuccess)
             {
-                return OperationResult<InventoryDto>.Failure("Rollen kunde inte hittas.");
+                return OperationResult<InventoryDto>.Failure("Inventariet kunde inte hittas.");
             }
 
             var entityToUpdate = getInventoryResult.Data;
 
             if (entityToUpdate != null)
             {
-                entityToUpdate.Quantity = entityToUpdate.Quantity;
-                entityToUpdate.Price = entityToUpdate.Price;
+                entityToUpdate.Quantity = inventoryDto.Quantity;
+                entityToUpdate.Price = inventoryDto.Price;
 
                 var updateResult = await _inventoryRepository.ProductUpdateAsync(
                     i => i.ProductId == entityToUpdate.ProductId,

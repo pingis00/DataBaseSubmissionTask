@@ -24,6 +24,11 @@ public partial class FullReviewViewModel(IServiceProvider serviceProvider, ICust
         set { SetProperty(ref _messageQueue, value); }
     }
 
+    public void ShowMessage(string message)
+    {
+        MessageQueue.Enqueue(message);
+    }
+
     [RelayCommand]
     private async Task NavigateToReviewList()
     {

@@ -13,6 +13,10 @@
              d:DesignHeight="450" d:DesignWidth="800">
 
     <Grid>
+        <md:Snackbar MessageQueue="{Binding MessageQueue}"
+             HorizontalAlignment="Center" 
+             VerticalAlignment="Bottom"
+             MaxWidth="300"/>
         <Button Content="Tillbaka" Command="{Binding NavigateBackCommand}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
         <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,50,0,0">
             <DataGrid ItemsSource="{Binding Customers}" AutoGenerateColumns="False" IsReadOnly="True" CanUserDeleteRows="False">
@@ -21,9 +25,9 @@
                     <DataGridTextColumn Header="Efternamn" Binding="{Binding LastName}" Width="200"/>
                     <DataGridTextColumn Header="E-post" Binding="{Binding Email}" Width="200"/>
                     <DataGridTextColumn Header="Telefon" Binding="{Binding PhoneNumber}" Width="200"/>
-                    <DataGridTextColumn Header="Adress" Binding="{Binding StreetName}" Width="200"/>
-                    <DataGridTextColumn Header="Postkod" Binding="{Binding PostalCode}" Width="200"/>
-                    <DataGridTextColumn Header="Stad" Binding="{Binding City}" Width="200"/>
+                    <DataGridTextColumn Header="Adress" Binding="{Binding Address.StreetName}" Width="200"/>
+                    <DataGridTextColumn Header="Postkod" Binding="{Binding Address.PostalCode}" Width="200"/>
+                    <DataGridTextColumn Header="Stad" Binding="{Binding Address.City}" Width="200"/>
                     <DataGridTemplateColumn Header="" Width="Auto">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>

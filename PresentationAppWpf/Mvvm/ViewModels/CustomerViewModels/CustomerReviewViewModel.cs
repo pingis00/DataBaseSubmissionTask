@@ -23,7 +23,7 @@ public partial class CustomerReviewViewModel : ObservableObject
     [ObservableProperty]
     public CustomerReviewDto? customerReviewDto;
     [ObservableProperty]
-    private ObservableCollection<CustomerReviewDto> reviews = new ObservableCollection<CustomerReviewDto>();
+    private ObservableCollection<CustomerReviewDto> reviews = [];
 
 
 

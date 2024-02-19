@@ -57,6 +57,18 @@
             <DataTemplate DataType="{x:Type productviewmodel:UpdateProductReviewViewModel}">
                 <productviews:UpdateProductReviewView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type productviewmodel:FullProductReviewViewModel}">
+                <productviews:FullProductReviewView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type productviewmodel:ProductInventoryViewModel}">
+                <productviews:ProductInventoryView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type productviewmodel:UpdateInventoryViewModel}">
+                <productviews:UpdateInventoryView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type productviewmodel:FullProductViewModel}">
+                <productviews:FullProductView/>
+            </DataTemplate>
         </ContentControl.Resources>
     </ContentControl>
 </Window>

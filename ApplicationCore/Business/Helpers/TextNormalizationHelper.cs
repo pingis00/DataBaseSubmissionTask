@@ -32,8 +32,7 @@ public static class TextNormalizationHelper
         {
             return OperationResult<string>.Failure("Ogiltigt telefonnummer. Ett svenskt telefonnummer ska bestå av 10 siffror.");
         }
-        string formattedNumber = $"{digitsOnly[..3]} {digitsOnly[3..6]} {digitsOnly[6..8]} {digitsOnly[8..]}";
-        return OperationResult<string>.Success("Telefonnummer formaterades framgångsrikt.", formattedNumber);
+        return OperationResult<string>.Success("Telefonnummer formaterades framgångsrikt.", digitsOnly);
     }
 
     public static OperationResult<string> FormatSwedishPostalCode(string postalCode)

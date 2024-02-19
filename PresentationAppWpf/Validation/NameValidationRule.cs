@@ -17,9 +17,9 @@ public class NameValidationRule : ValidationRule
 
         string name = value.ToString()!;
 
-        if (!Regex.IsMatch(name, @"^[a-zA-ZåäöÅÄÖ]{2,}$"))
+        if (!Regex.IsMatch(name, @"^[a-zA-ZåäöÅÄÖ]+(?:\s[a-zA-ZåäöÅÄÖ]+)*$"))
         {
-            return new ValidationResult(false, "Namnet måsta vara 2 tecken långt och får bara innehålla bokstäver.");
+            return new ValidationResult(false, "Namnet måste vara 2 tecken långt och får bara innehålla bokstäver och mellanslag mellan ord.");
         }
 
         return ValidationResult.ValidResult;

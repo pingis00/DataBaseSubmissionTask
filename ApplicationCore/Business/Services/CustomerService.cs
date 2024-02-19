@@ -157,9 +157,20 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
                     LastName = customerEntity.LastName,
                     Email = customerEntity.Email,
                     PhoneNumber = customerEntity.PhoneNumber,
-                    StreetName = customerEntity.Address.StreetName,
-                    City = customerEntity.Address.City,
-                    PostalCode = customerEntity.Address.PostalCode
+                    Address = new AddressDto
+                    {
+                        StreetName = customerEntity.Address.StreetName,
+                        City = customerEntity.Address.City,
+                        PostalCode = customerEntity.Address.PostalCode
+                    },
+                    Role = new RoleDto
+                    {
+                        RoleName = customerEntity.Role.RoleName
+                    },
+                    ContactPreference = new ContactPreferenceDto
+                    {
+                        PreferredContactMethod = customerEntity.ContactPreference.PreferredContactMethod
+                    }
                 }).ToList();
 
                 if (customersDto.Any())
@@ -221,12 +232,23 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
                     LastName = customer.LastName,
                     Email = customer.Email,
                     PhoneNumber = customer.PhoneNumber,
-                    StreetName = customer.Address.StreetName,
-                    PostalCode = customer.Address.PostalCode,
-                    City = customer.Address.City,
-                    RoleName = customer.Role.RoleName,
-                    PreferredContactMethod = customer.ContactPreference.PreferredContactMethod,
-                    
+                    Address = new AddressDto
+                    {
+                        StreetName = customer.Address.StreetName,
+                        PostalCode = customer.Address.PostalCode,
+                        City = customer.Address.City,
+                    },
+                    Role = new RoleDto
+                    {
+                        RoleName = customer.Role.RoleName,
+
+                    },
+                    ContactPreference = new ContactPreferenceDto
+                    {
+                        PreferredContactMethod = customer.ContactPreference.PreferredContactMethod
+
+                    }
+
                 };
 
                 return OperationResult<UpdateCustomerDto>.Success("Kunden hämtades framgångsrikt.", customerDto);

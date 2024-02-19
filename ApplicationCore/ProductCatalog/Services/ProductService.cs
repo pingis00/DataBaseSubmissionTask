@@ -151,8 +151,8 @@ public class ProductService(IProductRepository productRepository, IBrandService 
                     },
                     Inventory = new InventoryDto
                     {
-                        Quantity = productEntity.Inventory.Quantity,
-                        Price = productEntity.Inventory.Price,
+                        Quantity = productEntity.Inventory?.Quantity ?? 0,
+                        Price = productEntity.Inventory?.Price ?? 0m,
                     }
 
                 }).ToList();
@@ -193,11 +193,19 @@ public class ProductService(IProductRepository productRepository, IBrandService 
                     ArticleNumber = product.ArticleNumber,
                     Title = product.Title,
                     ProductDescription = product.ProductDescription,
-                    BrandName = product.Brand.BrandName,
-                    CategoryName = product.Category.CategoryName,
-                    Quantity = product.Inventory.Quantity,
-                    Price = product.Inventory.Price
-
+                    Brand = new BrandDto
+                    {
+                        BrandName = product.Brand.BrandName
+                    },
+                    Category = new CategoryDto
+                    {
+                        CategoryName = product.Category.CategoryName
+                    },
+                    Inventory = new InventoryDto
+                    {
+                        Quantity = product.Inventory?.Quantity ?? 0,
+                        Price = product.Inventory?.Price ?? 0m
+                    }
                 };
 
                 return OperationResult<CompleteProductDto>.Success("Kunden hämtades framgångsrikt.", productDto);

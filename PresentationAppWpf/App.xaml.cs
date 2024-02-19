@@ -108,6 +108,18 @@ public partial class App : Application
             services.AddTransient<UpdateProductReviewViewModel>();
             services.AddTransient<UpdateProductReviewView>();
 
+            services.AddTransient<FullProductReviewViewModel>();
+            services.AddTransient<FullProductReviewView>();
+
+            services.AddTransient<ProductInventoryViewModel>();
+            services.AddTransient<ProductInventoryView>();
+
+            services.AddTransient<UpdateInventoryViewModel>();
+            services.AddTransient<UpdateInventoryView>();
+
+            services.AddTransient<FullProductViewModel>();
+            services.AddTransient<FullProductView>();
+
         }).Build();
     }
 

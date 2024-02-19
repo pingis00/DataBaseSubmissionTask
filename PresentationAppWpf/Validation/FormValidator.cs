@@ -13,7 +13,7 @@ public class FormValidator(ICustomerDto customerDto, Action<string> showMessage)
 
     public bool ValidateForm()
     {
-        if (!fieldsAreNotEmpty())
+        if (!FieldsAreNotEmpty())
         {
             _showMessage("Vänligen fyll i alla obligatoriska fält..");
             return false;
@@ -29,7 +29,7 @@ public class FormValidator(ICustomerDto customerDto, Action<string> showMessage)
         return true;
     }
 
-    private bool fieldsAreNotEmpty()
+    private bool FieldsAreNotEmpty()
     {
         return !string.IsNullOrWhiteSpace(_customerDto.FirstName) &&
                !string.IsNullOrWhiteSpace(_customerDto.LastName) &&

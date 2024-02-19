@@ -28,14 +28,14 @@
             <StackPanel Margin="20">
                 <TextBlock Text="Registrera dig" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="20"/>
                 <Label Content="Användarroll" />
-                <ComboBox Margin="5"
+                <ComboBox Margin="5,0,0,15"
                             md:HintAssist.Hint="Välj i dropdown-lista"
                             ItemsSource="{Binding AvailableRoles}"
                             DisplayMemberPath="RoleName"
                             SelectedValuePath="RoleName"
                             SelectedValue="{Binding CustomerRegistrationDto.Role.RoleName, UpdateSourceTrigger=PropertyChanged}" />
                 <Label Content="Förnamn" />
-                <TextBox Margin="5" md:HintAssist.Hint="Förnamn" >
+                <TextBox Margin="5,0,0,15" md:HintAssist.Hint="Förnamn" >
                     <TextBox.Text>
                         <Binding Path="CustomerRegistrationDto.FirstName" UpdateSourceTrigger="PropertyChanged"
                                  ValidatesOnDataErrors="True" NotifyOnValidationError="True">
@@ -50,7 +50,7 @@
                     </TextBox.Style>
                 </TextBox>
                 <Label Content="Efternamn" />
-                <TextBox Margin="5" md:HintAssist.Hint="Efternamn" Style="{StaticResource MaterialDesignTextBox}">
+                <TextBox Margin="5,0,0,15" md:HintAssist.Hint="Efternamn" Style="{StaticResource MaterialDesignTextBox}">
                     <TextBox.Text>
                         <Binding Path="CustomerRegistrationDto.LastName" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
@@ -60,7 +60,7 @@
                     </TextBox.Text>
                 </TextBox>
                 <Label Content="Adress" />
-                <TextBox Margin="5" md:HintAssist.Hint="Adress" Style="{StaticResource MaterialDesignTextBox}">
+                <TextBox Margin="5,0,0,15" md:HintAssist.Hint="Adress" Style="{StaticResource MaterialDesignTextBox}">
                     <TextBox.Text>
                         <Binding Path="CustomerRegistrationDto.Address.StreetName" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
@@ -70,7 +70,7 @@
                     </TextBox.Text>
                 </TextBox>
                 <Label Content="Postkod" />
-                <TextBox Margin="5" md:HintAssist.Hint="Postkod" Style="{StaticResource MaterialDesignTextBox}">
+                <TextBox Margin="5,0,0,15" md:HintAssist.Hint="Postkod" Style="{StaticResource MaterialDesignTextBox}">
                     <TextBox.Text>
                         <Binding Path="CustomerRegistrationDto.Address.PostalCode" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
@@ -80,7 +80,7 @@
                     </TextBox.Text>
                 </TextBox>
                 <Label Content="Stad" />
-                <TextBox Margin="5" md:HintAssist.Hint="Stad" Style="{StaticResource MaterialDesignTextBox}">
+                <TextBox Margin="5,0,0,15" md:HintAssist.Hint="Stad" Style="{StaticResource MaterialDesignTextBox}">
                     <TextBox.Text>
                         <Binding Path="CustomerRegistrationDto.Address.City" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
@@ -90,7 +90,7 @@
                     </TextBox.Text>
                 </TextBox>
                 <Label Content="Telefonnummer" />
-                <TextBox Margin="5" md:HintAssist.Hint="Telefonnummer" Style="{StaticResource MaterialDesignTextBox}">
+                <TextBox Margin="5,0,0,15" md:HintAssist.Hint="Telefonnummer" Style="{StaticResource MaterialDesignTextBox}">
                     <TextBox.Text>
                         <Binding Path="CustomerRegistrationDto.PhoneNumber" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
@@ -100,7 +100,7 @@
                     </TextBox.Text>
                 </TextBox>
                 <Label Content="E-post" />
-                <TextBox Margin="5" md:HintAssist.Hint="E-post" Style="{StaticResource MaterialDesignTextBox}">
+                <TextBox Margin="5,0,0,15" md:HintAssist.Hint="E-post" Style="{StaticResource MaterialDesignTextBox}">
                     <TextBox.Text>
                         <Binding Path="CustomerRegistrationDto.Email" UpdateSourceTrigger="PropertyChanged">
                             <Binding.ValidationRules>
@@ -110,14 +110,14 @@
                     </TextBox.Text>
                 </TextBox>
                 <Label Content="Kontaktmetod" />
-                <ComboBox Margin="5"
+                <ComboBox Margin="5,0,0,15"
                           md:HintAssist.Hint="Välj i dropdown-lista"
                           ItemsSource="{Binding AvailableContactMethods}"
                           DisplayMemberPath="PreferredContactMethod"
                           SelectedValuePath="PreferredContactMethod"
                           SelectedValue="{Binding CustomerRegistrationDto.ContactPreference.PreferredContactMethod, UpdateSourceTrigger=PropertyChanged}" />
                 <Label Content="Lösenord" />
-                <PasswordBox x:Name="passwordBox" Margin="5" md:HintAssist.Hint="Lösenord" Style="{StaticResource MaterialDesignPasswordBox}" PasswordChanged="PasswordBox_PasswordChanged">
+                <PasswordBox x:Name="passwordBox" Margin="5,0,0,15" md:HintAssist.Hint="Lösenord" Style="{StaticResource MaterialDesignPasswordBox}" PasswordChanged="PasswordBox_PasswordChanged">
                     <PasswordBox.ToolTip>
                         <ToolTip>
                             <TextBlock>

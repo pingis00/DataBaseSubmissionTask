@@ -17,6 +17,10 @@
         <helper:BooleanToSaveOrUpdateConverter x:Key="BooleanToSaveOrUpdateConverter" />
     </UserControl.Resources>
     <Grid>
+        <md:Snackbar MessageQueue="{Binding MessageQueue}"
+             HorizontalAlignment="Center" 
+             VerticalAlignment="Bottom"
+             MaxWidth="300"/>
         <TabControl>
             <TabItem Header="Lägg till/Uppdatera Varumärke">
                 <Grid Margin="10">

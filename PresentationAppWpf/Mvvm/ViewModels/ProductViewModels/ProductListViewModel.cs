@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.ProductCatalog.Dtos;
 using ApplicationCore.ProductCatalog.Interfaces;
+using ApplicationCore.ProductCatalog.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MaterialDesignThemes.Wpf;
@@ -17,9 +18,6 @@ public partial class ProductListViewModel(IServiceProvider serviceProvider, IPro
     [ObservableProperty]
     public ObservableCollection<CompleteProductDto> products = [];
     private CompleteProductDto? _selectedProduct;
-
-    public ObservableCollection<BrandDto> AvailableBrands { get; private set; } = [];
-    public ObservableCollection<CategoryDto> AvailableCategories { get; private set; } = [];
 
     public CompleteProductDto SelectedProduct
     {
@@ -99,6 +97,23 @@ public partial class ProductListViewModel(IServiceProvider serviceProvider, IPro
 
         var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
         mainViewModel.CurrentViewModel = updateViewModel;
+    }
+
+    [RelayCommand]
+    private async Task NavigateToProductDetails(int productId)
+    {
+        var productDtoResult = await _productService.GetProductByIdAsync(productId);
+        if (!productDtoResult.IsSuccess || productDtoResult.Data == null)
+        {
+            ShowMessage("Kunde inte hämta Produktinformation.");
+            return;
+        }
+
+        var fullProductViewModel = _serviceProvider.GetRequiredService<FullProductViewModel>();
+        fullProductViewModel.CompleteProductDto = productDtoResult.Data;
+
+        var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
+        mainViewModel.CurrentViewModel = fullProductViewModel;
     }
 
     [RelayCommand]

@@ -52,7 +52,7 @@ public partial class CustomerListViewModel(IServiceProvider serviceProvider, ICu
         }
         else
         {
-            ShowMessage("Kundlistan är tom.");
+            ShowMessage("Inventarielistan är tom.");
         }
     }
 
