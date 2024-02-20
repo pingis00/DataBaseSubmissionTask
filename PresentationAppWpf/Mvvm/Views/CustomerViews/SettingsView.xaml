@@ -20,7 +20,7 @@
         <md:Snackbar MessageQueue="{Binding MessageQueue}"
              HorizontalAlignment="Center" 
              VerticalAlignment="Bottom"
-             MaxWidth="300"/>
+             MaxWidth="500"/>
         <TabControl>
             <TabItem Header="Lägg till/Uppdatera roll">
                 <Grid Margin="10">

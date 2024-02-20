@@ -37,20 +37,7 @@ public class CustomerReviewService(ICustomerReviewRepository customerReviewRepos
                 return OperationResult<CustomerReviewDto>.Failure("Det gick inte att skapa recensionen.");
             }
 
-            var createdReviewDto = new CustomerReviewDto
-            {
-                Id = reviewResult.Data.Id,
-                Comment = reviewResult.Data.Comment,
-                Date = reviewResult.Data.Date,
-                CustomerId = customer.Id,
-                Customer = new CustomerDto()
-                {
-                    Id = customerResult.Data.Id,
-                    Email = customerResult.Data.Email,
-                    FirstName = customerResult.Data.FirstName,
-                    LastName = customerResult.Data.LastName
-                }
-            };
+            var createdReviewDto = ConvertToDto(reviewResult.Data);
             return OperationResult<CustomerReviewDto>.Success("Recensionen skapades framgångsrikt.", createdReviewDto);
         }
         catch (Exception ex)
@@ -98,21 +85,7 @@ public class CustomerReviewService(ICustomerReviewRepository customerReviewRepos
 
             if (reviewEntitiesResult.IsSuccess && reviewEntitiesResult.Data != null)
             {
-                const int previewLength = 40;
-
-                var reviewDto = reviewEntitiesResult.Data.Select(reviewEntity => new CustomerReviewDto
-                {
-                    Id = reviewEntity.Id,
-                    Comment = reviewEntity.Comment.Length > previewLength
-                          ? reviewEntity.Comment.Substring(0, previewLength) + "..."
-                          : reviewEntity.Comment,
-                    Date = reviewEntity.Date,
-                    CustomerId = reviewEntity.CustomerId,
-                    Customer = new CustomerDto
-                    {
-                        Email = reviewEntity.Customer.Email,
-                    }
-                }).ToList();
+                var reviewDto = reviewEntitiesResult.Data.Select(reviewEntity => ConvertToDto(reviewEntity, true)).ToList();
 
                 if (reviewDto.Any())
                 {
@@ -147,21 +120,7 @@ public class CustomerReviewService(ICustomerReviewRepository customerReviewRepos
 
             var reviewEntity = reviewResult.Data;
 
-            var reviewDto = new CustomerReviewDto
-            {
-                Id = reviewEntity.Id,
-                Comment = reviewEntity.Comment,
-                Date = reviewEntity.Date,
-                Customer = new CustomerDto
-                {
-                    Id = reviewEntity.Id,
-                    Email = reviewEntity.Customer.Email,
-                    FirstName = reviewEntity.Customer.FirstName,
-                    LastName = reviewEntity.Customer.LastName,
-                }
-
-
-            };
+            var reviewDto = ConvertToDto(reviewEntity);
             return OperationResult<CustomerReviewDto>.Success("Recensionen hämtades framgångsrikt.", reviewDto);
         }
         catch (Exception ex)
@@ -225,12 +184,7 @@ public class CustomerReviewService(ICustomerReviewRepository customerReviewRepos
 
                 if (updateResult.IsSuccess)
                 {
-                    var updatedEntity = updateResult.Data;
-                    var updatedDto = new CustomerReviewDto
-                    {
-                        Id = updatedEntity.Id,
-                        Comment = updatedEntity.Comment
-                    };
+                    var updatedDto = ConvertToDto(updateResult.Data);
 
                     return OperationResult<CustomerReviewDto>.Success("Recensionen uppdaterades framgångsrikt.", updatedDto);
                 }
@@ -250,8 +204,26 @@ public class CustomerReviewService(ICustomerReviewRepository customerReviewRepos
             return OperationResult<CustomerReviewDto>.Failure("Ett internt fel inträffade när adressen skulle uppdateras.");
         }
     }
+
+    private CustomerReviewDto ConvertToDto(CustomerReviewEntity reviewEntity, bool previewComment = false)
+    {
+        const int previewLength = 40;
+        string comment = previewComment && reviewEntity.Comment.Length > previewLength
+                         ? reviewEntity.Comment.Substring(0, previewLength) + "..."
+                         : reviewEntity.Comment;
+        return new CustomerReviewDto
+        {
+            Id = reviewEntity.Id,
+            Comment = comment,
+            Date = reviewEntity.Date,
+            CustomerId = reviewEntity.CustomerId,
+            Customer = reviewEntity.Customer != null ? new CustomerDto
+            {
+                Id = reviewEntity.Customer.Id,
+                Email = reviewEntity.Customer.Email,
+                FirstName = reviewEntity.Customer.FirstName,
+                LastName = reviewEntity.Customer.LastName
+            } : null!
+        };
+    }
 }
-
-
-
-

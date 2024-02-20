@@ -4,8 +4,6 @@ using ApplicationCore.Business.Interfaces;
 using ApplicationCore.Infrastructure.Contexts;
 using ApplicationCore.Infrastructure.Entities;
 using ApplicationCore.Infrastructure.Interfaces;
-using ApplicationCore.Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Diagnostics;
 
@@ -18,8 +16,12 @@ public class ContactPreferenceService(IContactPreferenceRepository contactPrefer
 
     public async Task<OperationResult<bool>> ContactPreferenceHasCustomersAsync(int contactPreferenceId)
     {
-        bool hasCustomers = await _dbContext.Customers.AnyAsync(c => c.ContactPreferenceId == contactPreferenceId);
-        return OperationResult<bool>.Success(hasCustomers ? "Det finns kunder kopplade till Kontaktpreferensen." : "Det finns inga kunder kopplade till Kontaktpreferensen.");
+        bool hasCustomers = await _contactPreferenceRepository.HasCustomersAsync(contactPreferenceId);
+        if (hasCustomers)
+        {
+            return OperationResult<bool>.Failure("Det finns kunder kopplade till kontaktpreferensen.");
+        }
+        return OperationResult<bool>.Success("Det finns inga kunder kopplade till kontaktpreferensen.");
     }
 
     public async Task<OperationResult<ContactPreferenceDto>> CreateContactPreferenceAsync(ContactPreferenceDto contactPreference)
@@ -31,14 +33,9 @@ public class ContactPreferenceService(IContactPreferenceRepository contactPrefer
 
             if (existingEntity.IsSuccess && existingEntity.Data != null)
             {
-                var preferrenceDto = new ContactPreferenceDto
-                {
-                    Id = existingEntity.Data.Id,
-                    PreferredContactMethod = existingEntity.Data.PreferredContactMethod,
-                    
-                };
+                var preferenceDto = ConvertToDto(existingEntity.Data);
 
-                return OperationResult<ContactPreferenceDto>.Success("Kontaktpreferensen finns redan i systemet.", preferrenceDto);
+                return OperationResult<ContactPreferenceDto>.Success("Kontaktpreferensen finns redan i systemet.", preferenceDto);
             }
             else
             {
@@ -53,11 +50,7 @@ public class ContactPreferenceService(IContactPreferenceRepository contactPrefer
                 }
                 var newPreferenceEntity = newContactPreferenceEntityResult.Data;
 
-                var newPreferenceDto = new ContactPreferenceDto
-                {
-                    Id = newPreferenceEntity.Id,
-                    PreferredContactMethod = newPreferenceEntity.PreferredContactMethod
-                };
+                var newPreferenceDto = ConvertToDto(newPreferenceEntity);
 
                 return OperationResult<ContactPreferenceDto>.Success("Kontaktppreferensen skapades framgångrikt", newPreferenceDto);
             }
@@ -81,7 +74,7 @@ public class ContactPreferenceService(IContactPreferenceRepository contactPrefer
             }
 
             OperationResult<bool> hasCustomersResult = await ContactPreferenceHasCustomersAsync(contactPreferenceId);
-            if (hasCustomersResult.IsSuccess && hasCustomersResult.Data)
+            if (!hasCustomersResult.IsSuccess)
             {
                 return OperationResult<bool>.Failure("Preferensen kan inte raderas eftersom den är kopplad till en eller flera kunder.");
             }
@@ -113,11 +106,7 @@ public class ContactPreferenceService(IContactPreferenceRepository contactPrefer
 
             if (preferenceEntitiesResult.IsSuccess && preferenceEntitiesResult.Data != null)
             {
-                var preferenceDto = preferenceEntitiesResult.Data.Select(preferenceEntity => new ContactPreferenceDto
-                {
-                    Id = preferenceEntity.Id,
-                    PreferredContactMethod = preferenceEntity.PreferredContactMethod
-                }).ToList();
+                var preferenceDto = preferenceEntitiesResult.Data.Select(ConvertToDto).ToList();
 
                 if (preferenceDto.Any())
                 {
@@ -147,12 +136,7 @@ public class ContactPreferenceService(IContactPreferenceRepository contactPrefer
             var contactPreferenceResult = await _contactPreferenceRepository.GetOneAsync(p => p.Id == contactPreferenceId);
             if (contactPreferenceResult.IsSuccess && contactPreferenceResult.Data != null)
             {
-                var preference = contactPreferenceResult.Data;
-                var preferenceDto = new ContactPreferenceDto
-                {
-                    Id = preference.Id,
-                    PreferredContactMethod = preference.PreferredContactMethod
-                };
+                var preferenceDto = ConvertToDto(contactPreferenceResult.Data);
                 return OperationResult<ContactPreferenceDto>.Success("Kontaktpreferensen hämtades framgångsrikt.", preferenceDto);
             }
             else
@@ -191,12 +175,7 @@ public class ContactPreferenceService(IContactPreferenceRepository contactPrefer
 
                 if (updateResult.IsSuccess)
                 {
-                    var updatedEntity = updateResult.Data;
-                    var updatedDto = new ContactPreferenceDto
-                    {
-                        Id = updatedEntity.Id,
-                        PreferredContactMethod = updatedEntity.PreferredContactMethod
-                    };
+                    var updatedDto = ConvertToDto(updateResult.Data);
 
                     return OperationResult<ContactPreferenceDto>.Success("Adressen uppdaterades framgångsrikt.", updatedDto);
                 }
@@ -215,5 +194,14 @@ public class ContactPreferenceService(IContactPreferenceRepository contactPrefer
             Debug.WriteLine("ERROR :: " + ex.Message);
             return OperationResult<ContactPreferenceDto>.Failure("Ett internt fel inträffade när adressen skulle uppdateras.");
         }
+    }
+
+    private ContactPreferenceDto ConvertToDto(ContactPreferenceEntity entity)
+    {
+        return new ContactPreferenceDto
+        {
+            Id = entity.Id,
+            PreferredContactMethod = entity.PreferredContactMethod
+        };
     }
 }

@@ -1,6 +1,4 @@
-﻿using ApplicationCore.Business.Dtos;
-using ApplicationCore.Business.Helpers;
-using ApplicationCore.Infrastructure.Entities;
+﻿using ApplicationCore.Business.Helpers;
 using ApplicationCore.ProductCatalog.Context;
 using ApplicationCore.ProductCatalog.Dtos;
 using ApplicationCore.ProductCatalog.Entities;
@@ -11,14 +9,13 @@ using System.Diagnostics;
 
 namespace ApplicationCore.ProductCatalog.Services;
 
-public class BrandService(IBrandRepository brandRepository, DataContext dataContext) : IBrandService
+public class BrandService(IBrandRepository brandRepository) : IBrandService
 {
     private readonly IBrandRepository _brandRepository = brandRepository;
-    private readonly DataContext _dataContext = dataContext;
 
     public async Task<OperationResult<bool>> BrandHasProductsAsync(int brandId)
     {
-        bool hasProducts = await _dataContext.Products.AnyAsync(b => b.Id == brandId);
+        bool hasProducts = await _brandRepository.HasProductsAsync(brandId);
         if (hasProducts)
         {
             return OperationResult<bool>.Failure("Det finns produkter kopplade till varumärket.");
@@ -39,7 +36,6 @@ public class BrandService(IBrandRepository brandRepository, DataContext dataCont
                 {
                     Id = existingBrandResult.Data.Id,
                     BrandName = existingBrandResult.Data.BrandName
-
                 };
 
                 return OperationResult<BrandDto>.Success("Varumärket finns redan i systemet.", brandDto);
@@ -55,14 +51,8 @@ public class BrandService(IBrandRepository brandRepository, DataContext dataCont
                 {
                     return OperationResult<BrandDto>.Failure("Det gick inte att skapa varumärket.");
                 }
-                var newBrandEntity = newBrandEntityResult.Data;
 
-                var newBrandDto = new BrandDto
-                {
-                    Id = newBrandEntity.Id,
-                    BrandName = newBrandEntity.BrandName
-                };
-
+                var newBrandDto = ConvertToDto(newBrandEntityResult.Data);
                 return OperationResult<BrandDto>.Success("Varumärket skapades framgångrikt", newBrandDto);
             }
         }
@@ -117,11 +107,7 @@ public class BrandService(IBrandRepository brandRepository, DataContext dataCont
 
             if (brandEntitiesResult.IsSuccess && brandEntitiesResult.Data != null)
             {
-                var brandDto = brandEntitiesResult.Data.Select(brandEntity => new BrandDto
-                {
-                    Id = brandEntity.Id,
-                    BrandName = brandEntity.BrandName,
-                }).ToList();
+                var brandDto = brandEntitiesResult.Data.Select(ConvertToDto).ToList();
 
                 if (brandDto.Any())
                 {
@@ -149,20 +135,12 @@ public class BrandService(IBrandRepository brandRepository, DataContext dataCont
         try
         {
             var brandResult = await _brandRepository.ProductGetOneAsync(b => b.Id == brandId);
-            if (brandResult.IsSuccess && brandResult.Data != null)
-            {
-                var brand = brandResult.Data;
-                var brandDto = new BrandDto
-                {
-                    Id = brand.Id,
-                    BrandName = brand.BrandName
-                };
-                return OperationResult<BrandDto>.Success("Varumärket hämtades framgångsrikt.", brandDto);
-            }
-            else
+            if (!brandResult.IsSuccess && brandResult.Data == null)
             {
                 return OperationResult<BrandDto>.Failure("Varumärket kunde inte hittas.");
             }
+            var brandDto = ConvertToDto(brandResult.Data);
+            return OperationResult<BrandDto>.Success("Varumärket hämtades framgångsrikt.", brandDto);
         }
         catch (Exception ex)
         {
@@ -193,21 +171,15 @@ public class BrandService(IBrandRepository brandRepository, DataContext dataCont
                     entityToUpdate
                 );
 
-                if (updateResult.IsSuccess)
-                {
-                    var updatedEntity = updateResult.Data;
-                    var updatedDto = new BrandDto
-                    {
-                        Id = updatedEntity.Id,
-                        BrandName = updatedEntity.BrandName,
-                    };
-
-                    return OperationResult<BrandDto>.Success("Varumärket uppdaterades framgångsrikt.", updatedDto);
-                }
-                else
+                if (!updateResult.IsSuccess)
                 {
                     return OperationResult<BrandDto>.Failure("Det gick inte att uppdatera Varumärket.");
-                }
+
+                }               
+                var updatedDto = ConvertToDto(updateResult.Data);
+
+                return OperationResult<BrandDto>.Success("Varumärket uppdaterades framgångsrikt.", updatedDto);
+
             }
             else
             {
@@ -219,5 +191,14 @@ public class BrandService(IBrandRepository brandRepository, DataContext dataCont
             Debug.WriteLine("ERROR :: " + ex.Message);
             return OperationResult<BrandDto>.Failure("Ett internt fel inträffade när Varumärket skulle uppdateras.");
         }
+    }
+
+    private BrandDto ConvertToDto(Brand brand)
+    {
+        return new BrandDto
+        {
+            Id = brand.Id,
+            BrandName = brand.BrandName
+        };
     }
 }

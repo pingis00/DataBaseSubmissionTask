@@ -1,35 +1,18 @@
 ﻿using ApplicationCore.Business.Dtos;
 using ApplicationCore.Business.Interfaces;
-using ApplicationCore.Business.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
-using PresentationAppWpf.Validation;
 
 namespace PresentationAppWpf.Mvvm.ViewModels;
 
-public partial class UpdateReviewViewModel(IServiceProvider serviceProvider, ICustomerReviewService customerReviewService) : ObservableObject
+public partial class UpdateReviewViewModel(IServiceProvider serviceProvider, ICustomerReviewService customerReviewService) : BaseViewModel
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
     private readonly ICustomerReviewService _customerReviewService = customerReviewService;
 
     [ObservableProperty]
     private CustomerReviewDto? customerReviewDto;
-
-
-    private SnackbarMessageQueue _messageQueue = new(TimeSpan.FromSeconds(3));
-
-    public SnackbarMessageQueue MessageQueue
-    {
-        get { return _messageQueue; }
-        set { SetProperty(ref _messageQueue, value); }
-    }
-
-    public void ShowMessage(string message)
-    {
-        MessageQueue.Enqueue(message);
-    }
 
     [RelayCommand]
     private async Task NavigateBackToReviewList()

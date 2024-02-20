@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PresentationAppWpf.Mvvm.ViewModels;
+using PresentationAppWpf.Mvvm.ViewModels.CustomerViewModels;
 using PresentationAppWpf.Mvvm.ViewModels.ProductViewModels;
 using PresentationAppWpf.Mvvm.Views;
 using PresentationAppWpf.Mvvm.Views.CustomerViews;
@@ -119,6 +120,9 @@ public partial class App : Application
 
             services.AddTransient<FullProductViewModel>();
             services.AddTransient<FullProductView>();
+
+            services.AddTransient<AddressListViewModel>();
+            services.AddTransient<AddressListView>();
 
         }).Build();
     }

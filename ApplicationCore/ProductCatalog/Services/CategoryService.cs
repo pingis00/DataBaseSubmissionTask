@@ -3,25 +3,18 @@ using ApplicationCore.ProductCatalog.Context;
 using ApplicationCore.ProductCatalog.Dtos;
 using ApplicationCore.ProductCatalog.Entities;
 using ApplicationCore.ProductCatalog.Interfaces;
-using ApplicationCore.ProductCatalog.Repositories;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ApplicationCore.ProductCatalog.Services
 {
-    public class CategoryService(ICategoryRepository categoryRepository, DataContext dataContext) : ICategoryService
+    public class CategoryService(ICategoryRepository categoryRepository) : ICategoryService
     {
         private readonly ICategoryRepository _categoryRepository = categoryRepository;
-        private readonly DataContext _dataContext = dataContext;
 
         public async Task<OperationResult<bool>> CategoryHasProductsAsync(int categoryId)
         {
-            bool hasProducts = await _dataContext.Products.AnyAsync(b => b.Id == categoryId);
+            bool hasProducts = await _categoryRepository.HasProductsAsync(categoryId);
             if (hasProducts)
             {
                 return OperationResult<bool>.Failure("Det finns produkter kopplade till kategorin.");
@@ -58,13 +51,7 @@ namespace ApplicationCore.ProductCatalog.Services
                     {
                         return OperationResult<CategoryDto>.Failure("Det gick inte att skapa kategorin.");
                     }
-                    var newcategoryEntity = newCategoryEntityResult.Data;
-
-                    var newcategoryDto = new CategoryDto
-                    {
-                        Id = newcategoryEntity.Id,
-                        CategoryName = newcategoryEntity.CategoryName
-                    };
+                    var newcategoryDto = ConvertToDto(newCategoryEntityResult.Data);
 
                     return OperationResult<CategoryDto>.Success("Kategorin skapades framgångrikt", newcategoryDto);
                 }
@@ -120,11 +107,7 @@ namespace ApplicationCore.ProductCatalog.Services
 
                 if (categoryEntitiesResult.IsSuccess && categoryEntitiesResult.Data != null)
                 {
-                    var categoryDto = categoryEntitiesResult.Data.Select(categoryEntity => new CategoryDto
-                    {
-                        Id = categoryEntity.Id,
-                        CategoryName = categoryEntity.CategoryName,
-                    }).ToList();
+                    var categoryDto = categoryEntitiesResult.Data.Select(ConvertToDto).ToList();
 
                     if (categoryDto.Any())
                     {
@@ -152,20 +135,13 @@ namespace ApplicationCore.ProductCatalog.Services
             try
             {
                 var categoryResult = await _categoryRepository.ProductGetOneAsync(c => c.Id == categoryId);
-                if (categoryResult.IsSuccess && categoryResult.Data != null)
-                {
-                    var category = categoryResult.Data;
-                    var categoryDto = new CategoryDto
-                    {
-                        Id = category.Id,
-                        CategoryName = category.CategoryName
-                    };
-                    return OperationResult<CategoryDto>.Success("Kategorin hämtades framgångsrikt.", categoryDto);
-                }
-                else
+                if (!categoryResult.IsSuccess && categoryResult.Data == null)
                 {
                     return OperationResult<CategoryDto>.Failure("Kategorin kunde inte hittas.");
                 }
+
+                var categoryDto = ConvertToDto(categoryResult.Data);
+                return OperationResult<CategoryDto>.Success("Kategorin hämtades framgångsrikt.", categoryDto);
             }
             catch (Exception ex)
             {
@@ -196,21 +172,13 @@ namespace ApplicationCore.ProductCatalog.Services
                         entityToUpdate
                     );
 
-                    if (updateResult.IsSuccess)
-                    {
-                        var updatedEntity = updateResult.Data;
-                        var updatedDto = new CategoryDto
-                        {
-                            Id = updatedEntity.Id,
-                            CategoryName = updatedEntity.CategoryName,
-                        };
-
-                        return OperationResult<CategoryDto>.Success("Kategorin uppdaterades framgångsrikt.", updatedDto);
-                    }
-                    else
+                    if (!updateResult.IsSuccess)
                     {
                         return OperationResult<CategoryDto>.Failure("Det gick inte att uppdatera Kategorin.");
                     }
+                    var updatedDto = ConvertToDto(updateResult.Data);
+
+                    return OperationResult<CategoryDto>.Success("Kategorin uppdaterades framgångsrikt.", updatedDto);
                 }
                 else
                 {
@@ -222,6 +190,15 @@ namespace ApplicationCore.ProductCatalog.Services
                 Debug.WriteLine("ERROR :: " + ex.Message);
                 return OperationResult<CategoryDto>.Failure("Ett internt fel inträffade när Kategorin skulle uppdateras.");
             }
+        }
+
+        private CategoryDto ConvertToDto(Category category)
+        {
+            return new CategoryDto
+            {
+                Id = category.Id,
+                CategoryName = category.CategoryName
+            };
         }
     }
 }

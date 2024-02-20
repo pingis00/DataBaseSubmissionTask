@@ -1,24 +1,25 @@
 ﻿using ApplicationCore.Business.Dtos;
 using ApplicationCore.Business.Helpers;
 using ApplicationCore.Business.Interfaces;
-using ApplicationCore.Infrastructure.Contexts;
 using ApplicationCore.Infrastructure.Entities;
 using ApplicationCore.Infrastructure.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Diagnostics;
 
 namespace ApplicationCore.Business.Services;
 
-public class AddressService(IAddressRepository addressRepository, EagerLoadingContext dbContext) : IAddressService
+public class AddressService(IAddressRepository addressRepository) : IAddressService
 {
     private readonly IAddressRepository _addressRepository = addressRepository;
-    private readonly EagerLoadingContext _dbContext = dbContext;
 
     public async Task<OperationResult<bool>> AddressHasCustomersAsync(int addressId)
     {
-        bool hasCustomers = await _dbContext.Customers.AnyAsync(c => c.AddressId == addressId);
-        return OperationResult<bool>.Success(hasCustomers ? "Det finns kunder kopplade till adressen." : "Det finns inga kunder kopplade till adressen.");
+        bool hasCustomers = await _addressRepository.HasCustomersAsync(addressId);
+        if (hasCustomers)
+        {
+            return OperationResult<bool>.Failure("Det finns kunder kopplade till adressen.");
+        }
+        return OperationResult<bool>.Success("Det finns inga kunder kopplade till adressen.");
     }
 
     public async Task<OperationResult<AddressDto>> CreateAddressAsync(AddressDto address)
@@ -36,13 +37,7 @@ public class AddressService(IAddressRepository addressRepository, EagerLoadingCo
 
             if (existingAddressResult.IsSuccess && existingAddressResult.Data != null)
             {
-                var addressDto = new AddressDto
-                {
-                    Id = existingAddressResult.Data.Id,
-                    StreetName = existingAddressResult.Data.StreetName,
-                    PostalCode = existingAddressResult.Data.PostalCode,
-                    City = existingAddressResult.Data.City
-                };
+                var addressDto = ConvertToDto(existingAddressResult.Data);
 
                 return OperationResult<AddressDto>.Success("Adressen finns redan i systemet.", addressDto);
             }
@@ -92,7 +87,7 @@ public class AddressService(IAddressRepository addressRepository, EagerLoadingCo
             }
 
             OperationResult<bool> hasCustomersResult = await AddressHasCustomersAsync(addressId);
-            if (hasCustomersResult.IsSuccess && hasCustomersResult.Data)
+            if (!hasCustomersResult.IsSuccess)
             {
                 return OperationResult<bool>.Failure("Adressen kan inte raderas eftersom den är kopplad till en eller flera kunder.");
             }
@@ -123,14 +118,7 @@ public class AddressService(IAddressRepository addressRepository, EagerLoadingCo
             var addressResult = await _addressRepository.GetOneAsync(a => a.Id == addressId);
             if (addressResult.IsSuccess && addressResult.Data != null)
             {
-                var address = addressResult.Data;
-                var addressDto = new AddressDto
-                {
-                    Id = address.Id,
-                    StreetName = address.StreetName,
-                    PostalCode = address.PostalCode,
-                    City = address.City
-                };
+                var addressDto = ConvertToDto(addressResult.Data);
 
                 return OperationResult<AddressDto>.Success("Adressen hämtades framgångsrikt.", addressDto);
             }
@@ -152,29 +140,21 @@ public class AddressService(IAddressRepository addressRepository, EagerLoadingCo
         try
         {
             var addressEntitiesResult = await _addressRepository.GetAllAsync();
-
             if (addressEntitiesResult.IsSuccess && addressEntitiesResult.Data != null)
             {
-                var addressesDto = addressEntitiesResult.Data.Select(addressEntity => new AddressDto
+                var addressesDto = new List<AddressDto>();
+                foreach (var addressEntity in addressEntitiesResult.Data)
                 {
-                    Id = addressEntity.Id,
-                    StreetName = addressEntity.StreetName,
-                    PostalCode = addressEntity.PostalCode,
-                    City = addressEntity.City,
-                }).ToList();
-
-                if (addressesDto.Any())
-                {
-                    return OperationResult<IEnumerable<AddressDto>>.Success("Adresser hämtades framgångsrikt.", addressesDto);
+                    var dto = ConvertToDto(addressEntity);
+                    var hasCustomersResult = await AddressHasCustomersAsync(addressEntity.Id);
+                    dto.HasCustomers = !hasCustomersResult.IsSuccess;
+                    addressesDto.Add(dto);
                 }
-                else
-                {
-                    return OperationResult<IEnumerable<AddressDto>>.Failure("Inga adresser hittades.");
-                }
+                return OperationResult<IEnumerable<AddressDto>>.Success("Adresser hämtades framgångsrikt.", addressesDto);
             }
             else
             {
-                return OperationResult<IEnumerable<AddressDto>>.Failure("Det gick inte att hämta adresserna.");
+                return OperationResult<IEnumerable<AddressDto>>.Failure("Inga adresser hittades.");
             }
         }
         catch (Exception ex)
@@ -210,14 +190,7 @@ public class AddressService(IAddressRepository addressRepository, EagerLoadingCo
 
                 if (updateResult.IsSuccess)
                 {
-                    var updatedEntity = updateResult.Data;
-                    var updatedDto = new AddressDto
-                    {
-                        Id = updatedEntity.Id,
-                        StreetName = updatedEntity.StreetName,
-                        PostalCode = updatedEntity.PostalCode,
-                        City = updatedEntity.City
-                    };
+                    var updatedDto = ConvertToDto(updateResult.Data);
 
                     return OperationResult<AddressDto>.Success("Adressen uppdaterades framgångsrikt.", updatedDto);
                 }
@@ -236,5 +209,16 @@ public class AddressService(IAddressRepository addressRepository, EagerLoadingCo
             Debug.WriteLine("ERROR :: " + ex.Message);
             return OperationResult<AddressDto>.Failure("Ett internt fel inträffade när adressen skulle uppdateras.");
         }
+    }
+
+    private AddressDto ConvertToDto(AddressEntity addressEntity)
+    {
+        return new AddressDto
+        {
+            Id = addressEntity.Id,
+            StreetName = addressEntity.StreetName,
+            PostalCode = addressEntity.PostalCode,
+            City = addressEntity.City
+        };
     }
 }

@@ -38,18 +38,7 @@ public class ProductReviewService(IProductReviewRepository productReviewReposito
                 return OperationResult<ProductReviewDto>.Failure("Det gick inte att skapa recensionen.");
             }
 
-            var createdReviewDto = new ProductReviewDto
-            {
-                Id = reviewResult.Data.Id,
-                ReviewName = reviewResult.Data.ReviewName,
-                ReviewText = reviewResult.Data.ReviewText,
-                ProductId = product.Id,
-                Product = new ProductDto()
-                {
-                    Id = productResult.Data.Id,
-                    Title = productResult.Data.Title,
-                }
-            };
+            var createdReviewDto = ConvertToDto(reviewResult.Data);
             return OperationResult<ProductReviewDto>.Success("Recensionen skapades framgångsrikt.", createdReviewDto);
         }
         catch (Exception ex)
@@ -97,22 +86,9 @@ public class ProductReviewService(IProductReviewRepository productReviewReposito
 
             if (reviewEntitiesResult.IsSuccess && reviewEntitiesResult.Data != null)
             {
-                const int previewLength = 40;
 
-                var reviewDto = reviewEntitiesResult.Data.Select(reviewEntity => new ProductReviewDto
-                {
-                    Id = reviewEntity.Id,
-                    ReviewText = reviewEntity.ReviewText.Length > previewLength
-                          ? reviewEntity.ReviewText.Substring(0, previewLength) + "..."
-                          : reviewEntity.ReviewText,
-                    ReviewName = reviewEntity.ReviewName,
-                    ProductId = reviewEntity.ProductId,
-                    Product = new ProductDto
-                    {
-                        ArticleNumber = reviewEntity.Product.ArticleNumber,
-                        Title = reviewEntity.Product.Title
-                    }
-                }).ToList();
+
+                var reviewDto = reviewEntitiesResult.Data.Select(reviewEntity => ConvertToDto(reviewEntity, true)).ToList();
 
                 if (reviewDto.Any())
                 {
@@ -147,20 +123,7 @@ public class ProductReviewService(IProductReviewRepository productReviewReposito
 
             var reviewEntity = reviewResult.Data;
 
-            var reviewDto = new ProductReviewDto
-            {
-                Id = reviewEntity.Id,
-                ReviewText = reviewEntity.ReviewText,
-                ReviewName = reviewEntity.ReviewName,
-                Product = new ProductDto
-                {
-                    Id = reviewEntity.Id,
-                    ArticleNumber = reviewEntity.Product.ArticleNumber,
-                    Title = reviewEntity.Product.Title
-                }
-
-
-            };
+            var reviewDto = ConvertToDto(reviewEntity);
             return OperationResult<ProductReviewDto>.Success("Recensionen hämtades framgångsrikt.", reviewDto);
         }
         catch (Exception ex)
@@ -224,13 +187,7 @@ public class ProductReviewService(IProductReviewRepository productReviewReposito
 
                 if (updateResult.IsSuccess)
                 {
-                    var updatedEntity = updateResult.Data;
-                    var updatedDto = new ProductReviewDto
-                    {
-                        Id = updatedEntity.Id,
-                        ReviewText = updatedEntity.ReviewText
-                    };
-
+                    var updatedDto = ConvertToDto(updateResult.Data);
                     return OperationResult<ProductReviewDto>.Success("Recensionen uppdaterades framgångsrikt.", updatedDto);
                 }
                 else
@@ -248,5 +205,26 @@ public class ProductReviewService(IProductReviewRepository productReviewReposito
             Debug.WriteLine("ERROR :: " + ex.Message);
             return OperationResult<ProductReviewDto>.Failure("Ett internt fel inträffade när adressen skulle uppdateras.");
         }
+    }
+
+    private ProductReviewDto ConvertToDto(ProductReview reviewEntity, bool previewReviewText = false)
+    {
+        const int previewLength = 40;
+        string reviewText = previewReviewText && reviewEntity.ReviewText.Length > previewLength
+                         ? reviewEntity.ReviewText.Substring(0, previewLength) + "..."
+                         : reviewEntity.ReviewText;
+        return new ProductReviewDto
+        {
+            Id = reviewEntity.Id,
+            ReviewText = reviewText,
+            ReviewName = reviewEntity.ReviewName,
+            ProductId = reviewEntity.ProductId,
+            Product = reviewEntity.Product != null ? new ProductDto
+            {
+                Id = reviewEntity.Product.Id,
+                ArticleNumber = reviewEntity.Product.ArticleNumber,
+                Title = reviewEntity.Product.Title
+            } : null!
+        };
     }
 }

@@ -1,16 +1,14 @@
 ﻿using ApplicationCore.ProductCatalog.Dtos;
 using ApplicationCore.ProductCatalog.Interfaces;
-using ApplicationCore.ProductCatalog.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 using System.Windows;
 
 namespace PresentationAppWpf.Mvvm.ViewModels.ProductViewModels;
 
-public partial class ProductListViewModel(IServiceProvider serviceProvider, IProductService productService) : ObservableObject
+public partial class ProductListViewModel(IServiceProvider serviceProvider, IProductService productService) : BaseViewModel
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
     private readonly IProductService _productService = productService;
@@ -23,19 +21,6 @@ public partial class ProductListViewModel(IServiceProvider serviceProvider, IPro
     {
         get => _selectedProduct!;
         set => SetProperty(ref _selectedProduct, value);
-    }
-
-    private SnackbarMessageQueue _messageQueue = new(TimeSpan.FromSeconds(3));
-
-    public SnackbarMessageQueue MessageQueue
-    {
-        get { return _messageQueue; }
-        set { SetProperty(ref _messageQueue, value); }
-    }
-
-    public void ShowMessage(string message)
-    {
-        MessageQueue.Enqueue(message);
     }
 
     public async Task LoadProductsAsync()

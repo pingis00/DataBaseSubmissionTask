@@ -5,4 +5,5 @@ namespace ApplicationCore.ProductCatalog.Interfaces;
 
 public interface ICategoryRepository : IDataRepository<Category>
 {
+    Task<bool> HasProductsAsync(int categoryId);
 }

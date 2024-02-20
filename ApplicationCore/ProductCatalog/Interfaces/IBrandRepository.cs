@@ -5,4 +5,5 @@ namespace ApplicationCore.ProductCatalog.Interfaces;
 
 public interface IBrandRepository : IDataRepository<Brand>
 {
+    Task<bool> HasProductsAsync(int brandId);
 }

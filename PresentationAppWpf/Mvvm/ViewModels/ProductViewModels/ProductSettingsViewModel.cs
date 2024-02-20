@@ -1,28 +1,18 @@
-﻿using ApplicationCore.Business.Dtos;
-using ApplicationCore.ProductCatalog.Dtos;
+﻿using ApplicationCore.ProductCatalog.Dtos;
 using ApplicationCore.ProductCatalog.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
-using System.Data;
 using System.Windows;
 
 namespace PresentationAppWpf.Mvvm.ViewModels.ProductViewModels;
 
-public partial class ProductSettingsViewModel : ObservableObject
+public partial class ProductSettingsViewModel(IServiceProvider serviceProvider, IBrandService brandService, ICategoryService categoryService) : BaseViewModel
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IBrandService _brandService;
-    private readonly ICategoryService _categoryService;
-
-    public ProductSettingsViewModel(IServiceProvider serviceProvider, IBrandService brandService, ICategoryService categoryService)
-    {
-        _serviceProvider = serviceProvider;
-        _brandService = brandService;
-        _categoryService = categoryService;
-    }
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
+    private readonly IBrandService _brandService = brandService;
+    private readonly ICategoryService _categoryService = categoryService;
 
     [ObservableProperty]
     public ObservableCollection<BrandDto> brands = [];
@@ -52,19 +42,6 @@ public partial class ProductSettingsViewModel : ObservableObject
 
     [ObservableProperty]
     private bool isEditMode = false;
-
-    private SnackbarMessageQueue _messageQueue = new(TimeSpan.FromSeconds(3));
-
-    public SnackbarMessageQueue MessageQueue
-    {
-        get { return _messageQueue; }
-        set { SetProperty(ref _messageQueue, value); }
-    }
-
-    public void ShowMessage(string message)
-    {
-        MessageQueue.Enqueue(message);
-    }
 
     private void ClearBrandForm()
     {

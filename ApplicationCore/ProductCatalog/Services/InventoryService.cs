@@ -8,10 +8,9 @@ using System.Diagnostics;
 
 namespace ApplicationCore.ProductCatalog.Services;
 
-public class InventoryService(IIventoryRepository inventoryRepository, DataContext dataContext) : IInventoryService
+public class InventoryService(IIventoryRepository inventoryRepository) : IInventoryService
 {
     private readonly IIventoryRepository _inventoryRepository = inventoryRepository;
-    private readonly DataContext _dataContext = dataContext;
 
     public async Task<OperationResult<InventoryDto>> CreateInventoryAsync(InventoryDto inventory)
     {
@@ -46,12 +45,7 @@ public class InventoryService(IIventoryRepository inventoryRepository, DataConte
                 }
                 var newInventoryEntity = newInventoryEntityResult.Data;
 
-                var newInventoryDto = new InventoryDto
-                {
-                    ProductId = newInventoryEntity.ProductId,
-                    Quantity = newInventoryEntity.Quantity,
-                    Price = newInventoryEntity.Price,
-                };
+                var newInventoryDto = ConvertToDto(newInventoryEntityResult.Data);
 
                 return OperationResult<InventoryDto>.Success("Inventariet skapades framgångrikt", newInventoryDto);
             }
@@ -76,17 +70,7 @@ public class InventoryService(IIventoryRepository inventoryRepository, DataConte
 
             if (inventoryEntitiesResult.IsSuccess && inventoryEntitiesResult.Data != null)
             {
-                var inventoriesDto = inventoryEntitiesResult.Data.Select(inventoryEntity => new InventoryDto
-                {
-                    Id = inventoryEntity.ProductId,
-                    Quantity = inventoryEntity.Quantity,
-                    Price = inventoryEntity.Price,
-                    Product = new ProductDto
-                    {
-                        ArticleNumber = inventoryEntity.Product.ArticleNumber,
-                        Title = inventoryEntity.Product.Title,
-                    }
-                }).ToList();
+                var inventoriesDto = inventoryEntitiesResult.Data.Select(ConvertToDetailedDto).ToList();
 
                 if (inventoriesDto.Any())
                 {
@@ -116,18 +100,7 @@ public class InventoryService(IIventoryRepository inventoryRepository, DataConte
             var inventoryResult = await _inventoryRepository.ProductGetOneAsync(i => i.ProductId == inventoryId);
             if (inventoryResult.IsSuccess && inventoryResult.Data != null)
             {
-                var inventory = inventoryResult.Data;
-                var inventoryto = new InventoryDto
-                {
-                    ProductId = inventory.ProductId,
-                    Quantity = inventory.Quantity,
-                    Price = inventory.Price,
-                    Product = new ProductDto
-                    {
-                        ArticleNumber = inventory.Product.ArticleNumber,
-                        Title = inventory.Product.Title,
-                    }
-                };
+                var inventoryto = ConvertToDetailedDto(inventoryResult.Data);
                 return OperationResult<InventoryDto>.Success("Inventariet hämtades framgångsrikt.", inventoryto);
             }
             else
@@ -165,22 +138,14 @@ public class InventoryService(IIventoryRepository inventoryRepository, DataConte
                     entityToUpdate
                 );
 
-                if (updateResult.IsSuccess)
-                {
-                    var updatedEntity = updateResult.Data;
-                    var updatedDto = new InventoryDto
-                    {
-                        ProductId = updatedEntity.ProductId,
-                        Quantity = updatedEntity.Quantity,
-                        Price = updatedEntity.Price
-                    };
-
-                    return OperationResult<InventoryDto>.Success("Inventariet uppdaterades framgångsrikt.", updatedDto);
-                }
-                else
+                if (!updateResult.IsSuccess)
                 {
                     return OperationResult<InventoryDto>.Failure("Det gick inte att uppdatera inventariet.");
                 }
+                var updatedDto = ConvertToDto(updateResult.Data);
+
+                return OperationResult<InventoryDto>.Success("Inventariet uppdaterades framgångsrikt.", updatedDto);
+
             }
             else
             {
@@ -192,5 +157,32 @@ public class InventoryService(IIventoryRepository inventoryRepository, DataConte
             Debug.WriteLine("ERROR :: " + ex.Message);
             return OperationResult<InventoryDto>.Failure("Ett internt fel inträffade när inventariet skulle uppdateras.");
         }
+    }
+
+    private InventoryDto ConvertToDto(Inventory inventory)
+    {
+        return new InventoryDto
+        {
+            Id = inventory.ProductId,
+            Price = inventory.Price,
+            Quantity = inventory.Quantity,
+        };
+    }
+
+    private InventoryDto ConvertToDetailedDto(Inventory inventory)
+    {
+        return new InventoryDto
+        {
+            Id = inventory.ProductId,
+            Quantity = inventory.Quantity,
+            Price = inventory.Price,
+            ProductId = inventory.Product.Id,
+            Product = new ProductDto
+            {
+                Id= inventory.ProductId,
+                ArticleNumber = inventory.Product.ArticleNumber,
+                Title = inventory.Product.Title,
+            }
+        };
     }
 }

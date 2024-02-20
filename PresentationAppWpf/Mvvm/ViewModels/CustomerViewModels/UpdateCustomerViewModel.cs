@@ -1,20 +1,15 @@
 ﻿using ApplicationCore.Business.Dtos;
-using ApplicationCore.Business.Helpers;
 using ApplicationCore.Business.Interfaces;
-using ApplicationCore.Business.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
-using PresentationAppWpf.Mvvm.ViewModels.ProductViewModels;
 using PresentationAppWpf.Validation;
-using System;
 using System.Collections.ObjectModel;
-using System.Windows;
+
 
 namespace PresentationAppWpf.Mvvm.ViewModels;
 
-public partial class UpdateCustomerViewModel(IServiceProvider serviceProvider, ICustomerService customerService, IRoleService roleService, IContactPreferenceService contactPreferenceService) : ObservableObject
+public partial class UpdateCustomerViewModel(IServiceProvider serviceProvider, ICustomerService customerService, IRoleService roleService, IContactPreferenceService contactPreferenceService) : BaseViewModel
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
     private readonly ICustomerService _customerService = customerService;
@@ -26,19 +21,6 @@ public partial class UpdateCustomerViewModel(IServiceProvider serviceProvider, I
     private UpdateCustomerDto? updateCustomerDto;
     public ObservableCollection<RoleDto> AvailableRoles { get; private set; } = [];
     public ObservableCollection<ContactPreferenceDto> AvailableContactMethods { get; private set; } = [];
-
-    private SnackbarMessageQueue _messageQueue = new(TimeSpan.FromSeconds(3));
-
-    public SnackbarMessageQueue MessageQueue
-    {
-        get { return _messageQueue; }
-        set { SetProperty(ref _messageQueue, value); }
-    }
-
-    public void ShowMessage(string message)
-    {
-        MessageQueue.Enqueue(message);
-    }
 
     public async Task InitializeAsync()
     {

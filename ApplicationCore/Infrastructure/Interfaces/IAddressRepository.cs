@@ -5,4 +5,5 @@ namespace ApplicationCore.Infrastructure.Interfaces;
 
 public interface IAddressRepository : IRepository<AddressEntity>
 {
+    Task<bool> HasCustomersAsync(int addressId);
 }

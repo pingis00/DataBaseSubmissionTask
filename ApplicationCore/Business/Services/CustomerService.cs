@@ -4,8 +4,6 @@ using ApplicationCore.Business.Interfaces;
 using ApplicationCore.Infrastructure.Contexts;
 using ApplicationCore.Infrastructure.Entities;
 using ApplicationCore.Infrastructure.Interfaces;
-using ApplicationCore.Infrastructure.Repositories;
-using BCrypt.Net;
 using System.Diagnostics;
 
 namespace ApplicationCore.Business.Services;
@@ -83,14 +81,7 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
 
                 var customerEntity = createCustomerEntityResult.Data;
 
-                var newCustomerDto = new CustomerRegistrationDto
-                {
-                    Id = customerEntity.Id,
-                    FirstName = customerEntity.FirstName,
-                    LastName = customerEntity.LastName,
-                    Email = customerEntity.Email,
-                    PhoneNumber = customerEntity.PhoneNumber
-                };
+                var newCustomerDto = ConvertToRegistrationDto(createCustomerEntityResult.Data);
 
                 await transaction.CommitAsync();
                 return OperationResult<CustomerRegistrationDto>.Success("Adressen skapades framgångrikt", newCustomerDto);
@@ -150,28 +141,7 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
 
             if (customerEntitiesResult.IsSuccess && customerEntitiesResult.Data != null)
             {
-                var customersDto = customerEntitiesResult.Data.Select(customerEntity => new CustomerListDto
-                {
-                    Id = customerEntity.Id,
-                    FirstName = customerEntity.FirstName,
-                    LastName = customerEntity.LastName,
-                    Email = customerEntity.Email,
-                    PhoneNumber = customerEntity.PhoneNumber,
-                    Address = new AddressDto
-                    {
-                        StreetName = customerEntity.Address.StreetName,
-                        City = customerEntity.Address.City,
-                        PostalCode = customerEntity.Address.PostalCode
-                    },
-                    Role = new RoleDto
-                    {
-                        RoleName = customerEntity.Role.RoleName
-                    },
-                    ContactPreference = new ContactPreferenceDto
-                    {
-                        PreferredContactMethod = customerEntity.ContactPreference.PreferredContactMethod
-                    }
-                }).ToList();
+                var customersDto = customerEntitiesResult.Data.Select(ConvertToCustomerListDto).ToList();
 
                 if (customersDto.Any())
                 {
@@ -225,31 +195,7 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
             {
                 var customer = customerResult.Data;
 
-                var customerDto = new UpdateCustomerDto
-                {
-                    Id = customer.Id,
-                    FirstName = customer.FirstName,
-                    LastName = customer.LastName,
-                    Email = customer.Email,
-                    PhoneNumber = customer.PhoneNumber,
-                    Address = new AddressDto
-                    {
-                        StreetName = customer.Address.StreetName,
-                        PostalCode = customer.Address.PostalCode,
-                        City = customer.Address.City,
-                    },
-                    Role = new RoleDto
-                    {
-                        RoleName = customer.Role.RoleName,
-
-                    },
-                    ContactPreference = new ContactPreferenceDto
-                    {
-                        PreferredContactMethod = customer.ContactPreference.PreferredContactMethod
-
-                    }
-
-                };
+                var customerDto = ConvertToUpdateCustomerDto(customerResult.Data);
 
                 return OperationResult<UpdateCustomerDto>.Success("Kunden hämtades framgångsrikt.", customerDto);
             }
@@ -380,5 +326,75 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
             Debug.WriteLine("ERROR :: " + ex.Message);
             return OperationResult<UpdateCustomerDto>.Failure("Ett internt fel inträffade när adressen skulle uppdateras.");
         }
+    }
+
+    private CustomerRegistrationDto ConvertToRegistrationDto(CustomerEntity customer)
+    {
+        return new CustomerRegistrationDto
+        {
+            Id = customer.Id,
+            FirstName = customer.FirstName,
+            LastName = customer.LastName,
+            Email = customer.Email,
+            PhoneNumber = customer.PhoneNumber,
+        };
+    }
+
+    private CustomerListDto ConvertToCustomerListDto(CustomerEntity customerEntity)
+    {
+        return new CustomerListDto
+        {
+            Id = customerEntity.Id,
+            FirstName = customerEntity.FirstName,
+            LastName = customerEntity.LastName,
+            Email = customerEntity.Email,
+            PhoneNumber = customerEntity.PhoneNumber,
+            Address = new AddressDto
+            {
+                Id = customerEntity.Address.Id,
+                StreetName = customerEntity.Address.StreetName,
+                City = customerEntity.Address.City,
+                PostalCode = customerEntity.Address.PostalCode
+            },
+            Role = new RoleDto
+            {
+                Id = customerEntity.Role.Id,
+                RoleName = customerEntity.Role.RoleName
+            },
+            ContactPreference = new ContactPreferenceDto
+            {
+                Id = customerEntity.ContactPreference.Id,
+                PreferredContactMethod = customerEntity.ContactPreference.PreferredContactMethod
+            }
+        };
+    }
+
+    private UpdateCustomerDto ConvertToUpdateCustomerDto(CustomerEntity customerEntity)
+    {
+        return new UpdateCustomerDto
+        {
+            Id = customerEntity.Id,
+            FirstName = customerEntity.FirstName,
+            LastName = customerEntity.LastName,
+            Email = customerEntity.Email,
+            PhoneNumber = customerEntity.PhoneNumber,
+            Address = new AddressDto
+            {
+                Id = customerEntity.Address.Id,
+                StreetName = customerEntity.Address.StreetName,
+                PostalCode = customerEntity.Address.PostalCode,
+                City = customerEntity.Address.City
+            },
+            Role = new RoleDto
+            {
+                Id = customerEntity.Role.Id,
+                RoleName = customerEntity.Role.RoleName
+            },
+            ContactPreference = new ContactPreferenceDto
+            {
+                Id = customerEntity.ContactPreference.Id,
+                PreferredContactMethod = customerEntity.ContactPreference.PreferredContactMethod
+            }
+        };
     }
 }

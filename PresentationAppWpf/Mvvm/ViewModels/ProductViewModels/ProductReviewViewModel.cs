@@ -1,48 +1,31 @@
-﻿using ApplicationCore.Business.Dtos;
-using ApplicationCore.ProductCatalog.Dtos;
+﻿using ApplicationCore.ProductCatalog.Dtos;
 using ApplicationCore.ProductCatalog.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 
 namespace PresentationAppWpf.Mvvm.ViewModels.ProductViewModels;
 
-public partial class ProductReviewViewModel : ObservableObject
+public partial class ProductReviewViewModel : BaseViewModel
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IProductReviewService _productReviewService;
-    private readonly IProductService _productService;
 
     [ObservableProperty]
     public ProductReviewDto? productReviewDto;
     [ObservableProperty]
     private ObservableCollection<ProductReviewDto> productReviews = [];
 
-    public ProductReviewViewModel(IServiceProvider serviceProvider, IProductReviewService productReviewService, IProductService productService)
+    public ProductReviewViewModel(IServiceProvider serviceProvider, IProductReviewService productReviewService)
     {
         _serviceProvider = serviceProvider;
         _productReviewService = productReviewService;
-        _productService = productService;
 
         ProductReviewDto = new ProductReviewDto
         {
             Product = new ProductDto()
         };
-    }
-
-    private SnackbarMessageQueue _messageQueue = new(TimeSpan.FromSeconds(3));
-
-    public SnackbarMessageQueue MessageQueue
-    {
-        get { return _messageQueue; }
-        set { SetProperty(ref _messageQueue, value); }
-    }
-
-    public void ShowMessage(string message)
-    {
-        MessageQueue.Enqueue(message);
     }
 
     public async Task LoadProductReviewsAsync()

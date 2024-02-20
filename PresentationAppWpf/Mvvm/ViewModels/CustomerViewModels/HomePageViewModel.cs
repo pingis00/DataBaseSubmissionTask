@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using PresentationAppWpf.Mvvm.ViewModels.CustomerViewModels;
 using PresentationAppWpf.Mvvm.ViewModels.ProductViewModels;
 
 namespace PresentationAppWpf.Mvvm.ViewModels;
@@ -25,9 +26,10 @@ public partial class HomePageViewModel(IServiceProvider serviceProvider) : Obser
         var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
         var registerViewModel = _serviceProvider.GetRequiredService<RegisterCustomerViewModel>();
 
-        await registerViewModel.InitializeAsync();
+        await registerViewModel.LoadRolesAndPreferencesAsync();
         mainViewModel.CurrentViewModel = registerViewModel;
     }
+
     [RelayCommand]
     private async Task NavigateToCustomerList()
     {
@@ -37,6 +39,7 @@ public partial class HomePageViewModel(IServiceProvider serviceProvider) : Obser
         var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
         mainViewModel.CurrentViewModel = customerListViewModel;
     }
+
     [RelayCommand]
     private async Task NavigateToCustomerReview()
     {
@@ -45,6 +48,16 @@ public partial class HomePageViewModel(IServiceProvider serviceProvider) : Obser
 
         var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
         mainViewModel.CurrentViewModel = customerReviewViewModel;
+    }
+
+    [RelayCommand]
+    private async Task NavigateToAddressList()
+    {
+        var customerListViewModel = _serviceProvider.GetRequiredService<AddressListViewModel>();
+        await customerListViewModel.LoadAddressesAsync();
+
+        var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
+        mainViewModel.CurrentViewModel = customerListViewModel;
     }
 
     [RelayCommand]

@@ -1,7 +1,4 @@
-﻿using ApplicationCore.Business.Dtos;
-using ApplicationCore.Business.Helpers;
-using ApplicationCore.Business.Interfaces;
-using ApplicationCore.Infrastructure.Entities;
+﻿using ApplicationCore.Business.Helpers;
 using ApplicationCore.ProductCatalog.Context;
 using ApplicationCore.ProductCatalog.Dtos;
 using ApplicationCore.ProductCatalog.Entities;
@@ -67,15 +64,7 @@ public class ProductService(IProductRepository productRepository, IBrandService 
                     return OperationResult<CompleteProductDto>.Failure(inventoryResult.Message);
                 }
 
-                var newProductDto = new CompleteProductDto
-                {
-                    ArticleNumber = createProductResult.Data.ArticleNumber,
-                    Title = createProductResult.Data.Title,
-                    ProductDescription = createProductResult.Data.ProductDescription,
-                    Brand = brandResult.Data,
-                    Category = categoryResult.Data,
-                    Inventory = inventoryResult.Data
-                };
+                var newProductDto = ConvertToCompleteProductDto(createProductResult.Data, brandResult.Data, categoryResult.Data, inventoryResult.Data);
 
                 await transaction.CommitAsync();
                 return OperationResult<CompleteProductDto>.Success("Produkten skapades framgångrikt", newProductDto);
@@ -135,27 +124,7 @@ public class ProductService(IProductRepository productRepository, IBrandService 
 
             if (productEntitiesResult.IsSuccess && productEntitiesResult.Data != null)
             {
-                var productsDto = productEntitiesResult.Data.Select(productEntity => new CompleteProductDto
-                {
-                    Id = productEntity.Id,
-                    ArticleNumber = productEntity.ArticleNumber,
-                    Title = productEntity.Title,
-                    ProductDescription = productEntity.ProductDescription,
-                    Brand = new BrandDto
-                    {
-                        BrandName = productEntity.Brand.BrandName
-                    },
-                    Category = new CategoryDto 
-                    {
-                        CategoryName = productEntity.Category.CategoryName
-                    },
-                    Inventory = new InventoryDto
-                    {
-                        Quantity = productEntity.Inventory?.Quantity ?? 0,
-                        Price = productEntity.Inventory?.Price ?? 0m,
-                    }
-
-                }).ToList();
+                var productsDto = productEntitiesResult.Data.Select(ConvertToCompleteProductDtoFromEntity).ToList();
 
                 if (productsDto.Any())
                 {
@@ -185,28 +154,7 @@ public class ProductService(IProductRepository productRepository, IBrandService 
             var productResult = await _productRepository.ProductGetOneAsync(p => p.Id == productId);
             if (productResult.IsSuccess && productResult.Data != null)
             {
-                var product = productResult.Data;
-
-                var productDto = new CompleteProductDto
-                {
-                    Id = productId,
-                    ArticleNumber = product.ArticleNumber,
-                    Title = product.Title,
-                    ProductDescription = product.ProductDescription,
-                    Brand = new BrandDto
-                    {
-                        BrandName = product.Brand.BrandName
-                    },
-                    Category = new CategoryDto
-                    {
-                        CategoryName = product.Category.CategoryName
-                    },
-                    Inventory = new InventoryDto
-                    {
-                        Quantity = product.Inventory?.Quantity ?? 0,
-                        Price = product.Inventory?.Price ?? 0m
-                    }
-                };
+                var productDto = ConvertToCompleteProductDtoFromEntity(productResult.Data);
 
                 return OperationResult<CompleteProductDto>.Success("Kunden hämtades framgångsrikt.", productDto);
             }
@@ -269,15 +217,7 @@ public class ProductService(IProductRepository productRepository, IBrandService 
                         return OperationResult<UpdateProductDto>.Failure("Det gick inte att uppdatera produkten.");
                     }
                     var updatedEntity = updateResult.Data;
-                    var updatedDto = new UpdateProductDto
-                    {
-                        Id = updatedEntity.Id,
-                        ArticleNumber = updatedEntity.ArticleNumber,
-                        Title = updatedEntity.Title,
-                        ProductDescription = updatedEntity.ProductDescription,
-                        Brand = brandResult.Data,
-                        Category = categoryResult.Data,
-                    };
+                    var updatedDto = ConvertToUpdateProductDto(updatedEntity, brandResult.Data, categoryResult.Data);
                     return OperationResult<UpdateProductDto>.Success("Kunden uppdaterades framgångsrikt.", updatedDto);
 
                 }
@@ -342,4 +282,46 @@ public class ProductService(IProductRepository productRepository, IBrandService 
             return OperationResult<ProductDto>.Failure("Ett internt fel inträffade när artikelnumret skulle hämtas.");
         }
     }
+
+    private CompleteProductDto ConvertToCompleteProductDto(Product product, BrandDto brand, CategoryDto category, InventoryDto inventory)
+    {
+        return new CompleteProductDto
+        {
+            ArticleNumber = product.ArticleNumber,
+            Title = product.Title,
+            ProductDescription = product.ProductDescription,
+            Brand = brand,
+            Category = category,
+            Inventory = inventory
+        };
+    }
+
+    private CompleteProductDto ConvertToCompleteProductDtoFromEntity(Product productEntity)
+    {
+        return new CompleteProductDto
+        {
+            Id = productEntity.Id,
+            ArticleNumber = productEntity.ArticleNumber,
+            Title = productEntity.Title,
+            ProductDescription = productEntity.ProductDescription,
+            Brand = new BrandDto { BrandName = productEntity.Brand.BrandName },
+            Category = new CategoryDto { CategoryName = productEntity.Category.CategoryName },
+            Inventory = new InventoryDto { Quantity = productEntity.Inventory?.Quantity ?? 0, Price = productEntity.Inventory?.Price ?? 0m }
+        };
+    }
+
+    private UpdateProductDto ConvertToUpdateProductDto(Product updatedEntity, BrandDto brand, CategoryDto category)
+    {
+        return new UpdateProductDto
+        {
+            Id = updatedEntity.Id,
+            ArticleNumber = updatedEntity.ArticleNumber,
+            Title = updatedEntity.Title,
+            ProductDescription = updatedEntity.ProductDescription,
+            Brand = brand,
+            Category = category
+        };
+    }
+
+
 }

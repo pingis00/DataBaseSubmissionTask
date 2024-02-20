@@ -1,17 +1,14 @@
 ﻿using ApplicationCore.Business.Dtos;
 using ApplicationCore.Business.Interfaces;
-using ApplicationCore.Business.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 
 namespace PresentationAppWpf.Mvvm.ViewModels;
 
-public partial class CustomerListViewModel(IServiceProvider serviceProvider, ICustomerService customerService) : ObservableObject
+public partial class CustomerListViewModel(IServiceProvider serviceProvider, ICustomerService customerService) : BaseViewModel
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
     private readonly ICustomerService _customerService = customerService;
@@ -23,19 +20,6 @@ public partial class CustomerListViewModel(IServiceProvider serviceProvider, ICu
     {
         get => _selectedCustomer!;
         set => SetProperty(ref _selectedCustomer, value);
-    }
-
-    private SnackbarMessageQueue _messageQueue = new(TimeSpan.FromSeconds(3));
-
-    public SnackbarMessageQueue MessageQueue
-    {
-        get { return _messageQueue; }
-        set { SetProperty(ref _messageQueue, value); }
-    }
-
-    public void ShowMessage(string message)
-    {
-        MessageQueue.Enqueue(message);
     }
 
     public async Task LoadCustomersAsync()

@@ -4,8 +4,6 @@ using ApplicationCore.Business.Interfaces;
 using ApplicationCore.Infrastructure.Contexts;
 using ApplicationCore.Infrastructure.Entities;
 using ApplicationCore.Infrastructure.Interfaces;
-using ApplicationCore.Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace ApplicationCore.Business.Services;
@@ -44,13 +42,7 @@ public class RoleService(IRoleRepository roleRepository, EagerLoadingContext dbC
                 {
                     return OperationResult<RoleDto>.Failure("Det gick inte att skapa rollen.");
                 }
-                var newRoleEntity = newRoleEntityResult.Data;
-
-                var newRoleDto = new RoleDto
-                {
-                    Id = newRoleEntity.Id,
-                    RoleName= newRoleEntity.RoleName
-                };
+                var newRoleDto = ConvertToDto(newRoleEntityResult.Data);
 
                 return OperationResult<RoleDto>.Success("Rollen skapades framgångrikt", newRoleDto);
             }
@@ -81,7 +73,7 @@ public class RoleService(IRoleRepository roleRepository, EagerLoadingContext dbC
             var roleToDelete = roleToDeleteResult.Data;
 
 
-            var result = await _roleRepository.DeleteAsync(a => a.Id == roleToDelete.Id);
+            var result = await _roleRepository.DeleteAsync(r => r.Id == roleToDelete.Id);
             if (result.IsSuccess)
             {
                 return OperationResult<bool>.Success("Rollen raderades framgångsrikt.", true);
@@ -106,11 +98,7 @@ public class RoleService(IRoleRepository roleRepository, EagerLoadingContext dbC
 
             if (roleEntitiesResult.IsSuccess && roleEntitiesResult.Data != null)
             {
-                var rolesDto = roleEntitiesResult.Data.Select(roleEntity => new RoleDto
-                {
-                    Id = roleEntity.Id,
-                    RoleName = roleEntity.RoleName,
-                }).ToList();
+                var rolesDto = roleEntitiesResult.Data.Select(ConvertToDto).ToList();
 
                 if (rolesDto.Any())
                 {
@@ -138,20 +126,13 @@ public class RoleService(IRoleRepository roleRepository, EagerLoadingContext dbC
         try
         {
             var roleResult = await _roleRepository.GetOneAsync(r => r.Id == roleId);
-            if (roleResult.IsSuccess && roleResult.Data != null)
-            {
-                var role = roleResult.Data;
-                var roleDto = new RoleDto
-                {
-                    Id = role.Id,
-                    RoleName = role.RoleName
-                };
-                return OperationResult<RoleDto>.Success("Rollen hämtades framgångsrikt.", roleDto);
-            }
-            else
+            if (!roleResult.IsSuccess || roleResult.Data == null)
             {
                 return OperationResult<RoleDto>.Failure("Rollen kunde inte hittas.");
             }
+
+            var roleDto = ConvertToDto(roleResult.Data);
+            return OperationResult<RoleDto>.Success("Rollen hämtades framgångsrikt.", roleDto);
         }
         catch (Exception ex)
         {
@@ -162,7 +143,7 @@ public class RoleService(IRoleRepository roleRepository, EagerLoadingContext dbC
 
     public async Task<OperationResult<bool>> RoleHasCustomersAsync(int roleId)
     {
-        bool hasCustomers = await _dbContext.Customers.AnyAsync(c => c.RoleId == roleId);
+        bool hasCustomers = await _roleRepository.HasCustomersAsync(roleId);
         if (hasCustomers)
         {
             return OperationResult<bool>.Failure("Det finns kunder kopplade till rollen.");
@@ -192,21 +173,13 @@ public class RoleService(IRoleRepository roleRepository, EagerLoadingContext dbC
                     entityToUpdate
                 );
 
-                if (updateResult.IsSuccess)
+                if (!updateResult.IsSuccess)
                 {
-                    var updatedEntity = updateResult.Data;
-                    var updatedDto = new RoleDto
-                    {
-                        Id = updatedEntity.Id,
-                        RoleName = updatedEntity.RoleName,
-                    };
+                    return OperationResult<RoleDto>.Failure("Det gick inte att uppdatera rollen.");
+                }
 
-                    return OperationResult<RoleDto>.Success("Adressen uppdaterades framgångsrikt.", updatedDto);
-                }
-                else
-                {
-                    return OperationResult<RoleDto>.Failure("Det gick inte att uppdatera adressen.");
-                }
+                var updatedDto = ConvertToDto(updateResult.Data);
+                return OperationResult<RoleDto>.Success("Rollen uppdaterades framgångsrikt.", updatedDto);
             }
             else
             {
@@ -218,5 +191,14 @@ public class RoleService(IRoleRepository roleRepository, EagerLoadingContext dbC
             Debug.WriteLine("ERROR :: " + ex.Message);
             return OperationResult<RoleDto>.Failure("Ett internt fel inträffade när adressen skulle uppdateras.");
         }
+    }
+
+    private RoleDto ConvertToDto(RoleEntity roleEntity)
+    {
+        return new RoleDto
+        {
+            Id = roleEntity.Id,
+            RoleName = roleEntity.RoleName
+        };
     }
 }

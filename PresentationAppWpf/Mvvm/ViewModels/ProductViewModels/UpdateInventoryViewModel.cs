@@ -1,16 +1,13 @@
 ﻿using ApplicationCore.ProductCatalog.Dtos;
 using ApplicationCore.ProductCatalog.Interfaces;
-using ApplicationCore.ProductCatalog.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
-using PresentationAppWpf.Validation;
 using System.Collections.ObjectModel;
 
 namespace PresentationAppWpf.Mvvm.ViewModels.ProductViewModels;
 
-public partial class UpdateInventoryViewModel(IServiceProvider serviceProvider, IInventoryService inventoryService, IProductService productService) : ObservableObject
+public partial class UpdateInventoryViewModel(IServiceProvider serviceProvider, IInventoryService inventoryService, IProductService productService) : BaseViewModel
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
     private readonly IInventoryService _inventoryService = inventoryService;
@@ -19,19 +16,6 @@ public partial class UpdateInventoryViewModel(IServiceProvider serviceProvider, 
     [ObservableProperty]
     private InventoryDto? inventoryDto;
     public ObservableCollection<CompleteProductDto> AvailableProducts { get; private set; } = [];
-
-    private SnackbarMessageQueue _messageQueue = new(TimeSpan.FromSeconds(3));
-
-    public SnackbarMessageQueue MessageQueue
-    {
-        get { return _messageQueue; }
-        set { SetProperty(ref _messageQueue, value); }
-    }
-
-    public void ShowMessage(string message)
-    {
-        MessageQueue.Enqueue(message);
-    }
 
     public async Task InitializeInventory()
     {
@@ -76,7 +60,6 @@ public partial class UpdateInventoryViewModel(IServiceProvider serviceProvider, 
             ShowMessage("Inventarieuppdatering misslyckades.");
         }
     }
-
     private async Task NavigateBackToProductView()
     {
         var productInventoryViewModel = _serviceProvider.GetRequiredService<ProductInventoryViewModel>();

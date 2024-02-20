@@ -8,6 +8,8 @@
         xmlns:productviewmodel="clr-namespace:PresentationAppWpf.Mvvm.ViewModels.ProductViewModels"
         xmlns:views="clr-namespace:PresentationAppWpf.Mvvm.Views.CustomerViews"
         xmlns:viewmodels="clr-namespace:PresentationAppWpf.Mvvm.ViewModels"
+        
+        xmlns:viewmodel="clr-namespace:PresentationAppWpf.Mvvm.ViewModels.CustomerViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
         WindowStartupLocation="CenterScreen"
         
@@ -38,6 +40,9 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewmodels:FullReviewViewModel}">
                 <views:FullReviewView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewmodel:AddressListViewModel}">
+                <views:AddressListView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type productviewmodel:CreateProductViewModel}">
                 <productviews:CreateProductView/>

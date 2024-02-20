@@ -10,7 +10,7 @@ using System.Collections.ObjectModel;
 
 namespace PresentationAppWpf.Mvvm.ViewModels.ProductViewModels;
 
-public partial class UpdateProductViewModel(IServiceProvider serviceProvider, IProductService productService, IBrandService brandService, ICategoryService categoryService) : ObservableObject
+public partial class UpdateProductViewModel(IServiceProvider serviceProvider, IProductService productService, IBrandService brandService, ICategoryService categoryService) : BaseViewModel
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
     private readonly IProductService _productService = productService;
@@ -22,19 +22,6 @@ public partial class UpdateProductViewModel(IServiceProvider serviceProvider, IP
     private UpdateProductDto? updateProductDto;
     public ObservableCollection<BrandDto> AvailableBrands { get; private set; } = [];
     public ObservableCollection<CategoryDto> AvailableCategories { get; private set; } = [];
-
-    private SnackbarMessageQueue _messageQueue = new(TimeSpan.FromSeconds(3));
-
-    public SnackbarMessageQueue MessageQueue
-    {
-        get { return _messageQueue; }
-        set { SetProperty(ref _messageQueue, value); }
-    }
-
-    public void ShowMessage(string message)
-    {
-        MessageQueue.Enqueue(message);
-    }
 
     public async Task InitializeBrandsAndCategories()
     {

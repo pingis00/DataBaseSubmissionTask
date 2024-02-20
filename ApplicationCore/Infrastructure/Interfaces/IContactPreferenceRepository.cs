@@ -5,4 +5,5 @@ namespace ApplicationCore.Infrastructure.Interfaces;
 
 public interface IContactPreferenceRepository : IRepository<ContactPreferenceEntity>
 {
+    Task<bool> HasCustomersAsync(int contactPreferenceId);
 }
