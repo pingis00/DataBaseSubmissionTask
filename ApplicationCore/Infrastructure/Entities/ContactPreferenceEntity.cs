@@ -10,5 +10,5 @@ public class ContactPreferenceEntity
     [Column(TypeName = "nvarchar(50)")]
     public string PreferredContactMethod { get; set; } = null!;
 
-    public ICollection<CustomerEntity> Customers { get; set; } = new List<CustomerEntity>();
+    public ICollection<CustomerEntity> Customers { get; set; } = [];
 }

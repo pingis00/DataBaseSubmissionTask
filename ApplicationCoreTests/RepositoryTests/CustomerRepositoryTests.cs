@@ -86,7 +86,7 @@ public class CustomerRepositoryTests
     [Fact]
     public async Task GetAllAsync_ShouldReturnAllRecords()
     {
-        var (customerRepository, customerEntity) = SetupCustomerTest();
+        var (customerRepository, customerEntity) = await SetupCustomerWithRelationsTest();
         await customerRepository.CreateAsync(customerEntity);
 
         var result = await customerRepository.GetAllAsync();
@@ -100,7 +100,7 @@ public class CustomerRepositoryTests
     [Fact]
     public async Task GetOneAsync_ShouldReturnSingleRecordById()
     {
-        var (customerRepository, customerEntity) = SetupCustomerTest();
+        var (customerRepository, customerEntity) = await SetupCustomerWithRelationsTest();
         await customerRepository.CreateAsync(customerEntity);
 
         var result = await customerRepository.GetOneAsync(c => c.Id == customerEntity.Id);
@@ -123,7 +123,7 @@ public class CustomerRepositoryTests
     [Fact]
     public async Task UpdateAsync_ShouldModifyExistingRecord()
     {
-        var (customerRepository, customerEntity) =  SetupCustomerTest();
+        var (customerRepository, customerEntity) = await SetupCustomerWithRelationsTest();
         var createdEntity = await customerRepository.CreateAsync(customerEntity);
         var updatedEntity = new CustomerEntity
         {
@@ -156,6 +156,51 @@ public class CustomerRepositoryTests
             Email = "test@example.com",
             PhoneNumber = "0123456789",
             Password = "SecurePassword123",
+        };
+
+        return (customerRepository, customerEntity);
+    }
+
+    private async Task<(CustomerRepository, CustomerEntity)> SetupCustomerWithRelationsTest()
+    {
+        var addressRepository = new AddressRepository(_context);
+        var addressEntity = new AddressEntity
+        {
+            StreetName = "Bluffgatan",
+            PostalCode = "12345",
+            City = "Helsingborg"
+        };
+        var addressResult = await addressRepository.CreateAsync(addressEntity);
+        var createdAddress = addressResult.Data;
+
+        var contactPreferenceRepository = new ContactPreferenceRepository(_context);
+        var contactPreferenceEntity = new ContactPreferenceEntity
+        {
+            PreferredContactMethod = "Brevduva",
+        };
+        var preferenceResult = await contactPreferenceRepository.CreateAsync(contactPreferenceEntity);
+        var createdPreference = preferenceResult.Data;
+
+        var roleRepository = new RoleRepository(_context);
+        var roleEntity = new RoleEntity
+        {
+            RoleName = "Testroll",
+        };
+        var roleResult = await roleRepository.CreateAsync(roleEntity);
+        var createdRole = roleResult.Data;
+
+
+        var customerRepository = new CustomerRepository(_context);
+        var customerEntity = new CustomerEntity
+        {
+            FirstName = "Test",
+            LastName = "Testsson",
+            Email = "test@example.com",
+            PhoneNumber = "0123456789",
+            Password = "SecurePassword123",
+            AddressId = createdAddress.Id,
+            RoleId = createdRole.Id,
+            ContactPreferenceId = createdPreference.Id,
         };
 
         return (customerRepository, customerEntity);

@@ -170,7 +170,7 @@ public class AddressRepsoitoryTests
         Assert.False(hasCustomers);
     }
 
-    private (AddressRepository, AddressEntity) SetupAddressTest()
+    public (AddressRepository, AddressEntity) SetupAddressTest()
     {
         var addressRepository = new AddressRepository(_context);
         var addressEntity = new AddressEntity

@@ -37,5 +37,5 @@ public class CustomerEntity
     public int ContactPreferenceId { get; set; }
     public ContactPreferenceEntity ContactPreference { get; set; } = null!;
 
-    public ICollection<CustomerReviewEntity> CustomerReviewEntities { get; set; } = new List<CustomerReviewEntity>();
+    public ICollection<CustomerReviewEntity> CustomerReviewEntities { get; set; } = [];
 }
