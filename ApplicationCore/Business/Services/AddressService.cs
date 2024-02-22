@@ -65,7 +65,7 @@ public class AddressService(IAddressRepository addressRepository) : IAddressServ
                     City = newAddressEntity.City
                 };
 
-                return OperationResult<AddressDto>.Success("Adressen skapades framgångrikt", newAddressDto);
+                return OperationResult<AddressDto>.Success("Adressen skapades framgångrikt.", newAddressDto);
             }
         }
         catch (Exception ex)
@@ -150,7 +150,7 @@ public class AddressService(IAddressRepository addressRepository) : IAddressServ
                     dto.HasCustomers = !hasCustomersResult.IsSuccess;
                     addressesDto.Add(dto);
                 }
-                return OperationResult<IEnumerable<AddressDto>>.Success("Adresser hämtades framgångsrikt.", addressesDto);
+                return OperationResult<IEnumerable<AddressDto>>.Success("Adresserna hämtades framgångsrikt.", addressesDto);
             }
             else
             {

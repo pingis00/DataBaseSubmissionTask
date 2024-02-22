@@ -54,7 +54,7 @@ public class ContactPreferenceServiceTests
     }
 
     [Fact]
-    public async Task DeleteRoleAsync_LinkedToCustomers_DeleteFails()
+    public async Task DeleteContactPreferenceAsync_LinkedToCustomers_DeleteFails()
     {
         var (contactPreferenceService, contactPreferenceDto) = await SetupContactPreferenceTestAsync();
 
@@ -79,7 +79,7 @@ public class ContactPreferenceServiceTests
     }
 
     [Fact]
-    public async Task GetAllContactPreferencesAsync_WithRoles_ReturnsContactPreferences()
+    public async Task GetAllContactPreferencesAsync_WithContactPreferences_ReturnsContactPreferences()
     {
         var (contactPreferenceService, _) = await SetupContactPreferenceTestAsync();
 
