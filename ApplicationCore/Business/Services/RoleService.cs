@@ -8,10 +8,9 @@ using System.Diagnostics;
 
 namespace ApplicationCore.Business.Services;
 
-public class RoleService(IRoleRepository roleRepository, EagerLoadingContext dbContext) : IRoleService
+public class RoleService(IRoleRepository roleRepository) : IRoleService
 {
     private readonly IRoleRepository _roleRepository = roleRepository;
-    private readonly EagerLoadingContext _dbContext = dbContext;
 
     public async Task<OperationResult<RoleDto>> CreateRoleAsync(RoleDto role)
     {
@@ -183,13 +182,13 @@ public class RoleService(IRoleRepository roleRepository, EagerLoadingContext dbC
             }
             else
             {
-                return OperationResult<RoleDto>.Failure("Adressen kunde inte hittas.");
+                return OperationResult<RoleDto>.Failure("Rollen kunde inte hittas.");
             }
         }
         catch (Exception ex)
         {
             Debug.WriteLine("ERROR :: " + ex.Message);
-            return OperationResult<RoleDto>.Failure("Ett internt fel inträffade när adressen skulle uppdateras.");
+            return OperationResult<RoleDto>.Failure("Ett internt fel inträffade när rollen skulle uppdateras.");
         }
     }
 

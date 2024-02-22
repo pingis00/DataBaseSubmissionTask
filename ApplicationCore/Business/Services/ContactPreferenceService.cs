@@ -9,10 +9,9 @@ using System.Diagnostics;
 
 namespace ApplicationCore.Business.Services;
 
-public class ContactPreferenceService(IContactPreferenceRepository contactPreferenceRepository, EagerLoadingContext dbContext) : IContactPreferenceService
+public class ContactPreferenceService(IContactPreferenceRepository contactPreferenceRepository) : IContactPreferenceService
 {
     private readonly IContactPreferenceRepository _contactPreferenceRepository = contactPreferenceRepository;
-    private readonly EagerLoadingContext _dbContext = dbContext;
 
     public async Task<OperationResult<bool>> ContactPreferenceHasCustomersAsync(int contactPreferenceId)
     {
