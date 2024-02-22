@@ -51,7 +51,7 @@ public class ContactPreferenceService(IContactPreferenceRepository contactPrefer
 
                 var newPreferenceDto = ConvertToDto(newPreferenceEntity);
 
-                return OperationResult<ContactPreferenceDto>.Success("Kontaktppreferensen skapades framgångrikt", newPreferenceDto);
+                return OperationResult<ContactPreferenceDto>.Success("Kontaktpreferensen skapades framgångrikt", newPreferenceDto);
             }
         }
         catch (Exception ex)
@@ -158,7 +158,7 @@ public class ContactPreferenceService(IContactPreferenceRepository contactPrefer
 
             if (!getPreferenceResult.IsSuccess)
             {
-                return OperationResult<ContactPreferenceDto>.Failure("Rollen kunde inte hittas.");
+                return OperationResult<ContactPreferenceDto>.Failure("Kontakpreferensen kunde inte hittas.");
             }
 
             var entityToUpdate = getPreferenceResult.Data;
@@ -176,22 +176,22 @@ public class ContactPreferenceService(IContactPreferenceRepository contactPrefer
                 {
                     var updatedDto = ConvertToDto(updateResult.Data);
 
-                    return OperationResult<ContactPreferenceDto>.Success("Adressen uppdaterades framgångsrikt.", updatedDto);
+                    return OperationResult<ContactPreferenceDto>.Success("Kontakpreferensen uppdaterades framgångsrikt.", updatedDto);
                 }
                 else
                 {
-                    return OperationResult<ContactPreferenceDto>.Failure("Det gick inte att uppdatera adressen.");
+                    return OperationResult<ContactPreferenceDto>.Failure("Det gick inte att uppdatera kontakpreferensen.");
                 }
             }
             else
             {
-                return OperationResult<ContactPreferenceDto>.Failure("Adressen kunde inte hittas.");
+                return OperationResult<ContactPreferenceDto>.Failure("Kontakpreferensen kunde inte hittas.");
             }
         }
         catch (Exception ex)
         {
             Debug.WriteLine("ERROR :: " + ex.Message);
-            return OperationResult<ContactPreferenceDto>.Failure("Ett internt fel inträffade när adressen skulle uppdateras.");
+            return OperationResult<ContactPreferenceDto>.Failure("Ett internt fel inträffade när Kontakpreferensen skulle uppdateras.");
         }
     }
 
