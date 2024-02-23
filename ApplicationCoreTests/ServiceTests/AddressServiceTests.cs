@@ -89,7 +89,7 @@ public class AddressServiceTests
     }
 
     [Fact]
-    public async Task GetAllAddressesAsync_Addresses_ReturnsFailure()
+    public async Task GetAllAddressesAsync_NoAddresses_ReturnsFailure()
     {
         var addressRepository = new AddressRepository(_context);
         var addressService = new AddressService(addressRepository);

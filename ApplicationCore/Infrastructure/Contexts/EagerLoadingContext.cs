@@ -1,5 +1,6 @@
 ﻿using ApplicationCore.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Identity.Client;
 
 namespace ApplicationCore.Infrastructure.Contexts
@@ -11,6 +12,12 @@ namespace ApplicationCore.Infrastructure.Contexts
         public virtual DbSet<ContactPreferenceEntity> ContactPreferences { get; set; }
         public virtual DbSet<CustomerEntity> Customers { get; set; }
         public virtual DbSet<CustomerReviewEntity> CustomersReviews { get; set;}
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+            optionsBuilder.ConfigureWarnings(x => x.Ignore(InMemoryEventId.TransactionIgnoredWarning));
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

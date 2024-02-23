@@ -84,7 +84,7 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
                 var newCustomerDto = ConvertToRegistrationDto(createCustomerEntityResult.Data);
 
                 await transaction.CommitAsync();
-                return OperationResult<CustomerRegistrationDto>.Success("Adressen skapades framgångrikt", newCustomerDto);
+                return OperationResult<CustomerRegistrationDto>.Success("Kunden skapades framgångrikt", newCustomerDto);
             }
         }
         catch (Exception ex)

@@ -10,11 +10,7 @@ public interface ICustomerDto
     string Email { get; set; }
     string? Password { get; set; }
     string PhoneNumber { get; set; }
-    string StreetName { get; set; }
-    string PostalCode { get; set; }
-    string City { get; set; }
-    string PreferredContactMethod { get; set; }
-    string RoleName { get; set; }
+
     AddressDto Address { get; set; }
 
     ContactPreferenceDto ContactPreference { get; set; }
