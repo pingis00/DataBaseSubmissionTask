@@ -143,46 +143,17 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
             {
                 var customersDto = customerEntitiesResult.Data.Select(ConvertToCustomerListDto).ToList();
 
-                if (customersDto.Any())
-                {
-                    return OperationResult<IEnumerable<CustomerListDto>>.Success("Adresser hämtades framgångsrikt.", customersDto);
-                }
-                else
-                {
-                    return OperationResult<IEnumerable<CustomerListDto>>.Failure("Inga adresser hittades.");
-                }
+                return OperationResult<IEnumerable<CustomerListDto>>.Success("Kunderna hämtades framgångsrikt.", customersDto);              
             }
             else
             {
-                return OperationResult<IEnumerable<CustomerListDto>>.Failure("Det gick inte att hämta kunderna.");
+                return OperationResult<IEnumerable<CustomerListDto>>.Failure("Inga kunder hittades.");
             }
         }
         catch (Exception ex)
         {
             Debug.WriteLine("ERROR :: " + ex.Message);
-            return OperationResult<IEnumerable<CustomerListDto>>.Failure("Ett internt fel inträffade när adresserna skulle hämtas.");
-        }
-    }
-
-    public async Task<OperationResult<CustomerRegistrationDto>> GetCustomerByEmailAsync(string email)
-    {
-        try
-        {
-            var customer = await _customerRepository.GetOneAsync(c => c.Email == email);
-
-            if (customer != null)
-            {
-                return OperationResult<CustomerRegistrationDto>.Failure("Epostadressen finns redan registrerad.");
-            }
-            else
-            {
-                return OperationResult<CustomerRegistrationDto>.Success("Ingen kund med angiven e-postadress finns, fortsätt med registrering.");
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine("ERROR :: " + ex.Message);
-            return OperationResult<CustomerRegistrationDto>.Failure("Ett internt fel inträffade när Emailen skulle hämtas.");
+            return OperationResult<IEnumerable<CustomerListDto>>.Failure("Ett internt fel inträffade när kunderna skulle hämtas.");
         }
     }
 
@@ -274,7 +245,6 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
                     return OperationResult<UpdateCustomerDto>.Failure("Rollen kunde inte Uppdateras.");
                 }
 
-                entityToUpdate = getCustomerResult.Data;
 
                 if (entityToUpdate != null)
                 {
@@ -303,9 +273,9 @@ public class CustomerService(ICustomerRepository customerRepository, IAddressSer
                         LastName = updatedEntity.LastName,
                         Email = updatedEntity.Email,
                         PhoneNumber = updatedEntity.PhoneNumber,
-                        Role = roleResult.Data,
-                        Address = addressResult.Data,
-                        ContactPreference = preferenceResult.Data
+                        Role = new RoleDto { Id = roleResult.Data.Id, RoleName = updateCustomerDto.Role.RoleName },
+                        Address = new AddressDto { Id = addressResult.Data.Id, StreetName = updateCustomerDto.Address.StreetName, PostalCode = updateCustomerDto.Address.PostalCode, City = updateCustomerDto.Address.City },
+                        ContactPreference = new ContactPreferenceDto { Id = preferenceResult.Data.Id, PreferredContactMethod = updateCustomerDto.ContactPreference.PreferredContactMethod }
                     };
                     return OperationResult<UpdateCustomerDto>.Success("Kunden uppdaterades framgångsrikt.", updatedDto);
 

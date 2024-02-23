@@ -42,10 +42,10 @@ public class AddressServiceTests
     [Fact]
     public async Task DeleteAddressAsync_WithNoLinkedCustomers_DeletesAddressSuccessfully()
     {
-        var (AddressService, AddressDto) = await SetupAddressTestAsync();
-        await AddressService.CreateAddressAsync(AddressDto);
+        var (addressService, addressDto) = await SetupAddressTestAsync();
+        await addressService.CreateAddressAsync(addressDto);
 
-        var result = await AddressService.DeleteAddressAsync(AddressDto.Id);
+        var result = await addressService.DeleteAddressAsync(addressDto.Id);
 
         Assert.True(result.IsSuccess);
         Assert.Equal("Adressen raderades framgångsrikt.", result.Message);
@@ -54,7 +54,7 @@ public class AddressServiceTests
     [Fact]
     public async Task DeleteAddressAsync_LinkedToCustomers_DeleteFails()
     {
-        var (AddressService, AddressDto) = await SetupAddressTestAsync();
+        var (addressService, addressDto) = await SetupAddressTestAsync();
 
         var customerRepository = new CustomerRepository(_context);
         var customerEntity = new CustomerEntity
@@ -64,12 +64,12 @@ public class AddressServiceTests
             Email = "test@test.test",
             PhoneNumber = "0123456789",
             Password = "Andreas11!",
-            AddressId = AddressDto.Id,
+            AddressId = addressDto.Id,
         };
 
         await customerRepository.CreateAsync(customerEntity);
 
-        var deleteResult = await AddressService.DeleteAddressAsync(AddressDto.Id);
+        var deleteResult = await addressService.DeleteAddressAsync(addressDto.Id);
 
 
         Assert.False(deleteResult.IsSuccess);
@@ -77,11 +77,11 @@ public class AddressServiceTests
     }
 
     [Fact]
-    public async Task GetAllAddressesAsync_WitAddresses_ReturnsAddresses()
+    public async Task GetAllAddressesAsync_ReturnsAddresses()
     {
-        var (AddressService, _) = await SetupAddressTestAsync();
+        var (addressService, _) = await SetupAddressTestAsync();
 
-        var result = await AddressService.GetAllAddressesAsync();
+        var result = await addressService.GetAllAddressesAsync();
 
         Assert.True(result.IsSuccess);
         Assert.NotEmpty(result.Data);
@@ -101,32 +101,32 @@ public class AddressServiceTests
     }
 
     [Fact]
-    public async Task GetAddressByIdAsync_ReturnsContactPreference()
+    public async Task GetAddressByIdAsync_ReturnsAddress()
     {
-        var (AddressService, AddressDto) = await SetupAddressTestAsync();
+        var (addressService, addressDto) = await SetupAddressTestAsync();
 
-        var result = await AddressService.GetAddressByIdAsync(AddressDto.Id);
+        var result = await addressService.GetAddressByIdAsync(addressDto.Id);
 
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Data);
-        Assert.Equal(AddressDto.Id, result.Data.Id);
+        Assert.Equal(addressDto.Id, result.Data.Id);
         Assert.Equal("Adressen hämtades framgångsrikt.", result.Message);
     }
 
     [Fact]
     public async Task GetAddressByIdAsync_AddressDoesNotExist_ReturnsFailure()
     {
-        var (AddressService, _) = await SetupAddressTestAsync();
+        var (addressService, _) = await SetupAddressTestAsync();
         var nonExistentAddressId = 1999;
 
-        var result = await AddressService.GetAddressByIdAsync(nonExistentAddressId);
+        var result = await addressService.GetAddressByIdAsync(nonExistentAddressId);
 
         Assert.False(result.IsSuccess);
         Assert.Equal("Adressen kunde inte hittas.", result.Message);
     }
 
     [Fact]
-    public async Task UpdateContactPreferenceAsync_ExistingContactPreference_UpdatesSuccessfully()
+    public async Task UpdateAddressAsync_ExistingAddress_UpdatesSuccessfully()
     {
         var (addressService, addressDto) = await SetupAddressTestAsync();
         await addressService.CreateAddressAsync(addressDto);
@@ -144,13 +144,13 @@ public class AddressServiceTests
     }
 
     [Fact]
-    public async Task UpdateContactPreferenceAsync_ContactPreferenceDoesNotExist_ReturnsFailure()
+    public async Task UpdateAddressAsync_AddressDoesNotExist_ReturnsFailure()
     {
-        var (AddressService, _) = await SetupAddressTestAsync();
+        var (addressService, _) = await SetupAddressTestAsync();
         var nonExistentAddressDto = new AddressDto { 
             Id = 1999, StreetName = "NonExistent", PostalCode = "NonExistent", City = "NonExistent" };
 
-        var result = await AddressService.UpdateAddressAsync(nonExistentAddressDto);
+        var result = await addressService.UpdateAddressAsync(nonExistentAddressDto);
 
         Assert.False(result.IsSuccess);
         Assert.Equal("Adressen kunde inte hittas.", result.Message);
